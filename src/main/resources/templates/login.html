@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập – HotelHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #fff7ed;
+               display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .placeholder { text-align: center; }
+        .placeholder h1 { font-size: 28px; font-weight: 700; color: #ea580c; margin-bottom: 12px; }
+        .placeholder a { color: #27282a; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="placeholder">
+        <h1>Trang đăng nhập</h1>
+        <p><a th:href="@{/register}" href="/register">← Quay lại đăng ký</a></p>
+    </div>
+</body>
+</html>
