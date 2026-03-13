@@ -32,6 +32,9 @@
             <p class="subtitle">Đăng ký chỗ nghỉ của bạn để truy cập vào bảng điều khiển quản lý.</p>
         </div>
 
+        <!-- Alert banner (success / error từ server) -->
+        <div class="alert-banner" id="alertBanner"></div>
+
         <!-- Full name -->
         <label class="field-label" for="fullName">Họ và tên đầy đủ</label>
         <input
@@ -128,67 +131,106 @@
     </div><!-- end .right-panel -->
 </div><!-- end .register-wrapper -->
 
-<script>
-    const btnRegister    = document.getElementById('btnRegister');
-    const fullNameInput  = document.getElementById('fullName');
-    const emailInput     = document.getElementById('email');
-    const passwordInput  = document.getElementById('password');
-    const confirmInput   = document.getElementById('confirmPassword');
+<script th:inline="javascript">
+    const BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
 
-    const fullNameError  = document.getElementById('fullNameError');
-    const emailError     = document.getElementById('emailError');
-    const passwordError  = document.getElementById('passwordError');
+    const btnRegister   = document.getElementById('btnRegister');
+    const fullNameInput = document.getElementById('fullName');
+    const emailInput    = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const confirmInput  = document.getElementById('confirmPassword');
 
-    function showError(el, msg) {
-        el.textContent = msg;
-        el.classList.add('visible');
+    const fullNameError = document.getElementById('fullNameError');
+    const emailError    = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+    const alertBanner   = document.getElementById('alertBanner');
+
+    /* ── helpers ── */
+    function showError(el, msg) { el.textContent = msg; el.classList.add('visible'); }
+    function hideError(el)      { el.classList.remove('visible'); }
+    function validateEmail(v)   { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+    function showAlert(type, msg) {
+        alertBanner.textContent = msg;
+        alertBanner.className   = 'alert-banner ' + type;
+        alertBanner.style.display = 'block';
+    }
+    function hideAlert() { alertBanner.style.display = 'none'; }
+
+    function setLoading(on) {
+        btnRegister.disabled    = on;
+        btnRegister.textContent = on ? 'Đang xử lý...' : 'Tạo tài khoản';
     }
 
-    function hideError(el) {
-        el.classList.remove('visible');
-    }
-
-    function validateEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    btnRegister.addEventListener('click', () => {
+    /* ── submit ── */
+    btnRegister.addEventListener('click', async () => {
         let valid = true;
 
-        // Validate full name
         if (fullNameInput.value.trim() === '') {
-            showError(fullNameError, 'Vui lòng nhập họ và tên.');
-            valid = false;
-        } else {
-            hideError(fullNameError);
-        }
+            showError(fullNameError, 'Vui lòng nhập họ và tên.'); valid = false;
+        } else { hideError(fullNameError); }
 
-        // Validate email
         if (!validateEmail(emailInput.value.trim())) {
-            showError(emailError, 'Vui lòng nhập địa chỉ email hợp lệ.');
-            valid = false;
-        } else {
-            hideError(emailError);
-        }
+            showError(emailError, 'Vui lòng nhập địa chỉ email hợp lệ.'); valid = false;
+        } else { hideError(emailError); }
 
-        // Validate password
-        if (passwordInput.value.length < 6) {
-            showError(passwordError, 'Mật khẩu phải có ít nhất 6 ký tự.');
-            valid = false;
+        if (passwordInput.value.length < 8) {
+            showError(passwordError, 'Mật khẩu phải có ít nhất 8 ký tự.'); valid = false;
         } else if (passwordInput.value !== confirmInput.value) {
-            showError(passwordError, 'Mật khẩu không khớp.');
-            valid = false;
-        } else {
-            hideError(passwordError);
-        }
+            showError(passwordError, 'Mật khẩu không khớp.'); valid = false;
+        } else { hideError(passwordError); }
 
-        if (valid) {
-            // TODO: submit form / call API
-            alert('Đăng ký thành công! (Chưa kết nối backend)');
+        if (!valid) return;
+
+        setLoading(true);
+        hideAlert();
+
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/auth/register`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fullName:        fullNameInput.value.trim(),
+                    email:           emailInput.value.trim(),
+                    password:        passwordInput.value,
+                    confirmPassword: confirmInput.value
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.status === 201) {
+                localStorage.setItem('accessToken', data.accessToken);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                showAlert('success', 'Đăng ký thành công! Đang chuyển hướng...');
+                setTimeout(() => { window.location.href = '/login?registered=true'; }, 1500);
+                return;
+            }
+
+            if (res.status === 409) {
+                showError(emailError, 'Email này đã được sử dụng.');
+            } else if (res.status === 400) {
+                const fe = data.fieldErrors;
+                if (fe) {
+                    if (fe.fullName)        showError(fullNameError, fe.fullName);
+                    if (fe.email)          showError(emailError,    fe.email);
+                    if (fe.password)       showError(passwordError, fe.password);
+                    if (fe.confirmPassword) showError(passwordError, fe.confirmPassword);
+                } else {
+                    showAlert('error', data.message || 'Dữ liệu không hợp lệ.');
+                }
+            } else {
+                showAlert('error', 'Đã xảy ra lỗi máy chủ. Vui lòng thử lại.');
+            }
+
+        } catch (e) {
+            showAlert('error', 'Không thể kết nối tới máy chủ. Vui lòng kiểm tra backend đang chạy.');
+        } finally {
+            setLoading(false);
         }
     });
 
-    // Real-time clear errors
+    /* ── real-time clear errors ── */
     fullNameInput.addEventListener('input', () => hideError(fullNameError));
     emailInput.addEventListener('input',    () => hideError(emailError));
     passwordInput.addEventListener('input', () => hideError(passwordError));
@@ -197,7 +239,6 @@
     document.getElementById('btnGoogle').addEventListener('click', () => {
         alert('Đăng ký với Google (chưa tích hợp)');
     });
-
     document.getElementById('btnFacebook').addEventListener('click', () => {
         alert('Đăng ký với Facebook (chưa tích hợp)');
     });

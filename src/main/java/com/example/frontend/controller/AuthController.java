@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class AuthController {
 
-    @Value("${backend.url:http://localhost:8081}")
+    @Value("${app.backend.url}")
     private String backendUrl;
 
     @GetMapping("/register")
