@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đặt Phòng Trực Tuyến – HotelHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/booking.css}" />
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<header class="navbar">
+    <div class="navbar-brand">
+        <svg class="brand-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 14V6L8 2L14 6V14H10V10H6V14H2Z" fill="#171212"/>
+        </svg>
+        <span class="brand-name">HotelHub</span>
+    </div>
+    <nav class="navbar-links">
+        <a href="#" class="nav-link active">Trang chủ</a>
+        <a href="#" class="nav-link">Phòng</a>
+        <a href="#" class="nav-link">Dịch vụ</a>
+        <a href="#" class="nav-link">Khách hàng</a>
+    </nav>
+    <div class="navbar-actions">
+        <button class="btn-icon" id="btnNotification" title="Thông báo" aria-label="Thông báo">
+            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 2a6 6 0 0 0-6 6v3l-1.5 2.5h15L16 11V8a6 6 0 0 0-6-6ZM8.5 16.5a1.5 1.5 0 0 0 3 0" stroke="#171212" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <div class="avatar-wrapper" id="avatarBtn" title="Tài khoản">
+            <img class="avatar-img" src="https://www.figma.com/api/mcp/asset/ba02a468-8a32-4cfd-991a-f110d7044c2f" alt="Avatar" />
+        </div>
+    </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <h1 class="hero-title">Trải nghiệm kỳ nghỉ tuyệt vời</h1>
+</section>
+
+<!-- ===== BOOKING FORM ===== -->
+<section class="booking-section">
+    <h2 class="section-label">Đặt Phòng Trực Tuyến</h2>
+
+    <div class="booking-bar">
+        <!-- Check-in -->
+        <div class="booking-field" id="fieldCheckin">
+            <svg class="field-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2.5" y="3.5" width="15" height="15" rx="1.5" stroke="#8c6e5e" stroke-width="1.5"/>
+                <path d="M6.5 2v3M13.5 2v3M2.5 8h15" stroke="#8c6e5e" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <div class="field-text">
+                <span class="field-day" id="checkinDay">Thứ bảy</span>
+                <span class="field-date" id="checkinDate">01-01-2022</span>
+            </div>
+            <input type="date" class="date-input" id="checkinPicker" />
+        </div>
+
+        <div class="field-sep">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="8" cy="8" r="5" fill="none" stroke="#b5a9a2" stroke-width="1.3"/>
+                <path d="M8 5v3.5L10 10" stroke="#b5a9a2" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <!-- Check-out -->
+        <div class="booking-field" id="fieldCheckout">
+            <svg class="field-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2.5" y="3.5" width="15" height="15" rx="1.5" stroke="#8c6e5e" stroke-width="1.5"/>
+                <path d="M6.5 2v3M13.5 2v3M2.5 8h15" stroke="#8c6e5e" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <div class="field-text">
+                <span class="field-day" id="checkoutDay">Chủ nhật</span>
+                <span class="field-date" id="checkoutDate">02-01-2022</span>
+            </div>
+            <input type="date" class="date-input" id="checkoutPicker" />
+        </div>
+
+        <!-- Guests -->
+        <div class="booking-field guests-field" id="fieldGuests">
+            <div class="avatar-small">
+                <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="20" cy="20" r="20" fill="#EADDFF"/>
+                    <ellipse cx="20" cy="16" rx="6" ry="6" fill="#4F378A"/>
+                    <ellipse cx="20" cy="32" rx="10" ry="7" fill="#4F378A"/>
+                </svg>
+            </div>
+            <div class="field-text">
+                <span class="field-day" id="guestRooms">1 Phòng</span>
+                <span class="field-date" id="guestDetail">2 Người lớn, Trẻ em</span>
+            </div>
+            <!-- Guest dropdown -->
+            <div class="guests-dropdown" id="guestsDropdown">
+                <div class="guest-row">
+                    <span class="guest-label">Phòng</span>
+                    <div class="guest-counter">
+                        <button class="counter-btn" data-target="rooms" data-action="dec">−</button>
+                        <span class="counter-val" id="cntRooms">1</span>
+                        <button class="counter-btn" data-target="rooms" data-action="inc">+</button>
+                    </div>
+                </div>
+                <div class="guest-row">
+                    <span class="guest-label">Người lớn</span>
+                    <div class="guest-counter">
+                        <button class="counter-btn" data-target="adults" data-action="dec">−</button>
+                        <span class="counter-val" id="cntAdults">2</span>
+                        <button class="counter-btn" data-target="adults" data-action="inc">+</button>
+                    </div>
+                </div>
+                <div class="guest-row">
+                    <span class="guest-label">Trẻ em</span>
+                    <div class="guest-counter">
+                        <button class="counter-btn" data-target="children" data-action="dec">−</button>
+                        <span class="counter-val" id="cntChildren">0</span>
+                        <button class="counter-btn" data-target="children" data-action="inc">+</button>
+                    </div>
+                </div>
+                <button class="btn-apply" id="btnApplyGuests">Áp dụng</button>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <button class="btn-search" id="btnSearch">Tìm</button>
+    </div>
+</section>
+
+<!-- ===== ROOM SUGGESTIONS ===== -->
+<section class="rooms-section">
+    <h2 class="section-title">Gợi ý Phòng</h2>
+
+    <div class="rooms-grid" id="roomsGrid">
+
+        <!-- Card 1 -->
+        <div class="room-card" data-room="standard">
+            <div class="room-img-wrap">
+                <img class="room-img" src="https://www.figma.com/api/mcp/asset/64ab7f08-936c-4d49-98c2-eca3cb14530f" alt="Phòng Tiêu Chuẩn" />
+                <span class="room-badge">Phổ biến</span>
+            </div>
+            <div class="room-info">
+                <div class="room-info-top">
+                    <h3 class="room-name">Phòng Tiêu Chuẩn</h3>
+                    <span class="room-price">200k<span class="per-night">/đêm</span></span>
+                </div>
+                <p class="room-desc">Tiện nghi đầy đủ, phù hợp cho cặp đôi hoặc du khách một mình.</p>
+                <div class="room-tags">
+                    <span class="tag">WiFi</span>
+                    <span class="tag">TV</span>
+                    <span class="tag">Điều hòa</span>
+                </div>
+                <button class="btn-book" data-room="Phòng Tiêu Chuẩn" data-price="200000">Đặt ngay</button>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="room-card" data-room="vip">
+            <div class="room-img-wrap">
+                <img class="room-img" src="https://www.figma.com/api/mcp/asset/717af94a-5882-4339-859c-a782f89b9f5e" alt="Phòng Vip" />
+            </div>
+            <div class="room-info">
+                <div class="room-info-top">
+                    <h3 class="room-name">Phòng Vip</h3>
+                    <span class="room-price">350k<span class="per-night">/đêm</span></span>
+                </div>
+                <p class="room-desc">Không gian sang trọng, dịch vụ cao cấp cho khách thương gia.</p>
+                <div class="room-tags">
+                    <span class="tag">WiFi</span>
+                    <span class="tag">TV</span>
+                    <span class="tag">Mini bar</span>
+                </div>
+                <button class="btn-book" data-room="Phòng Vip" data-price="350000">Đặt ngay</button>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="room-card" data-room="deluxe">
+            <div class="room-img-wrap">
+                <img class="room-img" src="https://www.figma.com/api/mcp/asset/ed93047a-c384-4279-b6d8-9481b414319d" alt="Phòng Deluxe" />
+            </div>
+            <div class="room-info">
+                <div class="room-info-top">
+                    <h3 class="room-name">Phòng Deluxe</h3>
+                    <span class="room-price">500k<span class="per-night">/đêm</span></span>
+                </div>
+                <p class="room-desc">View hướng biển, nội thất hiện đại và phòng tắm rộng rãi.</p>
+                <div class="room-tags">
+                    <span class="tag">WiFi</span>
+                    <span class="tag">Bồn tắm</span>
+                    <span class="tag">View biển</span>
+                </div>
+                <button class="btn-book" data-room="Phòng Deluxe" data-price="500000">Đặt ngay</button>
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="room-card" data-room="premium">
+            <div class="room-img-wrap">
+                <img class="room-img" src="https://www.figma.com/api/mcp/asset/0df3e4b0-83f0-4a16-b015-fcde87a97408" alt="Phòng Cao Cấp" />
+            </div>
+            <div class="room-info">
+                <div class="room-info-top">
+                    <h3 class="room-name">Phòng Cao Cấp</h3>
+                    <span class="room-price">700k<span class="per-night">/đêm</span></span>
+                </div>
+                <p class="room-desc">Trải nghiệm đẳng cấp 5 sao với dịch vụ butler riêng.</p>
+                <div class="room-tags">
+                    <span class="tag">WiFi</span>
+                    <span class="tag">Butler</span>
+                    <span class="tag">Spa</span>
+                </div>
+                <button class="btn-book" data-room="Phòng Cao Cấp" data-price="700000">Đặt ngay</button>
+            </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="room-card" data-room="connecting">
+            <div class="room-img-wrap">
+                <img class="room-img" src="https://www.figma.com/api/mcp/asset/4d7eeb47-017f-4d05-b9b8-1478467a1ae9" alt="Phòng Connecting room" />
+            </div>
+            <div class="room-info">
+                <div class="room-info-top">
+                    <h3 class="room-name">Phòng Connecting room</h3>
+                    <span class="room-price">500k<span class="per-night">/đêm</span></span>
+                </div>
+                <p class="room-desc">Lý tưởng cho gia đình, gồm hai phòng thông nhau tiện lợi.</p>
+                <div class="room-tags">
+                    <span class="tag">WiFi</span>
+                    <span class="tag">TV</span>
+                    <span class="tag">Gia đình</span>
+                </div>
+                <button class="btn-book" data-room="Phòng Connecting room" data-price="500000">Đặt ngay</button>
+            </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="room-card" data-room="presidential">
+            <div class="room-img-wrap">
+                <img class="room-img" src="https://www.figma.com/api/mcp/asset/ce3954c9-c1de-4ec5-b5e3-b5eeca98a87d" alt="Phòng Tổng Thống" />
+                <span class="room-badge badge-gold">Đặc biệt</span>
+            </div>
+            <div class="room-info">
+                <div class="room-info-top">
+                    <h3 class="room-name">Phòng Tổng Thống</h3>
+                    <span class="room-price">2000k<span class="per-night">/đêm</span></span>
+                </div>
+                <p class="room-desc">Căn phòng sang trọng bậc nhất, dành cho những vị khách đặc biệt.</p>
+                <div class="room-tags">
+                    <span class="tag">Butler</span>
+                    <span class="tag">Jacuzzi</span>
+                    <span class="tag">Phòng họp</span>
+                </div>
+                <button class="btn-book" data-room="Phòng Tổng Thống" data-price="2000000">Đặt ngay</button>
+            </div>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="room-card" data-room="double">
+            <div class="room-img-wrap">
+                <img class="room-img" src="https://www.figma.com/api/mcp/asset/8d0bb591-d34c-4329-94ea-5408dd7b6a4f" alt="Phòng Douple" />
+            </div>
+            <div class="room-info">
+                <div class="room-info-top">
+                    <h3 class="room-name">Phòng Double</h3>
+                    <span class="room-price">1000k<span class="per-night">/đêm</span></span>
+                </div>
+                <p class="room-desc">Hai giường đôi, không gian thoáng đãng cho nhóm bạn bè.</p>
+                <div class="room-tags">
+                    <span class="tag">WiFi</span>
+                    <span class="tag">TV</span>
+                    <span class="tag">2 giường</span>
+                </div>
+                <button class="btn-book" data-room="Phòng Double" data-price="1000000">Đặt ngay</button>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ===== BOOKING MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="bookingModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <button class="modal-close" id="modalClose" aria-label="Đóng">&times;</button>
+        <h2 class="modal-title" id="modalTitle">Xác nhận đặt phòng</h2>
+
+        <div class="modal-body">
+            <div class="modal-room-info">
+                <div class="modal-info-row">
+                    <span class="info-label">Loại phòng</span>
+                    <span class="info-val" id="mRoomName">—</span>
+                </div>
+                <div class="modal-info-row">
+                    <span class="info-label">Nhận phòng</span>
+                    <span class="info-val" id="mCheckin">—</span>
+                </div>
+                <div class="modal-info-row">
+                    <span class="info-label">Trả phòng</span>
+                    <span class="info-val" id="mCheckout">—</span>
+                </div>
+                <div class="modal-info-row">
+                    <span class="info-label">Số đêm</span>
+                    <span class="info-val" id="mNights">—</span>
+                </div>
+                <div class="modal-info-row">
+                    <span class="info-label">Khách</span>
+                    <span class="info-val" id="mGuests">—</span>
+                </div>
+                <div class="modal-info-row highlight">
+                    <span class="info-label">Tổng tiền</span>
+                    <span class="info-val price-total" id="mTotal">—</span>
+                </div>
+            </div>
+
+            <div class="modal-form">
+                <label class="modal-label" for="mName">Họ và tên</label>
+                <input type="text" class="modal-input" id="mName" placeholder="Nguyễn Văn A" />
+
+                <label class="modal-label" for="mPhone">Số điện thoại</label>
+                <input type="tel" class="modal-input" id="mPhone" placeholder="0901 234 567" />
+
+                <label class="modal-label" for="mEmail">Email</label>
+                <input type="email" class="modal-input" id="mEmail" placeholder="example@email.com" />
+
+                <label class="modal-label" for="mNote">Ghi chú</label>
+                <textarea class="modal-input modal-textarea" id="mNote" placeholder="Yêu cầu đặc biệt (nếu có)..."></textarea>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" id="btnCancelModal">Huỷ</button>
+            <button class="btn-confirm" id="btnConfirmBooking">Xác nhận đặt phòng</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SUCCESS TOAST ===== -->
+<div class="toast" id="successToast">
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10" cy="10" r="9" fill="#22c55e"/>
+        <path d="M6 10l3 3 5-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span id="toastMsg">Đặt phòng thành công!</span>
+</div>
+
+<script th:inline="javascript">
+    const BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+
+    /* ───────────────────── DATE HELPERS ───────────────────── */
+    const DAYS_VI = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
+
+    function formatDateVi(dateStr) {
+        if (!dateStr) return { day: '—', date: '—' };
+        const d = new Date(dateStr + 'T00:00:00');
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yy = d.getFullYear();
+        return { day: DAYS_VI[d.getDay()], date: `${dd}-${mm}-${yy}` };
+    }
+
+    function nightsBetween(ci, co) {
+        if (!ci || !co) return 0;
+        const a = new Date(ci), b = new Date(co);
+        return Math.max(0, Math.round((b - a) / 86400000));
+    }
+
+    function fmtMoney(n) {
+        return (n / 1000).toLocaleString('vi-VN') + 'k';
+    }
+
+    /* Defaults */
+    let checkinVal  = '2022-01-01';
+    let checkoutVal = '2022-01-02';
+
+    function renderCheckin() {
+        const { day, date } = formatDateVi(checkinVal);
+        document.getElementById('checkinDay').textContent  = day;
+        document.getElementById('checkinDate').textContent = date;
+    }
+    function renderCheckout() {
+        const { day, date } = formatDateVi(checkoutVal);
+        document.getElementById('checkoutDay').textContent  = day;
+        document.getElementById('checkoutDate').textContent = date;
+    }
+    renderCheckin();
+    renderCheckout();
+
+    document.getElementById('fieldCheckin').addEventListener('click', () => {
+        document.getElementById('checkinPicker').showPicker?.() || document.getElementById('checkinPicker').click();
+    });
+    document.getElementById('checkinPicker').addEventListener('change', e => {
+        checkinVal = e.target.value;
+        renderCheckin();
+        if (checkoutVal <= checkinVal) {
+            const d = new Date(checkinVal + 'T00:00:00');
+            d.setDate(d.getDate() + 1);
+            checkoutVal = d.toISOString().split('T')[0];
+            renderCheckout();
+        }
+    });
+
+    document.getElementById('fieldCheckout').addEventListener('click', () => {
+        document.getElementById('checkoutPicker').showPicker?.() || document.getElementById('checkoutPicker').click();
+    });
+    document.getElementById('checkoutPicker').addEventListener('change', e => {
+        if (e.target.value > checkinVal) {
+            checkoutVal = e.target.value;
+            renderCheckout();
+        }
+    });
+
+    /* ───────────────────── GUESTS DROPDOWN ───────────────────── */
+    let guests = { rooms: 1, adults: 2, children: 0 };
+
+    document.getElementById('fieldGuests').addEventListener('click', e => {
+        if (!e.target.closest('.guests-dropdown')) {
+            document.getElementById('guestsDropdown').classList.toggle('open');
+        }
+    });
+
+    document.querySelectorAll('.counter-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.stopPropagation();
+            const target = btn.dataset.target;
+            const action = btn.dataset.action;
+            if (action === 'inc') guests[target]++;
+            if (action === 'dec' && guests[target] > (target === 'adults' ? 1 : 0)) guests[target]--;
+            document.getElementById('cnt' + target.charAt(0).toUpperCase() + target.slice(1)).textContent = guests[target];
+        });
+    });
+
+    document.getElementById('btnApplyGuests').addEventListener('click', e => {
+        e.stopPropagation();
+        document.getElementById('guestRooms').textContent  = guests.rooms + ' Phòng';
+        document.getElementById('guestDetail').textContent = guests.adults + ' Người lớn' + (guests.children > 0 ? ', ' + guests.children + ' Trẻ em' : ', Trẻ em');
+        document.getElementById('guestsDropdown').classList.remove('open');
+    });
+
+    document.addEventListener('click', e => {
+        const field = document.getElementById('fieldGuests');
+        if (!field.contains(e.target)) {
+            document.getElementById('guestsDropdown').classList.remove('open');
+        }
+    });
+
+    /* ───────────────────── SEARCH ───────────────────── */
+    document.getElementById('btnSearch').addEventListener('click', () => {
+        const nights = nightsBetween(checkinVal, checkoutVal);
+        if (nights === 0) { showToast('Vui lòng chọn ngày hợp lệ!', true); return; }
+        showToast(`Tìm kiếm phòng từ ${document.getElementById('checkinDate').textContent} → ${document.getElementById('checkoutDate').textContent} (${nights} đêm)`);
+        document.querySelector('.rooms-section').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    /* ───────────────────── MODAL ───────────────────── */
+    let currentRoomName  = '';
+    let currentRoomPrice = 0;
+
+    function openModal(roomName, roomPrice) {
+        currentRoomName  = roomName;
+        currentRoomPrice = roomPrice;
+
+        const nights = Math.max(1, nightsBetween(checkinVal, checkoutVal));
+        const total  = roomPrice * nights;
+
+        document.getElementById('mRoomName').textContent = roomName;
+        document.getElementById('mCheckin').textContent  = document.getElementById('checkinDate').textContent;
+        document.getElementById('mCheckout').textContent = document.getElementById('checkoutDate').textContent;
+        document.getElementById('mNights').textContent   = nights + ' đêm';
+        document.getElementById('mGuests').textContent   =
+            guests.rooms + ' phòng · ' + guests.adults + ' người lớn' +
+            (guests.children > 0 ? ' · ' + guests.children + ' trẻ em' : '');
+        document.getElementById('mTotal').textContent    = fmtMoney(total);
+
+        document.getElementById('modalOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.btn-book').forEach(btn => {
+        btn.addEventListener('click', () => {
+            openModal(btn.dataset.room, parseInt(btn.dataset.price));
+        });
+    });
+
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('btnCancelModal').addEventListener('click', closeModal);
+    document.getElementById('modalOverlay').addEventListener('click', e => {
+        if (e.target === document.getElementById('modalOverlay')) closeModal();
+    });
+
+    /* ───────────────────── CONFIRM BOOKING ───────────────────── */
+    document.getElementById('btnConfirmBooking').addEventListener('click', async () => {
+        const name  = document.getElementById('mName').value.trim();
+        const phone = document.getElementById('mPhone').value.trim();
+        const email = document.getElementById('mEmail').value.trim();
+
+        if (!name)  { document.getElementById('mName').focus();  return; }
+        if (!phone) { document.getElementById('mPhone').focus(); return; }
+
+        const nights = Math.max(1, nightsBetween(checkinVal, checkoutVal));
+        const payload = {
+            roomType:  currentRoomName,
+            pricePerNight: currentRoomPrice,
+            checkIn:   checkinVal,
+            checkOut:  checkoutVal,
+            nights,
+            rooms:     guests.rooms,
+            adults:    guests.adults,
+            children:  guests.children,
+            guestName: name,
+            guestPhone: phone,
+            guestEmail: email,
+            note: document.getElementById('mNote').value.trim()
+        };
+
+        const btn = document.getElementById('btnConfirmBooking');
+        btn.disabled    = true;
+        btn.textContent = 'Đang xử lý...';
+
+        try {
+            const token = localStorage.getItem('accessToken');
+            const res = await fetch(`${BACKEND_URL}/api/bookings`, {
+                method:  'POST',
+                headers: {
+                    'Content-Type':  'application/json',
+                    ...(token ? { 'Authorization': 'Bearer ' + token } : {})
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok || res.status === 201) {
+                closeModal();
+                showToast('Đặt phòng thành công! Chúng tôi sẽ liên hệ sớm.');
+            } else {
+                const data = await res.json().catch(() => ({}));
+                showToast(data.message || 'Đặt phòng thất bại. Vui lòng thử lại.', true);
+            }
+        } catch (err) {
+            showToast('Không thể kết nối máy chủ. Vui lòng thử lại.', true);
+        } finally {
+            btn.disabled    = false;
+            btn.textContent = 'Xác nhận đặt phòng';
+        }
+    });
+
+    /* ───────────────────── TOAST ───────────────────── */
+    let toastTimer = null;
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('successToast');
+        document.getElementById('toastMsg').textContent = msg;
+        toast.className = 'toast' + (isError ? ' toast-error' : '') + ' show';
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { toast.className = toast.className.replace(' show', ''); }, 3500);
+    }
+</script>
+
+</body>
+</html>
