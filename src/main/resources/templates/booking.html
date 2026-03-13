@@ -369,9 +369,12 @@
         return (n / 1000).toLocaleString('vi-VN') + 'k';
     }
 
-    /* Defaults */
-    let checkinVal  = '2022-01-01';
-    let checkoutVal = '2022-01-02';
+    /* Defaults — hôm nay và ngày mai */
+    function toISODate(d) { return d.toISOString().split('T')[0]; }
+    const today    = new Date();
+    const tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
+    let checkinVal  = toISODate(today);
+    let checkoutVal = toISODate(tomorrow);
 
     function renderCheckin() {
         const { day, date } = formatDateVi(checkinVal);
@@ -496,26 +499,33 @@
     /* ───────────────────── CONFIRM BOOKING ───────────────────── */
     document.getElementById('btnConfirmBooking').addEventListener('click', async () => {
         const name  = document.getElementById('mName').value.trim();
-        const phone = document.getElementById('mPhone').value.trim();
+        // Chuẩn hoá số điện thoại: xoá dấu cách, gạch ngang, chấm
+        const phone = document.getElementById('mPhone').value.trim().replace(/[\s\-\.]/g, '');
         const email = document.getElementById('mEmail').value.trim();
 
-        if (!name)  { document.getElementById('mName').focus();  return; }
-        if (!phone) { document.getElementById('mPhone').focus(); return; }
+        // Validate client-side trước
+        clearModalErrors();
+        let valid = true;
+        if (!name)  { showModalError('mName',  'Vui lòng nhập họ tên'); valid = false; }
+        if (!phone) { showModalError('mPhone', 'Vui lòng nhập số điện thoại'); valid = false; }
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showModalError('mEmail', 'Email không hợp lệ'); valid = false;
+        }
+        if (!valid) return;
 
         const nights = Math.max(1, nightsBetween(checkinVal, checkoutVal));
         const payload = {
-            roomType:  currentRoomName,
+            roomType:      currentRoomName,
             pricePerNight: currentRoomPrice,
-            checkIn:   checkinVal,
-            checkOut:  checkoutVal,
-            nights,
-            rooms:     guests.rooms,
-            adults:    guests.adults,
-            children:  guests.children,
-            guestName: name,
-            guestPhone: phone,
-            guestEmail: email,
-            note: document.getElementById('mNote').value.trim()
+            checkIn:       checkinVal,
+            checkOut:      checkoutVal,
+            rooms:         guests.rooms,
+            adults:        guests.adults,
+            children:      guests.children,
+            guestName:     name,
+            guestPhone:    phone,
+            guestEmail:    email || null,
+            note:          document.getElementById('mNote').value.trim() || null
         };
 
         const btn = document.getElementById('btnConfirmBooking');
@@ -533,20 +543,71 @@
                 body: JSON.stringify(payload)
             });
 
+            const data = await res.json().catch(() => ({}));
+
             if (res.ok || res.status === 201) {
                 closeModal();
-                showToast('Đặt phòng thành công! Chúng tôi sẽ liên hệ sớm.');
+                showToast('🎉 Đặt phòng thành công! Chúng tôi sẽ liên hệ sớm.');
+                resetModalForm();
+            } else if (res.status === 400 && data.fieldErrors) {
+                // Hiển thị lỗi validation từng field
+                const fe = data.fieldErrors;
+                const fieldMap = {
+                    guestName:     'mName',
+                    guestPhone:    'mPhone',
+                    guestEmail:    'mEmail',
+                    checkIn:       null,
+                    checkOut:      null,
+                    pricePerNight: null,
+                    roomType:      null
+                };
+                let hasFieldError = false;
+                for (const [key, inputId] of Object.entries(fieldMap)) {
+                    if (fe[key]) {
+                        if (inputId) showModalError(inputId, fe[key]);
+                        hasFieldError = true;
+                    }
+                }
+                if (!hasFieldError) {
+                    showToast(data.message || 'Dữ liệu không hợp lệ.', true);
+                }
+            } else if (res.status === 409) {
+                showToast(data.message || 'Phòng đã được đặt trong khoảng thời gian này.', true);
             } else {
-                const data = await res.json().catch(() => ({}));
                 showToast(data.message || 'Đặt phòng thất bại. Vui lòng thử lại.', true);
             }
         } catch (err) {
-            showToast('Không thể kết nối máy chủ. Vui lòng thử lại.', true);
+            showToast('Không thể kết nối máy chủ. Vui lòng kiểm tra backend đang chạy.', true);
         } finally {
             btn.disabled    = false;
             btn.textContent = 'Xác nhận đặt phòng';
         }
     });
+
+    function showModalError(inputId, msg) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        input.classList.add('input-error');
+        let err = input.nextElementSibling;
+        if (!err || !err.classList.contains('modal-field-error')) {
+            err = document.createElement('span');
+            err.className = 'modal-field-error';
+            input.parentNode.insertBefore(err, input.nextSibling);
+        }
+        err.textContent = msg;
+    }
+
+    function clearModalErrors() {
+        document.querySelectorAll('.modal-field-error').forEach(el => el.remove());
+        document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+    }
+
+    function resetModalForm() {
+        ['mName','mPhone','mEmail','mNote'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        clearModalErrors();
+    }
 
     /* ───────────────────── TOAST ───────────────────── */
     let toastTimer = null;
