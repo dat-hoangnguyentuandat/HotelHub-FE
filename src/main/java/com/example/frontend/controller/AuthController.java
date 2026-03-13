@@ -22,4 +22,10 @@ public class AuthController {
         model.addAttribute("backendUrl", backendUrl);
         return "login";
     }
+
+    @GetMapping({"/", "/booking"})
+    public String booking(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "booking";
+    }
 }
