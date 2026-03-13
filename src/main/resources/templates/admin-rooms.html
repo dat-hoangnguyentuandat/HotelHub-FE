@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Phòng – HotelHub Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/admin-rooms.css}" />
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <!-- ═══════════════════════════════════════
+         SIDEBAR
+    ═══════════════════════════════════════ -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-avatar">
+                <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="20" cy="20" r="20" fill="#2d4a3e"/>
+                    <path d="M10 30V16L20 9L30 16V30H24V23H16V30H10Z" fill="white"/>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <span class="brand-title">Khách Sạn</span>
+                <span class="brand-sub">Quản lý</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item" id="navOverview">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 9.5L12 3L21 9.5V20C21 20.55 20.55 21 20 21H15V15H9V21H4C3.45 21 3 20.55 3 20V9.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                </svg>
+                <span>Tổng quan</span>
+            </a>
+
+            <a href="#" class="nav-item active" id="navRooms">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="7" width="20" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                    <path d="M7 7V5C7 3.9 7.9 3 9 3H15C16.1 3 17 3.9 17 5V7" stroke="currentColor" stroke-width="1.8"/>
+                    <path d="M2 13H22" stroke="currentColor" stroke-width="1.8"/>
+                    <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
+                </svg>
+                <span>Phòng</span>
+            </a>
+
+            <a href="#" class="nav-item" id="navSchedule">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                    <path d="M8 2V6M16 2V6M3 10H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M8 14H16M8 18H12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <span>Lịch trình</span>
+            </a>
+
+            <a href="#" class="nav-item" id="navReport">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                    <path d="M14 2V8H20M8 13H16M8 17H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <span>Báo cáo</span>
+            </a>
+
+            <a href="#" class="nav-item" id="navSettings">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
+                    <path d="M12 2V4M12 20V22M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M2 12H4M20 12H22M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <span>Cài đặt</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- ═══════════════════════════════════════
+         MAIN CONTENT
+    ═══════════════════════════════════════ -->
+    <main class="main-content">
+
+        <!-- Top bar -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Quản lý Phòng</h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="9" cy="9" r="6" stroke="#8c7b72" stroke-width="1.5"/>
+                        <path d="M13.5 13.5L17 17" stroke="#8c7b72" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Tìm tên phòng..." />
+                </div>
+                <select class="filter-select" id="filterStatus">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="Trống">Trống</option>
+                    <option value="Đã Đặt">Đã Đặt</option>
+                    <option value="Đang ở">Đang ở</option>
+                    <option value="Hết Phòng">Hết Phòng</option>
+                    <option value="Bảo Trì">Bảo Trì</option>
+                </select>
+                <button class="btn-add" id="btnAddRoom">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 4V16M4 10H16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Thêm Phòng
+                </button>
+            </div>
+        </div>
+
+        <!-- Role warning banner -->
+        <div class="role-banner" id="roleBanner" style="display:none">
+            <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M10 6v5M10 13.5v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <div>
+                <strong>Bạn đang đăng nhập với quyền GUEST.</strong>
+                Mọi thao tác Sửa / Xoá / Thêm phòng sẽ bị từ chối (403).
+                Vui lòng đăng nhập bằng tài khoản <strong>ADMIN</strong>:
+                <code>admin@hotelhub.com</code> / <code>Admin@123</code>
+                — hoặc nhờ ADMIN nâng quyền tài khoản của bạn.
+            </div>
+            <a href="/login" class="banner-login-btn">Đăng nhập lại</a>
+        </div>
+
+        <!-- Stats cards -->
+        <div class="stats-row" id="statsRow">            <div class="stat-card">
+                <span class="stat-label">Tổng số phòng</span>
+                <span class="stat-val" id="statTotal">—</span>
+            </div>
+            <div class="stat-card stat-green">
+                <span class="stat-label">Trống</span>
+                <span class="stat-val" id="statAvail">—</span>
+            </div>
+            <div class="stat-card stat-orange">
+                <span class="stat-label">Đang sử dụng</span>
+                <span class="stat-val" id="statOccupied">—</span>
+            </div>
+            <div class="stat-card stat-red">
+                <span class="stat-label">Bảo trì / Hết phòng</span>
+                <span class="stat-val" id="statMaint">—</span>
+            </div>
+        </div>
+
+        <!-- Table card -->
+        <div class="table-card">
+            <table class="room-table" id="roomTable">
+                <thead>
+                    <tr>
+                        <th class="col-name">Tên Phòng</th>
+                        <th class="col-type">Loại Phòng</th>
+                        <th class="col-status">Trạng Thái</th>
+                        <th class="col-schedule">Thời gian phòng</th>
+                        <th class="col-maint">Bảo trì</th>
+                        <th class="col-action">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="roomTableBody">
+                    <tr class="loading-row">
+                        <td colspan="6">
+                            <div class="skeleton-wrap">
+                                <div class="skeleton"></div>
+                                <div class="skeleton"></div>
+                                <div class="skeleton"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Empty state -->
+            <div class="empty-state" id="emptyState" style="display:none">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="8" y="14" width="48" height="38" rx="4" stroke="#d4c5bc" stroke-width="2.5"/>
+                    <path d="M8 26H56M22 14V26M42 14V26" stroke="#d4c5bc" stroke-width="2.5" stroke-linecap="round"/>
+                    <circle cx="32" cy="42" r="6" stroke="#d4c5bc" stroke-width="2.5"/>
+                    <path d="M29 42H35M32 39V45" stroke="#d4c5bc" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                <p>Không tìm thấy phòng nào</p>
+                <button class="btn-add btn-sm" id="btnAddRoomEmpty">+ Thêm phòng mới</button>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+
+    </main>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL THÊM / SỬA PHÒNG
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="roomModal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Thêm Phòng Mới</h2>
+            <button class="modal-close" id="modalClose" aria-label="Đóng">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-grid">
+                <div class="form-group span-1">
+                    <label class="form-label" for="fRoomName">Tên phòng <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="fRoomName" placeholder="VD: Phòng 101" />
+                    <span class="form-error" id="errRoomName"></span>
+                </div>
+
+                <div class="form-group span-1">
+                    <label class="form-label" for="fRoomType">Loại phòng <span class="required">*</span></label>
+                    <select class="form-input form-select" id="fRoomType">
+                        <option value="">-- Chọn loại phòng --</option>
+                        <option value="Phòng Tiêu Chuẩn">Phòng Tiêu Chuẩn</option>
+                        <option value="Phòng Vip">Phòng Vip</option>
+                        <option value="Phòng Deluxe">Phòng Deluxe</option>
+                        <option value="Phòng Cao Cấp">Phòng Cao Cấp</option>
+                        <option value="Phòng Connecting room">Phòng Connecting room</option>
+                        <option value="Phòng Tổng Thống">Phòng Tổng Thống</option>
+                        <option value="Phòng Double">Phòng Double</option>
+                    </select>
+                    <span class="form-error" id="errRoomType"></span>
+                </div>
+
+                <div class="form-group span-2">
+                    <label class="form-label" for="fDescription">Mô tả</label>
+                    <textarea class="form-input form-textarea" id="fDescription" placeholder="Mô tả ngắn về phòng..."></textarea>
+                </div>
+
+                <div class="form-group span-1">
+                    <label class="form-label" for="fPrice">Giá/đêm (VNĐ) <span class="required">*</span></label>
+                    <input type="number" class="form-input" id="fPrice" placeholder="VD: 500000" min="0" step="10000"/>
+                    <span class="form-error" id="errPrice"></span>
+                </div>
+
+                <div class="form-group span-1">
+                    <label class="form-label" for="fCapacity">Sức chứa (người)</label>
+                    <input type="number" class="form-input" id="fCapacity" placeholder="VD: 2" min="1" max="20" value="2"/>
+                </div>
+
+                <div class="form-group span-1">
+                    <label class="form-label" for="fStatus">Trạng thái</label>
+                    <select class="form-input form-select" id="fStatus">
+                        <option value="Trống">Trống</option>
+                        <option value="Đã Đặt">Đã Đặt</option>
+                        <option value="Đang ở">Đang ở</option>
+                        <option value="Hết Phòng">Hết Phòng</option>
+                        <option value="Bảo Trì">Bảo Trì</option>
+                    </select>
+                </div>
+
+                <div class="form-group span-1">
+                    <label class="form-label" for="fMaintenance">Bảo trì</label>
+                    <select class="form-input form-select" id="fMaintenance">
+                        <option value="false">Không</option>
+                        <option value="true">Đang Bảo Trì</option>
+                    </select>
+                </div>
+
+                <div class="form-group span-2">
+                    <label class="form-label">Tiện nghi</label>
+                    <div class="amenities-grid">
+                        <label class="amenity-check"><input type="checkbox" value="WiFi" /> WiFi</label>
+                        <label class="amenity-check"><input type="checkbox" value="TV" /> TV</label>
+                        <label class="amenity-check"><input type="checkbox" value="Điều hòa" /> Điều hòa</label>
+                        <label class="amenity-check"><input type="checkbox" value="Mini bar" /> Mini bar</label>
+                        <label class="amenity-check"><input type="checkbox" value="Bồn tắm" /> Bồn tắm</label>
+                        <label class="amenity-check"><input type="checkbox" value="Ban công" /> Ban công</label>
+                        <label class="amenity-check"><input type="checkbox" value="View biển" /> View biển</label>
+                        <label class="amenity-check"><input type="checkbox" value="Spa" /> Spa</label>
+                    </div>
+                </div>
+
+                <div class="form-group span-2">
+                    <label class="form-label" for="fFloor">Tầng</label>
+                    <input type="number" class="form-input" id="fFloor" placeholder="VD: 3" min="1" max="50"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" id="btnCancelModal">Huỷ</button>
+            <button class="btn-save" id="btnSaveRoom">Lưu phòng</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL XÁC NHẬN XOÁ
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="deleteOverlay">
+    <div class="modal modal-sm" id="deleteModal" role="dialog" aria-modal="true">
+        <div class="delete-icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="24" cy="24" r="22" fill="#fef2f2" stroke="#fecaca" stroke-width="2"/>
+                <path d="M18 18L30 30M30 18L18 30" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h3 class="delete-title">Xoá phòng này?</h3>
+        <p class="delete-desc">Hành động này không thể hoàn tác. Phòng <strong id="deleteRoomName">—</strong> sẽ bị xoá vĩnh viễn.</p>
+        <div class="modal-footer">
+            <button class="btn-cancel" id="btnCancelDelete">Huỷ</button>
+            <button class="btn-delete-confirm" id="btnConfirmDelete">Xoá</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="adminToast">
+    <svg class="toast-icon-ok" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#22c55e"/><path d="M6 10l3 3 5-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg class="toast-icon-err" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#ef4444"/><path d="M7 7l6 6M13 7l-6 6" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span id="adminToastMsg">Thao tác thành công!</span>
+</div>
+
+<script th:inline="javascript">
+    const BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+
+    /* ═══════════════════════════════════════════════════════════
+       STATE
+    ═══════════════════════════════════════════════════════════ */
+    let allRooms     = [];   // full list fetched from API
+    let filtered     = [];   // after search/filter
+    let currentPage  = 1;
+    const PAGE_SIZE  = 8;
+    let editingId    = null; // null = add new, number = edit
+
+    /* ═══════════════════════════════════════════════════════════
+       API
+    ═══════════════════════════════════════════════════════════ */
+    function authHeaders() {
+        const token = localStorage.getItem('accessToken');
+        return {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': 'Bearer ' + token } : {})
+        };
+    }
+
+    async function fetchRooms() {
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/admin/rooms`, { headers: authHeaders() });
+            if (!res.ok) throw new Error('Lỗi tải danh sách phòng');
+            const data = await res.json();
+            // Hỗ trợ cả mảng thẳng lẫn paged { content: [...] }
+            allRooms = Array.isArray(data) ? data : (data.content || []);
+        } catch {
+            // Nếu chưa có API, dùng dữ liệu demo
+            allRooms = DEMO_ROOMS;
+        }
+        applyFilter();
+        renderStats();
+    }
+
+    async function saveRoom(payload) {
+        const url    = editingId ? `${BACKEND_URL}/api/admin/rooms/${editingId}` : `${BACKEND_URL}/api/admin/rooms`;
+        const method = editingId ? 'PUT' : 'POST';
+        const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(payload) });
+        if (!res.ok) {
+            if (res.status === 403) throw new Error('⛔ Bạn không có quyền thực hiện thao tác này. Vui lòng đăng nhập bằng tài khoản ADMIN.');
+            if (res.status === 401) throw new Error('🔒 Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.message || 'Không thể lưu phòng');
+        }
+        return res.json();
+    }
+
+    async function deleteRoom(id) {
+        const res = await fetch(`${BACKEND_URL}/api/admin/rooms/${id}`, {
+            method: 'DELETE', headers: authHeaders()
+        });
+        if (!res.ok) {
+            if (res.status === 403) throw new Error('⛔ Bạn không có quyền xoá phòng. Vui lòng đăng nhập bằng tài khoản ADMIN.');
+            if (res.status === 401) throw new Error('🔒 Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+            throw new Error('Không thể xoá phòng');
+        }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       DEMO DATA (fallback khi chưa có API)
+    ═══════════════════════════════════════════════════════════ */
+    const DEMO_ROOMS = [
+        { id: 1, roomName: 'Phòng 101', roomType: 'Phòng Tiêu Chuẩn', description: 'Phòng cơ bản, giá rẻ', status: 'Đã Đặt',  schedule: 'Thứ 7: 8 giờ sáng – CN: 5 giờ chiều', maintenance: false, price: 200000, capacity: 2, amenities: ['WiFi','TV','Điều hòa'], floor: 1 },
+        { id: 2, roomName: 'Phòng 201', roomType: 'Phòng Vip',         description: 'Phòng cao cấp, rộng hơn, tiện nghi tốt hơn và giá cao hơn', status: 'Đang ở', schedule: 'Thứ 3: 9 giờ chiều – Thứ 5: 10 giờ tối', maintenance: false, price: 350000, capacity: 2, amenities: ['WiFi','TV','Mini bar'], floor: 2 },
+        { id: 3, roomName: 'Phòng 301', roomType: 'Phòng Deluxe',      description: 'Phòng cao cấp hơn Standard, tiện nghi tốt hơn', status: 'Trống',   schedule: '', maintenance: true,  price: 500000, capacity: 3, amenities: ['WiFi','Bồn tắm','View biển'], floor: 3 },
+        { id: 4, roomName: 'Phòng 401', roomType: 'Phòng Cao Cấp',     description: 'Phòng cao hơn Standard, tiện nghi tốt hơn', status: 'Trống',   schedule: '', maintenance: false, price: 700000, capacity: 2, amenities: ['WiFi','Spa','Butler'], floor: 4 },
+        { id: 5, roomName: 'Phòng 501', roomType: 'Phòng Double',       description: 'Phòng có 1 giường đôi, phù hợp 2 người.', status: 'Hết Phòng', schedule: '', maintenance: false, price: 1000000, capacity: 2, amenities: ['WiFi','TV'], floor: 5 },
+        { id: 6, roomName: 'Phòng 601', roomType: 'Phòng Tổng Thống',   description: 'Căn phòng sang trọng bậc nhất dành cho VIP', status: 'Trống',  schedule: '', maintenance: false, price: 2000000, capacity: 4, amenities: ['WiFi','Jacuzzi','Phòng họp','Butler'], floor: 6 },
+        { id: 7, roomName: 'Phòng 102', roomType: 'Phòng Tiêu Chuẩn', description: 'Phòng cơ bản, nhìn ra sân vườn', status: 'Trống', schedule: '', maintenance: false, price: 200000, capacity: 2, amenities: ['WiFi','TV'], floor: 1 },
+        { id: 8, roomName: 'Phòng 202', roomType: 'Phòng Vip',          description: 'Phòng Vip hướng hồ bơi', status: 'Đã Đặt', schedule: 'Thứ 6: 2 giờ chiều – CN: 12 giờ trưa', maintenance: false, price: 350000, capacity: 2, amenities: ['WiFi','TV','Mini bar','Ban công'], floor: 2 },
+        { id: 9, roomName: 'Phòng 302', roomType: 'Phòng Deluxe',      description: 'Phòng Deluxe hướng biển', status: 'Đang ở', schedule: 'Thứ 2: 3 giờ chiều – Thứ 4: 11 giờ sáng', maintenance: false, price: 500000, capacity: 3, amenities: ['WiFi','Bồn tắm','View biển','Ban công'], floor: 3 },
+    ];
+
+    /* ═══════════════════════════════════════════════════════════
+       FILTER & RENDER
+    ═══════════════════════════════════════════════════════════ */
+    function applyFilter() {
+        const q   = document.getElementById('searchInput').value.trim().toLowerCase();
+        const st  = document.getElementById('filterStatus').value;
+        filtered  = allRooms.filter(r => {
+            const matchName = !q || (r.roomName || '').toLowerCase().includes(q) || (r.roomType || '').toLowerCase().includes(q);
+            const matchSt   = !st || r.status === st;
+            return matchName && matchSt;
+        });
+        currentPage = 1;
+        renderTable();
+        renderPagination();
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('roomTableBody');
+        const empty = document.getElementById('emptyState');
+        const start = (currentPage - 1) * PAGE_SIZE;
+        const page  = filtered.slice(start, start + PAGE_SIZE);
+
+        if (page.length === 0) {
+            tbody.innerHTML = '';
+            empty.style.display = 'flex';
+            return;
+        }
+        empty.style.display = 'none';
+
+        tbody.innerHTML = page.map(r => `
+            <tr class="room-row" data-id="${r.id}">
+                <td class="col-name">
+                    <div class="room-name-cell">
+                        <div class="room-icon-wrap">
+                            <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="13" rx="2" stroke="#8c6e5e" stroke-width="1.6"/><path d="M2 13H22M7 13V10C7 8.9 7.9 8 9 8H15C16.1 8 17 8.9 17 10V13" stroke="#8c6e5e" stroke-width="1.6"/></svg>
+                        </div>
+                        <div>
+                            <div class="room-name-text">${r.roomName || '—'}</div>
+                            ${r.floor ? `<div class="room-floor">Tầng ${r.floor}</div>` : ''}
+                        </div>
+                    </div>
+                </td>
+                <td class="col-type">
+                    <div class="type-name">${r.roomType || '—'}</div>
+                    <div class="type-desc">${r.description || ''}</div>
+                </td>
+                <td class="col-status"><span class="badge badge-${statusKey(r.status)}">${r.status || '—'}</span></td>
+                <td class="col-schedule"><span class="schedule-text">${r.schedule || '—'}</span></td>
+                <td class="col-maint">
+                    <span class="maint-badge ${r.maintenance ? 'maint-on' : 'maint-off'}">${r.maintenance ? 'Đang Bảo Trì' : 'Không'}</span>
+                </td>
+                <td class="col-action">
+                    <button class="btn-edit" data-id="${r.id}" title="Sửa">
+                        <svg viewBox="0 0 20 20" fill="none"><path d="M14.5 2.5L17.5 5.5L7 16H4V13L14.5 2.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                        Sửa
+                    </button>
+                    <span class="action-sep">|</span>
+                    <button class="btn-del" data-id="${r.id}" data-name="${r.roomName}" title="Xoá">
+                        <svg viewBox="0 0 20 20" fill="none"><path d="M4 6H16M7 6V4H13V6M8 9V15M12 9V15M5 6L6 17H14L15 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Xóa
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+
+        // Bind action buttons
+        tbody.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', () => openEditModal(parseInt(btn.dataset.id)));
+        });
+        tbody.querySelectorAll('.btn-del').forEach(btn => {
+            btn.addEventListener('click', () => openDeleteModal(parseInt(btn.dataset.id), btn.dataset.name));
+        });
+    }
+
+    function statusKey(s) {
+        const map = { 'Trống': 'empty', 'Đã Đặt': 'booked', 'Đang ở': 'occupied', 'Hết Phòng': 'full', 'Bảo Trì': 'maint' };
+        return map[s] || 'empty';
+    }
+
+    function renderStats() {
+        document.getElementById('statTotal').textContent    = allRooms.length;
+        document.getElementById('statAvail').textContent    = allRooms.filter(r => r.status === 'Trống').length;
+        document.getElementById('statOccupied').textContent = allRooms.filter(r => r.status === 'Đang ở' || r.status === 'Đã Đặt').length;
+        document.getElementById('statMaint').textContent    = allRooms.filter(r => r.maintenance || r.status === 'Hết Phòng' || r.status === 'Bảo Trì').length;
+    }
+
+    function renderPagination() {
+        const total = Math.ceil(filtered.length / PAGE_SIZE);
+        const pg    = document.getElementById('pagination');
+        if (total <= 1) { pg.innerHTML = ''; return; }
+
+        let html = `<button class="pg-btn pg-prev" ${currentPage === 1 ? 'disabled' : ''} id="pgPrev">
+            <svg viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9L11 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>`;
+        for (let i = 1; i <= total; i++) {
+            html += `<button class="pg-btn pg-num ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+        }
+        html += `<button class="pg-btn pg-next" ${currentPage === total ? 'disabled' : ''} id="pgNext">
+            <svg viewBox="0 0 18 18" fill="none"><path d="M7 4L12 9L7 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>`;
+        pg.innerHTML = html;
+
+        pg.querySelectorAll('.pg-num').forEach(b => {
+            b.addEventListener('click', () => { currentPage = parseInt(b.dataset.page); renderTable(); renderPagination(); });
+        });
+        pg.querySelector('#pgPrev')?.addEventListener('click', () => { currentPage--; renderTable(); renderPagination(); });
+        pg.querySelector('#pgNext')?.addEventListener('click', () => { currentPage++; renderTable(); renderPagination(); });
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       MODAL ADD / EDIT
+    ═══════════════════════════════════════════════════════════ */
+    function openAddModal() {
+        editingId = null;
+        document.getElementById('modalTitle').textContent = 'Thêm Phòng Mới';
+        document.getElementById('btnSaveRoom').textContent = 'Thêm phòng';
+        clearModalForm();
+        document.getElementById('modalOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function openEditModal(id) {
+        const room = allRooms.find(r => r.id === id);
+        if (!room) return;
+        editingId = id;
+        document.getElementById('modalTitle').textContent    = 'Sửa Phòng';
+        document.getElementById('btnSaveRoom').textContent   = 'Lưu thay đổi';
+        document.getElementById('fRoomName').value    = room.roomName   || '';
+        document.getElementById('fRoomType').value    = room.roomType   || '';
+        document.getElementById('fDescription').value = room.description|| '';
+        document.getElementById('fPrice').value       = room.price      || '';
+        document.getElementById('fCapacity').value    = room.capacity   || 2;
+        document.getElementById('fStatus').value      = room.status     || 'Trống';
+        document.getElementById('fMaintenance').value = String(room.maintenance || false);
+        document.getElementById('fFloor').value       = room.floor      || '';
+        // Amenities
+        document.querySelectorAll('.amenity-check input').forEach(cb => {
+            cb.checked = (room.amenities || []).includes(cb.value);
+        });
+        clearFormErrors();
+        document.getElementById('modalOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function clearModalForm() {
+        ['fRoomName','fRoomType','fDescription','fPrice','fFloor'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        document.getElementById('fCapacity').value    = '2';
+        document.getElementById('fStatus').value      = 'Trống';
+        document.getElementById('fMaintenance').value = 'false';
+        document.querySelectorAll('.amenity-check input').forEach(cb => cb.checked = false);
+        clearFormErrors();
+    }
+
+    function clearFormErrors() {
+        ['errRoomName','errRoomType','errPrice'].forEach(id => {
+            document.getElementById(id).textContent = '';
+        });
+        document.querySelectorAll('.form-input.error').forEach(el => el.classList.remove('error'));
+    }
+
+    document.getElementById('btnSaveRoom').addEventListener('click', async () => {
+        clearFormErrors();
+        const name  = document.getElementById('fRoomName').value.trim();
+        const type  = document.getElementById('fRoomType').value;
+        const price = parseFloat(document.getElementById('fPrice').value);
+        let valid   = true;
+
+        if (!name)          { setFormError('fRoomName', 'errRoomName', 'Tên phòng không được trống'); valid = false; }
+        if (!type)          { setFormError('fRoomType', 'errRoomType', 'Vui lòng chọn loại phòng');   valid = false; }
+        if (!price || price <= 0) { setFormError('fPrice', 'errPrice', 'Giá phải lớn hơn 0');         valid = false; }
+        if (!valid) return;
+
+        const amenities = [...document.querySelectorAll('.amenity-check input:checked')].map(cb => cb.value);
+
+        const payload = {
+            roomName:     name,
+            roomType:     type,
+            description:  document.getElementById('fDescription').value.trim(),
+            price:        price,
+            capacity:     parseInt(document.getElementById('fCapacity').value) || 2,
+            status:       document.getElementById('fStatus').value,
+            maintenance:  document.getElementById('fMaintenance').value === 'true',
+            floor:        parseInt(document.getElementById('fFloor').value) || null,
+            amenities
+        };
+
+        const btn = document.getElementById('btnSaveRoom');
+        btn.disabled = true;
+        btn.textContent = 'Đang lưu...';
+
+        try {
+            const saved = await saveRoom(payload);
+            // Cập nhật local list
+            if (editingId) {
+                allRooms = allRooms.map(r => r.id === editingId ? { ...r, ...saved, id: editingId } : r);
+            } else {
+                allRooms.push(saved.id ? saved : { ...payload, id: Date.now() });
+            }
+            closeModal();
+            applyFilter();
+            renderStats();
+            showToast(editingId ? 'Cập nhật phòng thành công!' : 'Thêm phòng thành công!');
+        } catch (e) {
+            showToast(e.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = editingId ? 'Lưu thay đổi' : 'Thêm phòng';
+        }
+    });
+
+    function setFormError(inputId, errId, msg) {
+        document.getElementById(inputId).classList.add('error');
+        document.getElementById(errId).textContent = msg;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       MODAL DELETE
+    ═══════════════════════════════════════════════════════════ */
+    let deleteTargetId = null;
+
+    function openDeleteModal(id, name) {
+        deleteTargetId = id;
+        document.getElementById('deleteRoomName').textContent = name || '—';
+        document.getElementById('deleteOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+        deleteTargetId = null;
+    }
+
+    document.getElementById('btnConfirmDelete').addEventListener('click', async () => {
+        if (!deleteTargetId) return;
+        const btn = document.getElementById('btnConfirmDelete');
+        btn.disabled = true;
+        btn.textContent = 'Đang xoá...';
+        try {
+            await deleteRoom(deleteTargetId);
+            allRooms = allRooms.filter(r => r.id !== deleteTargetId);
+            closeDeleteModal();
+            applyFilter();
+            renderStats();
+            showToast('Đã xoá phòng thành công!');
+        } catch (e) {
+            showToast(e.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Xoá';
+        }
+    });
+
+    /* ═══════════════════════════════════════════════════════════
+       OVERLAY CLOSE / EVENTS
+    ═══════════════════════════════════════════════════════════ */
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('btnCancelModal').addEventListener('click', closeModal);
+    document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target === document.getElementById('modalOverlay')) closeModal(); });
+
+    document.getElementById('btnCancelDelete').addEventListener('click', closeDeleteModal);
+    document.getElementById('deleteOverlay').addEventListener('click', e => { if (e.target === document.getElementById('deleteOverlay')) closeDeleteModal(); });
+
+    document.getElementById('btnAddRoom').addEventListener('click', openAddModal);
+    document.getElementById('btnAddRoomEmpty')?.addEventListener('click', openAddModal);
+
+    document.getElementById('searchInput').addEventListener('input', debounce(applyFilter, 250));
+    document.getElementById('filterStatus').addEventListener('change', applyFilter);
+
+    /* ═══════════════════════════════════════════════════════════
+       SIDEBAR NAVIGATION
+    ═══════════════════════════════════════════════════════════ */
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', e => {
+            e.preventDefault();
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            item.classList.add('active');
+        });
+    });
+
+    /* ═══════════════════════════════════════════════════════════
+       TOAST
+    ═══════════════════════════════════════════════════════════ */
+    let toastTimer = null;
+    function showToast(msg, isError = false) {
+        const t = document.getElementById('adminToast');
+        document.getElementById('adminToastMsg').textContent = msg;
+        t.className = 'toast' + (isError ? ' toast-error' : '') + ' show';
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { t.className = t.className.replace(' show', ''); }, 3500);
+    }
+
+    function debounce(fn, delay) {
+        let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       INIT
+    ═══════════════════════════════════════════════════════════ */
+
+    // Kiểm tra role ngay khi load – hiển thị banner cảnh báo nếu không phải ADMIN
+    (function checkRole() {
+        try {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) return; // chưa đăng nhập – không show banner
+            const user = JSON.parse(userStr);
+            const role = (user.role || '').toUpperCase();
+            if (role !== 'ADMIN' && role !== 'HOTEL_OWNER') {
+                document.getElementById('roleBanner').style.display = 'flex';
+            }
+        } catch (_) { /* ignore */ }
+    })();
+
+    fetchRooms();
+</script>
+</body>
+</html>
