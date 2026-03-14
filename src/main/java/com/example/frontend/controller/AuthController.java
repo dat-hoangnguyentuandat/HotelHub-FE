@@ -34,4 +34,10 @@ public class AuthController {
         model.addAttribute("backendUrl", backendUrl);
         return "admin-rooms";
     }
+
+    @GetMapping("/admin/dashboard")
+    public String dashboard(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "dashboard";
+    }
 }
