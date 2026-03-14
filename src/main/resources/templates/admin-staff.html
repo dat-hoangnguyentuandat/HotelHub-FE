@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Nhân viên – HotelHub Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/admin-staff.css}" />
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <!-- ═══════════════════════════════════════
+         SIDEBAR
+    ═══════════════════════════════════════ -->
+    <aside class="sidebar">
+        <!-- User Profile -->
+        <div class="sidebar-profile">
+            <div class="profile-avatar">
+                <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="20" cy="20" r="20" fill="#c17c5a"/>
+                    <circle cx="20" cy="16" r="6" fill="#f5ddd0"/>
+                    <path d="M8 34C8 27.4 13.4 22 20 22s12 5.4 12 12" fill="#f5ddd0"/>
+                </svg>
+            </div>
+            <div class="profile-info">
+                <span class="profile-name">Quản trị viên Khách sạn</span>
+                <span class="profile-role">Quản trị viên</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+            <a href="/admin/dashboard" class="nav-item" id="navDashboard">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.8"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.8"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.8"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.8"/>
+                </svg>
+                <span>Tổng quan</span>
+            </a>
+
+            <a href="/admin/staff" class="nav-item active" id="navStaff">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                    <path d="M3 20C3 16.7 5.7 14 9 14s6 2.7 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M16 11C17.1 11 18 10.1 18 9s-.9-2-2-2M22 20c0-3.3-2.7-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <span>Nhân viên</span>
+            </a>
+
+            <a href="/admin/schedule" class="nav-item" id="navSchedule">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                    <path d="M8 2V6M16 2V6M3 10H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M8 14H16M8 18H12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <span>Lịch trình</span>
+            </a>
+
+            <a href="/bao-cao" class="nav-item" id="navReport">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                    <path d="M14 2V8H20M8 13H16M8 17H13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <span>Báo cáo</span>
+            </a>
+
+            <a href="/cai-dat" class="nav-item" id="navSettings">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
+                    <path d="M12 2V4M12 20V22M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M2 12H4M20 12H22M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <span>Cài đặt</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- ═══════════════════════════════════════
+         MAIN CONTENT
+    ═══════════════════════════════════════ -->
+    <main class="main-content">
+
+        <!-- Topbar -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Quản lý Nhân viên</h1>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="9" cy="9" r="6" stroke="#8c7b72" stroke-width="1.5"/>
+                        <path d="M13.5 13.5L17 17" stroke="#8c7b72" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Tìm tên nhân viên..." />
+                </div>
+                <select class="filter-select" id="filterRole">
+                    <option value="">Tất cả vai trò</option>
+                    <option value="Lễ tân">Lễ tân</option>
+                    <option value="Buồng phòng">Buồng phòng</option>
+                    <option value="Quản lý">Quản lý</option>
+                    <option value="Bếp">Bếp</option>
+                    <option value="Bảo vệ">Bảo vệ</option>
+                </select>
+                <select class="filter-select" id="filterStatus">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="WORKING">Đang làm việc</option>
+                    <option value="ON_LEAVE">Đang nghỉ phép</option>
+                    <option value="INACTIVE">Ngừng làm việc</option>
+                </select>
+                <button class="btn-add" id="btnAddStaff">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 4V16M4 10H16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Thêm nhân viên mới
+                </button>
+            </div>
+        </div>
+
+        <!-- Table card -->
+        <div class="table-card">
+            <table class="staff-table" id="staffTable">
+                <thead>
+                    <tr>
+                        <th class="col-avatar">Ảnh đại diện</th>
+                        <th class="col-name">Họ và tên</th>
+                        <th class="col-role">Vai trò</th>
+                        <th class="col-shift">Lịch ca làm</th>
+                        <th class="col-status">Trạng thái</th>
+                        <th class="col-action">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="staffTableBody">
+                    <tr class="loading-row">
+                        <td colspan="6">
+                            <div class="skeleton-wrap">
+                                <div class="skeleton"></div>
+                                <div class="skeleton"></div>
+                                <div class="skeleton"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Empty state -->
+            <div class="empty-state" id="emptyState" style="display:none">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="26" cy="20" r="10" stroke="#d4c5bc" stroke-width="2.5"/>
+                    <path d="M8 52C8 43.2 16.1 36 26 36s18 7.2 18 16" stroke="#d4c5bc" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M40 28C41.7 28 43 26.7 43 25s-1.3-3-3-3M50 52c0-6.6-4.5-12-10.5-13.5" stroke="#d4c5bc" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                <p>Không tìm thấy nhân viên nào</p>
+                <button class="btn-add btn-sm" id="btnAddStaffEmpty">+ Thêm nhân viên mới</button>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+
+    </main>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL THÊM / SỬA NHÂN VIÊN
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="staffModal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Thêm Nhân Viên Mới</h2>
+            <button class="modal-close" id="modalClose" aria-label="Đóng">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-grid">
+                <!-- Avatar preview -->
+                <div class="form-group span-2 avatar-upload-group">
+                    <div class="avatar-preview-wrap">
+                        <div class="avatar-preview" id="avatarPreview">
+                            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="20" cy="20" r="20" fill="#e8e0db"/>
+                                <circle cx="20" cy="16" r="6" fill="#c4b5ad"/>
+                                <path d="M8 34C8 27.4 13.4 22 20 22s12 5.4 12 12" fill="#c4b5ad"/>
+                            </svg>
+                        </div>
+                        <div class="avatar-upload-actions">
+                            <label class="btn-upload" for="avatarInput">
+                                <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v8M6 8l4-4 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 15h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                                Tải ảnh lên
+                            </label>
+                            <input type="file" id="avatarInput" accept="image/*" style="display:none" />
+                            <p class="avatar-hint">JPG, PNG tối đa 2MB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group span-1">
+                    <label class="form-label" for="fFullName">Họ và tên <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="fFullName" placeholder="VD: Nguyễn Văn A" />
+                    <span class="form-error" id="errFullName"></span>
+                </div>
+
+                <div class="form-group span-1">
+                    <label class="form-label" for="fRole">Vai trò <span class="required">*</span></label>
+                    <select class="form-input form-select" id="fRole">
+                        <option value="">-- Chọn vai trò --</option>
+                        <option value="Lễ tân">Lễ tân</option>
+                        <option value="Buồng phòng">Buồng phòng</option>
+                        <option value="Quản lý">Quản lý</option>
+                        <option value="Bếp">Bếp</option>
+                        <option value="Bảo vệ">Bảo vệ</option>
+                    </select>
+                    <span class="form-error" id="errRole"></span>
+                </div>
+
+                <div class="form-group span-1">
+                    <label class="form-label" for="fPhone">Số điện thoại</label>
+                    <input type="tel" class="form-input" id="fPhone" placeholder="VD: 0901234567" />
+                </div>
+
+                <div class="form-group span-1">
+                    <label class="form-label" for="fEmail">Email</label>
+                    <input type="email" class="form-input" id="fEmail" placeholder="VD: nhanvien@hotel.com" />
+                </div>
+
+                <div class="form-group span-1">
+                    <label class="form-label" for="fShift">Lịch ca làm <span class="required">*</span></label>
+                    <select class="form-input form-select" id="fShift">
+                        <option value="">-- Chọn ca làm --</option>
+                        <option value="Ca sáng: 6 giờ sáng - 2 giờ chiều">Ca sáng: 6 giờ sáng – 2 giờ chiều</option>
+                        <option value="Ca chiều: 2 giờ chiều - 10 giờ tối">Ca chiều: 2 giờ chiều – 10 giờ tối</option>
+                        <option value="Ca đêm: 10 giờ tối - 6 giờ sáng">Ca đêm: 10 giờ tối – 6 giờ sáng</option>
+                        <option value="Cả ngày: 9 giờ sáng - 5 giờ chiều">Cả ngày: 9 giờ sáng – 5 giờ chiều</option>
+                    </select>
+                    <span class="form-error" id="errShift"></span>
+                </div>
+
+                <div class="form-group span-1">
+                    <label class="form-label" for="fStatus">Trạng thái</label>
+                    <select class="form-input form-select" id="fStatus">
+                        <option value="WORKING">Đang làm việc</option>
+                        <option value="ON_LEAVE">Đang nghỉ phép</option>
+                        <option value="INACTIVE">Ngừng làm việc</option>
+                    </select>
+                </div>
+
+                <div class="form-group span-2">
+                    <label class="form-label" for="fNote">Ghi chú</label>
+                    <textarea class="form-input form-textarea" id="fNote" placeholder="Ghi chú thêm về nhân viên..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" id="btnCancelModal">Huỷ</button>
+            <button class="btn-save" id="btnSaveStaff">Lưu nhân viên</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL XÁC NHẬN XOÁ
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="deleteOverlay">
+    <div class="modal modal-sm" id="deleteModal" role="dialog" aria-modal="true">
+        <div class="delete-icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="24" cy="24" r="22" fill="#fef2f2" stroke="#fecaca" stroke-width="2"/>
+                <path d="M18 18L30 30M30 18L18 30" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h3 class="delete-title">Xoá nhân viên này?</h3>
+        <p class="delete-desc">Hành động này không thể hoàn tác. Nhân viên <strong id="deleteStaffName">—</strong> sẽ bị xoá vĩnh viễn.</p>
+        <div class="modal-footer">
+            <button class="btn-cancel" id="btnCancelDelete">Huỷ</button>
+            <button class="btn-delete-confirm" id="btnConfirmDelete">Xoá</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="staffToast">
+    <svg class="toast-icon-ok" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#22c55e"/><path d="M6 10l3 3 5-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg class="toast-icon-err" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#ef4444"/><path d="M7 7l6 6M13 7l-6 6" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span id="staffToastMsg">Thao tác thành công!</span>
+</div>
+
+<script th:inline="javascript">
+    const BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+    const API_STAFF   = BACKEND_URL + '/api/admin/staff';
+
+    /* ═══════════════════════════════════════════════════════════
+       STATE – pagination server-side
+    ═══════════════════════════════════════════════════════════ */
+    let allStaff     = [];   // cache trang hiện tại từ server
+    let serverTotal  = 0;    // tổng phần tử từ server
+    let serverPages  = 1;    // tổng trang từ server
+    let currentPage  = 0;    // 0-based (Spring Page)
+    const PAGE_SIZE  = 10;
+    let editingId    = null;
+    let avatarBase64 = null;
+
+    /* ═══════════════════════════════════════════════════════════
+       AUTH HEADERS
+    ═══════════════════════════════════════════════════════════ */
+    function authHeaders() {
+        const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+        return {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': 'Bearer ' + token } : {})
+        };
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       BUILD QUERY STRING
+    ═══════════════════════════════════════════════════════════ */
+    function buildQuery(page) {
+        const keyword = document.getElementById('searchInput').value.trim();
+        const role    = document.getElementById('filterRole').value;
+        const status  = document.getElementById('filterStatus').value;
+        const params  = new URLSearchParams({
+            page: page,
+            size: PAGE_SIZE,
+            ...(keyword ? { keyword } : {}),
+            ...(status  ? { status  } : {})
+        });
+        return params.toString();
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       API – GET (paged)
+    ═══════════════════════════════════════════════════════════ */
+    async function fetchStaff(page) {
+        page = page ?? currentPage;
+        showSkeleton();
+        try {
+            const res = await fetch(`${API_STAFF}?${buildQuery(page)}`, { headers: authHeaders() });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+
+            /* PagedResponse: { content, page, size, totalElements, totalPages, last } */
+            allStaff    = data.content       || [];
+            serverTotal = data.totalElements ?? allStaff.length;
+            serverPages = data.totalPages    ?? 1;
+            currentPage = data.page          ?? page;
+
+            /* Áp thêm filter vai trò ở client (server không filter theo role) */
+            renderTable(applyRoleFilter(allStaff));
+            renderPagination();
+        } catch (err) {
+            console.warn('Staff API error, dùng demo data:', err.message);
+            allStaff    = DEMO_STAFF;
+            serverTotal = DEMO_STAFF.length;
+            serverPages = Math.ceil(DEMO_STAFF.length / PAGE_SIZE);
+            currentPage = 0;
+            renderTable(applyRoleFilter(allStaff));
+            renderPagination();
+        }
+    }
+
+    function applyRoleFilter(list) {
+        const role = document.getElementById('filterRole').value;
+        return role ? list.filter(s => s.role === role) : list;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       API – SAVE (POST / PUT)
+    ═══════════════════════════════════════════════════════════ */
+    async function apiSaveStaff(payload) {
+        const url    = editingId ? `${API_STAFF}/${editingId}` : API_STAFF;
+        const method = editingId ? 'PUT' : 'POST';
+        const res    = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(payload) });
+        if (!res.ok) {
+            if (res.status === 403) throw new Error('⛔ Bạn không có quyền thực hiện thao tác này.');
+            if (res.status === 401) throw new Error('🔒 Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+            const err = await res.json().catch(() => ({}));
+            /* Xử lý validation errors từ GlobalExceptionHandler */
+            if (err.fieldErrors) {
+                const msgs = Object.values(err.fieldErrors).join('; ');
+                throw new Error(msgs);
+            }
+            throw new Error(err.message || 'Không thể lưu nhân viên');
+        }
+        return res.json();
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       API – DELETE
+    ═══════════════════════════════════════════════════════════ */
+    async function apiDeleteStaff(id) {
+        const res = await fetch(`${API_STAFF}/${id}`, { method: 'DELETE', headers: authHeaders() });
+        if (!res.ok) {
+            if (res.status === 403) throw new Error('⛔ Bạn không có quyền xoá nhân viên.');
+            if (res.status === 401) throw new Error('🔒 Phiên đăng nhập đã hết hạn.');
+            if (res.status === 404) throw new Error('Nhân viên không tồn tại.');
+            throw new Error('Không thể xoá nhân viên');
+        }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       DEMO DATA (fallback khi chưa có token / backend chưa start)
+       Dùng enum value từ StaffStatus: WORKING | ON_LEAVE | INACTIVE
+    ═══════════════════════════════════════════════════════════ */
+    const DEMO_STAFF = [
+        { id:1,  fullName:'Nguyễn Nhật Hào',    role:'Lễ tân',      shift:'Ca sáng: 6 giờ sáng - 2 giờ chiều',   status:'WORKING',  statusLabel:'Đang làm việc',  phone:'0901111111', email:'hao@hotel.com',   note:'', avatar:null },
+        { id:2,  fullName:'Trần Đức',            role:'Buồng phòng', shift:'Ca chiều: 2 giờ chiều - 10 giờ tối',  status:'WORKING',  statusLabel:'Đang làm việc',  phone:'0902222222', email:'duc@hotel.com',   note:'', avatar:null },
+        { id:3,  fullName:'Bùi Trí Tài',         role:'Quản lý',     shift:'Cả ngày: 9 giờ sáng - 5 giờ chiều',  status:'WORKING',  statusLabel:'Đang làm việc',  phone:'0903333333', email:'tai@hotel.com',   note:'', avatar:null },
+        { id:4,  fullName:'Lê Nguyễn Thế Kiệt', role:'Lễ tân',      shift:'Ca đêm: 10 giờ tối - 6 giờ sáng',    status:'WORKING',  statusLabel:'Đang làm việc',  phone:'0904444444', email:'kiet@hotel.com',  note:'', avatar:null },
+        { id:5,  fullName:'Nguyễn Tuấn Anh',     role:'Buồng phòng', shift:'Ca sáng: 6 giờ sáng - 2 giờ chiều',  status:'ON_LEAVE', statusLabel:'Đang nghỉ phép', phone:'0905555555', email:'anh@hotel.com',   note:'Nghỉ phép 1 tuần', avatar:null },
+        { id:6,  fullName:'Phạm Thị Lan',        role:'Lễ tân',      shift:'Ca chiều: 2 giờ chiều - 10 giờ tối', status:'WORKING',  statusLabel:'Đang làm việc',  phone:'0906666666', email:'lan@hotel.com',   note:'', avatar:null },
+        { id:7,  fullName:'Hoàng Minh Khoa',     role:'Bảo vệ',      shift:'Ca đêm: 10 giờ tối - 6 giờ sáng',   status:'WORKING',  statusLabel:'Đang làm việc',  phone:'0907777777', email:'khoa@hotel.com',  note:'', avatar:null },
+        { id:8,  fullName:'Đặng Thị Thu Hà',     role:'Bếp',         shift:'Ca sáng: 6 giờ sáng - 2 giờ chiều', status:'INACTIVE', statusLabel:'Ngừng làm việc', phone:'0908888888', email:'ha@hotel.com',    note:'Đã nghỉ việc', avatar:null },
+        { id:9,  fullName:'Vũ Đức Thắng',        role:'Quản lý',     shift:'Cả ngày: 9 giờ sáng - 5 giờ chiều', status:'WORKING',  statusLabel:'Đang làm việc',  phone:'0909999999', email:'thang@hotel.com', note:'', avatar:null },
+        { id:10, fullName:'Lý Thị Mỹ Dung',      role:'Bếp',         shift:'Ca chiều: 2 giờ chiều - 10 giờ tối',status:'ON_LEAVE', statusLabel:'Đang nghỉ phép', phone:'0910000000', email:'dung@hotel.com',  note:'', avatar:null },
+    ];
+
+    /* ═══════════════════════════════════════════════════════════
+       RENDER TABLE
+    ═══════════════════════════════════════════════════════════ */
+    function showSkeleton() {
+        document.getElementById('staffTableBody').innerHTML = `
+            <tr class="loading-row">
+                <td colspan="6">
+                    <div class="skeleton-wrap">
+                        <div class="skeleton"></div>
+                        <div class="skeleton"></div>
+                        <div class="skeleton"></div>
+                    </div>
+                </td>
+            </tr>`;
+        document.getElementById('emptyState').style.display = 'none';
+    }
+
+    function renderTable(list) {
+        const tbody = document.getElementById('staffTableBody');
+        const empty = document.getElementById('emptyState');
+
+        if (!list || list.length === 0) {
+            tbody.innerHTML = '';
+            empty.style.display = 'flex';
+            return;
+        }
+        empty.style.display = 'none';
+
+        tbody.innerHTML = list.map(s => {
+            /* statusLabel đến từ backend; fallback map nếu demo */
+            const label   = s.statusLabel || STATUS_LABEL[s.status] || s.status;
+            const cssKey  = STATUS_CSS[s.status] || 'working';
+            return `
+            <tr class="staff-row" data-id="${s.id}">
+                <td class="col-avatar">
+                    <div class="staff-avatar">
+                        ${s.avatar
+                            ? `<img src="${escHtml(s.avatar)}" alt="${escHtml(s.fullName)}" />`
+                            : `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="#e8e0db"/><circle cx="20" cy="16" r="6" fill="#c4b5ad"/><path d="M8 34C8 27.4 13.4 22 20 22s12 5.4 12 12" fill="#c4b5ad"/></svg>`
+                        }
+                    </div>
+                </td>
+                <td class="col-name">
+                    <span class="staff-name">${escHtml(s.fullName)}</span>
+                    ${s.phone ? `<span class="staff-phone">${escHtml(s.phone)}</span>` : ''}
+                </td>
+                <td class="col-role"><span class="role-text">${escHtml(s.role || '—')}</span></td>
+                <td class="col-shift"><span class="shift-text">${escHtml(s.shift || '—')}</span></td>
+                <td class="col-status">
+                    <span class="status-badge status-${cssKey}">${escHtml(label)}</span>
+                </td>
+                <td class="col-action">
+                    <button class="btn-edit" data-id="${s.id}" title="Sửa">
+                        <svg viewBox="0 0 20 20" fill="none"><path d="M14.5 2.5L17.5 5.5L7 16H4V13L14.5 2.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                        Sửa
+                    </button>
+                    <span class="action-sep">|</span>
+                    <button class="btn-del" data-id="${s.id}" data-name="${escHtml(s.fullName)}" title="Xoá">
+                        <svg viewBox="0 0 20 20" fill="none"><path d="M4 6H16M7 6V4H13V6M8 9V15M12 9V15M5 6L6 17H14L15 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Xóa
+                    </button>
+                </td>
+            </tr>`;
+        }).join('');
+
+        tbody.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', () => openEditModal(parseInt(btn.dataset.id)));
+        });
+        tbody.querySelectorAll('.btn-del').forEach(btn => {
+            btn.addEventListener('click', () => openDeleteModal(parseInt(btn.dataset.id), btn.dataset.name));
+        });
+    }
+
+    /* Mapping enum → CSS class & tiếng Việt (fallback nếu statusLabel không có) */
+    const STATUS_CSS = { WORKING: 'working', ON_LEAVE: 'leave', INACTIVE: 'inactive' };
+    const STATUS_LABEL = { WORKING: 'Đang làm việc', ON_LEAVE: 'Đang nghỉ phép', INACTIVE: 'Ngừng làm việc' };
+
+    function escHtml(str) {
+        if (str == null) return '';
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       PAGINATION (server-side)
+    ═══════════════════════════════════════════════════════════ */
+    function renderPagination() {
+        const pg = document.getElementById('pagination');
+        if (serverPages <= 1) { pg.innerHTML = ''; return; }
+
+        let html = `<button class="pg-btn pg-prev" ${currentPage === 0 ? 'disabled' : ''} id="pgPrev">
+            <svg viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9L11 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>`;
+        for (let i = 0; i < serverPages; i++) {
+            html += `<button class="pg-btn pg-num ${i === currentPage ? 'active' : ''}" data-page="${i}">${i + 1}</button>`;
+        }
+        html += `<button class="pg-btn pg-next" ${currentPage >= serverPages - 1 ? 'disabled' : ''} id="pgNext">
+            <svg viewBox="0 0 18 18" fill="none"><path d="M7 4L12 9L7 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>`;
+        pg.innerHTML = html;
+
+        pg.querySelectorAll('.pg-num').forEach(b =>
+            b.addEventListener('click', () => fetchStaff(parseInt(b.dataset.page))));
+        pg.querySelector('#pgPrev')?.addEventListener('click', () => fetchStaff(currentPage - 1));
+        pg.querySelector('#pgNext')?.addEventListener('click', () => fetchStaff(currentPage + 1));
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       SEARCH & FILTER → gọi lại API từ page 0
+    ═══════════════════════════════════════════════════════════ */
+    function reloadFromStart() { fetchStaff(0); }
+
+    document.getElementById('searchInput').addEventListener('input', debounce(reloadFromStart, 300));
+    document.getElementById('filterStatus').addEventListener('change', reloadFromStart);
+    document.getElementById('filterRole').addEventListener('change', () => {
+        /* role filter là client-side vì API không hỗ trợ; re-render hiện tại */
+        renderTable(applyRoleFilter(allStaff));
+    });
+
+    /* ═══════════════════════════════════════════════════════════
+       MODAL ADD / EDIT
+    ═══════════════════════════════════════════════════════════ */
+    function openAddModal() {
+        editingId    = null;
+        avatarBase64 = null;
+        document.getElementById('modalTitle').textContent   = 'Thêm Nhân Viên Mới';
+        document.getElementById('btnSaveStaff').textContent = 'Thêm nhân viên';
+        clearModalForm();
+        document.getElementById('modalOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function openEditModal(id) {
+        const staff = allStaff.find(s => s.id === id);
+        if (!staff) return;
+        editingId    = id;
+        avatarBase64 = null;  // không gửi lại avatar nếu không thay đổi
+        document.getElementById('modalTitle').textContent   = 'Sửa Nhân Viên';
+        document.getElementById('btnSaveStaff').textContent = 'Lưu thay đổi';
+        document.getElementById('fFullName').value = staff.fullName || '';
+        document.getElementById('fRole').value     = staff.role     || '';
+        document.getElementById('fPhone').value    = staff.phone    || '';
+        document.getElementById('fEmail').value    = staff.email    || '';
+        document.getElementById('fShift').value    = staff.shift    || '';
+        /* status là enum WORKING / ON_LEAVE / INACTIVE */
+        document.getElementById('fStatus').value   = staff.status   || 'WORKING';
+        document.getElementById('fNote').value     = staff.note     || '';
+        updateAvatarPreview(staff.avatar || null);
+        clearFormErrors();
+        document.getElementById('modalOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function updateAvatarPreview(src) {
+        const el = document.getElementById('avatarPreview');
+        el.innerHTML = src
+            ? `<img src="${src}" alt="avatar" />`
+            : `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="#e8e0db"/><circle cx="20" cy="16" r="6" fill="#c4b5ad"/><path d="M8 34C8 27.4 13.4 22 20 22s12 5.4 12 12" fill="#c4b5ad"/></svg>`;
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function clearModalForm() {
+        ['fFullName','fRole','fPhone','fEmail','fShift','fNote'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        document.getElementById('fStatus').value = 'WORKING';
+        document.getElementById('avatarInput').value = '';
+        updateAvatarPreview(null);
+        clearFormErrors();
+    }
+
+    function clearFormErrors() {
+        ['errFullName','errRole','errShift'].forEach(id => {
+            document.getElementById(id).textContent = '';
+        });
+        document.querySelectorAll('.form-input.error').forEach(el => el.classList.remove('error'));
+    }
+
+    function setFormError(inputId, errId, msg) {
+        document.getElementById(inputId).classList.add('error');
+        document.getElementById(errId).textContent = msg;
+    }
+
+    /* Avatar file input */
+    document.getElementById('avatarInput').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) { showToast('Ảnh phải nhỏ hơn 2MB', true); return; }
+        const reader = new FileReader();
+        reader.onload = e => { avatarBase64 = e.target.result; updateAvatarPreview(avatarBase64); };
+        reader.readAsDataURL(file);
+    });
+
+    /* Save */
+    document.getElementById('btnSaveStaff').addEventListener('click', async () => {
+        clearFormErrors();
+        const fullName = document.getElementById('fFullName').value.trim();
+        const role     = document.getElementById('fRole').value;
+        const shift    = document.getElementById('fShift').value;
+        let valid      = true;
+        if (!fullName) { setFormError('fFullName','errFullName','Họ và tên không được trống'); valid = false; }
+        if (!role)     { setFormError('fRole','errRole','Vui lòng chọn vai trò'); valid = false; }
+        if (!shift)    { setFormError('fShift','errShift','Vui lòng chọn ca làm'); valid = false; }
+        if (!valid) return;
+
+        /* Payload khớp StaffRequest – status dùng enum string */
+        const payload = {
+            fullName,
+            role,
+            phone:  document.getElementById('fPhone').value.trim()  || null,
+            email:  document.getElementById('fEmail').value.trim()  || null,
+            shift,
+            status: document.getElementById('fStatus').value,   // WORKING | ON_LEAVE | INACTIVE
+            note:   document.getElementById('fNote').value.trim()   || null,
+            avatar: avatarBase64  // null nếu không đổi ảnh
+        };
+
+        const btn = document.getElementById('btnSaveStaff');
+        btn.disabled = true; btn.textContent = 'Đang lưu...';
+        try {
+            await apiSaveStaff(payload);
+            closeModal();
+            showToast(editingId ? 'Cập nhật nhân viên thành công!' : 'Thêm nhân viên thành công!');
+            fetchStaff(currentPage);  // reload trang hiện tại
+        } catch (e) {
+            showToast(e.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = editingId ? 'Lưu thay đổi' : 'Thêm nhân viên';
+        }
+    });
+
+    /* ═══════════════════════════════════════════════════════════
+       MODAL DELETE
+    ═══════════════════════════════════════════════════════════ */
+    let deleteTargetId = null;
+
+    function openDeleteModal(id, name) {
+        deleteTargetId = id;
+        document.getElementById('deleteStaffName').textContent = name || '—';
+        document.getElementById('deleteOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+        deleteTargetId = null;
+    }
+
+    document.getElementById('btnConfirmDelete').addEventListener('click', async () => {
+        if (!deleteTargetId) return;
+        const btn = document.getElementById('btnConfirmDelete');
+        btn.disabled = true; btn.textContent = 'Đang xoá...';
+        try {
+            await apiDeleteStaff(deleteTargetId);
+            closeDeleteModal();
+            showToast('Đã xoá nhân viên thành công!');
+            /* Nếu xoá hết trang cuối → quay về trang trước */
+            const goPage = (allStaff.length === 1 && currentPage > 0) ? currentPage - 1 : currentPage;
+            fetchStaff(goPage);
+        } catch (e) {
+            showToast(e.message, true);
+        } finally {
+            btn.disabled = false; btn.textContent = 'Xoá';
+        }
+    });
+
+    /* ═══════════════════════════════════════════════════════════
+       EVENTS
+    ═══════════════════════════════════════════════════════════ */
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('btnCancelModal').addEventListener('click', closeModal);
+    document.getElementById('modalOverlay').addEventListener('click', e => {
+        if (e.target === document.getElementById('modalOverlay')) closeModal();
+    });
+
+    document.getElementById('btnCancelDelete').addEventListener('click', closeDeleteModal);
+    document.getElementById('deleteOverlay').addEventListener('click', e => {
+        if (e.target === document.getElementById('deleteOverlay')) closeDeleteModal();
+    });
+
+    document.getElementById('btnAddStaff').addEventListener('click', openAddModal);
+    document.getElementById('btnAddStaffEmpty')?.addEventListener('click', openAddModal);
+
+    /* ═══════════════════════════════════════════════════════════
+       SIDEBAR – highlight theo URL
+    ═══════════════════════════════════════════════════════════ */
+    (function highlightActiveNav() {
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-item').forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === currentPath);
+        });
+    })();
+
+    /* ═══════════════════════════════════════════════════════════
+       TOAST
+    ═══════════════════════════════════════════════════════════ */
+    let toastTimer = null;
+    function showToast(msg, isError = false) {
+        const t = document.getElementById('staffToast');
+        document.getElementById('staffToastMsg').textContent = msg;
+        t.className = 'toast' + (isError ? ' toast-error' : '') + ' show';
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { t.className = t.className.replace(' show',''); }, 3500);
+    }
+
+    function debounce(fn, delay) {
+        let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
+    }
+
+    /* ═══ INIT ═══ */
+    fetchStaff(0);
+</script>
+</body>
+</html>
