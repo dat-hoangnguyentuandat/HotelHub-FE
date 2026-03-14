@@ -46,4 +46,10 @@ public class AuthController {
         model.addAttribute("backendUrl", backendUrl);
         return "admin-staff";
     }
+
+    @GetMapping("/admin/bookings")
+    public String adminBookings(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "admin-bookings";
+    }
 }
