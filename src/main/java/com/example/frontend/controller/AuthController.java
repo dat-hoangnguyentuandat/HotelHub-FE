@@ -64,4 +64,10 @@ public class AuthController {
         model.addAttribute("backendUrl", backendUrl);
         return "loyal-customers";
     }
+
+    @GetMapping("/admin/cancellation")
+    public String adminCancellation(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "admin-cancellation";
+    }
 }
