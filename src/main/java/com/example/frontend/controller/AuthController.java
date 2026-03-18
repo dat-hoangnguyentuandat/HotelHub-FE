@@ -58,4 +58,10 @@ public class AuthController {
         model.addAttribute("backendUrl", backendUrl);
         return "admin-special-requests";
     }
+
+    @GetMapping("/loyal-customers")
+    public String loyalcustomers(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "loyal-customers";
+    }
 }
