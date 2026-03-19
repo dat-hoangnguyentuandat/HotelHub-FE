@@ -70,4 +70,10 @@ public class AuthController {
         model.addAttribute("backendUrl", backendUrl);
         return "admin-cancellation";
     }
+
+    @GetMapping("/admin/admin-services")
+    public String adminservices(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "admin-services";
+    }
 }
