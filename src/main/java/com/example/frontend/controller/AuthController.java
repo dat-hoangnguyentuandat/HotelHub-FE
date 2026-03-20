@@ -76,4 +76,10 @@ public class AuthController {
         model.addAttribute("backendUrl", backendUrl);
         return "admin-services";
     }
+
+    @GetMapping("/payment")
+    public String payment(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "payment";
+    }
 }

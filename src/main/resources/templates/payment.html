@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thanh Toán – HotelHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/payment.css}" />
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<header class="navbar">
+    <div class="navbar-brand">
+        <svg class="brand-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 14V6L8 2L14 6V14H10V10H6V14H2Z" fill="#171212"/>
+        </svg>
+        <span class="brand-name">HotelHub</span>
+    </div>
+    <nav class="navbar-links">
+        <a th:href="@{/booking}" class="nav-link">Trang chủ</a>
+        <a href="#" class="nav-link">Phòng</a>
+        <a href="#" class="nav-link">Dịch vụ</a>
+        <a href="#" class="nav-link">Khách hàng</a>
+    </nav>
+    <div class="navbar-actions">
+        <button class="btn-icon" title="Thông báo" aria-label="Thông báo">
+            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 2a6 6 0 0 0-6 6v3l-1.5 2.5h15L16 11V8a6 6 0 0 0-6-6ZM8.5 16.5a1.5 1.5 0 0 0 3 0" stroke="#171212" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <div class="avatar-wrapper" title="Tài khoản">
+            <img class="avatar-img" src="https://i.pravatar.cc/40?img=3" alt="Avatar" />
+        </div>
+    </div>
+</header>
+
+<!-- ===== PROGRESS STEPS ===== -->
+<div class="progress-bar-wrap">
+    <div class="progress-steps">
+        <div class="step done">
+            <div class="step-circle">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="step-label">Chọn phòng</span>
+        </div>
+        <div class="step-line done"></div>
+        <div class="step done">
+            <div class="step-circle">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="step-label">Thông tin đặt phòng</span>
+        </div>
+        <div class="step-line active"></div>
+        <div class="step active">
+            <div class="step-circle">3</div>
+            <span class="step-label">Thanh toán</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+            <div class="step-circle">4</div>
+            <span class="step-label">Xác nhận</span>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="payment-main">
+    <div class="payment-grid">
+
+        <!-- ===== LEFT: PAYMENT FORM ===== -->
+        <section class="payment-form-section">
+            <h2 class="section-title">Thanh Toán</h2>
+
+            <!-- Timer -->
+            <div class="timer-banner" id="timerBanner">
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="10" cy="11" r="7" stroke="#e55200" stroke-width="1.5"/>
+                    <path d="M10 7v4l2.5 2" stroke="#e55200" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M7.5 2.5h5" stroke="#e55200" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <span>Phiên thanh toán hết hạn sau: <strong id="countdownTimer">14:59</strong></span>
+            </div>
+
+            <!-- ── PAYMENT METHOD TABS ── -->
+            <div class="method-tabs" role="tablist">
+                <button class="method-tab active" data-method="card" role="tab" aria-selected="true">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="1.5" y="4.5" width="17" height="11" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M1.5 8h17" stroke="currentColor" stroke-width="1.5"/>
+                        <rect x="4" y="11" width="4" height="2" rx="0.5" fill="currentColor"/>
+                    </svg>
+                    Thẻ ngân hàng
+                </button>
+                <button class="method-tab" data-method="qr" role="tab" aria-selected="false">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="2" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                        <rect x="12" y="2" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                        <rect x="2" y="12" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M13 13h1m2 0h1m-3 2h1m2-2v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    Quét QR
+                </button>
+                <button class="method-tab" data-method="wallet" role="tab" aria-selected="false">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="5" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M2 9h16" stroke="currentColor" stroke-width="1.5"/>
+                        <circle cx="15" cy="13" r="1.5" fill="currentColor"/>
+                    </svg>
+                    Ví điện tử
+                </button>
+                <button class="method-tab" data-method="cash" role="tab" aria-selected="false">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="5" width="16" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                        <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 10h.5M14.5 10H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    Tiền mặt
+                </button>
+            </div>
+
+            <!-- ══ PANEL: THẺ NGÂN HÀNG ══ -->
+            <div class="method-panel active" id="panelCard">
+                <!-- Card type logos -->
+                <div class="card-logos">
+                    <div class="card-logo" data-type="visa">
+                        <svg viewBox="0 0 48 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <text x="0" y="13" font-family="Inter,sans-serif" font-size="14" font-weight="700" fill="#1a1f71">VISA</text>
+                        </svg>
+                    </div>
+                    <div class="card-logo" data-type="mastercard">
+                        <svg viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="13" cy="12" r="10" fill="#EB001B"/>
+                            <circle cx="23" cy="12" r="10" fill="#F79E1B"/>
+                            <path d="M18 5.4A10 10 0 0 1 22.6 12 10 10 0 0 1 18 18.6 10 10 0 0 1 13.4 12 10 10 0 0 1 18 5.4Z" fill="#FF5F00"/>
+                        </svg>
+                    </div>
+                    <div class="card-logo" data-type="napas">
+                        <span style="font-family:Inter,sans-serif;font-weight:700;font-size:11px;color:#0055a5">NAPAS</span>
+                    </div>
+                    <div class="card-logo" data-type="jcb">
+                        <span style="font-family:Inter,sans-serif;font-weight:700;font-size:11px;color:#003087">JCB</span>
+                    </div>
+                </div>
+
+                <!-- Card preview -->
+                <div class="card-preview" id="cardPreview">
+                    <div class="card-preview-inner">
+                        <div class="card-chip">
+                            <svg viewBox="0 0 28 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="28" height="22" rx="3" fill="#d4a847"/>
+                                <rect x="2" y="7" width="24" height="8" fill="#c8963b"/>
+                                <line x1="14" y1="0" x2="14" y2="22" stroke="#c8963b" stroke-width="1.5"/>
+                                <line x1="0" y1="11" x2="28" y2="11" stroke="#c8963b" stroke-width="1"/>
+                            </svg>
+                        </div>
+                        <div class="card-number-display" id="cardNumberDisplay">•••• •••• •••• ••••</div>
+                        <div class="card-bottom-row">
+                            <div>
+                                <div class="card-label-sm">Tên chủ thẻ</div>
+                                <div class="card-holder-display" id="cardHolderDisplay">HỌ VÀ TÊN</div>
+                            </div>
+                            <div>
+                                <div class="card-label-sm">Hết hạn</div>
+                                <div class="card-expiry-display" id="cardExpiryDisplay">MM/YY</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card form -->
+                <form class="card-form" id="cardForm" novalidate autocomplete="off">
+                    <div class="form-row">
+                        <div class="form-group full">
+                            <label class="form-label" for="cardNumber">Số thẻ <span class="required">*</span></label>
+                            <div class="input-wrapper">
+                                <svg class="input-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="1.5" y="4.5" width="17" height="11" rx="1.5" stroke="#8c6e5e" stroke-width="1.5"/>
+                                    <path d="M1.5 8h17" stroke="#8c6e5e" stroke-width="1.5"/>
+                                </svg>
+                                <input type="text" id="cardNumber" class="form-input" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric" />
+                                <span class="card-type-badge" id="cardTypeBadge"></span>
+                            </div>
+                            <span class="form-error" id="errCardNumber"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full">
+                            <label class="form-label" for="cardHolder">Tên chủ thẻ <span class="required">*</span></label>
+                            <div class="input-wrapper">
+                                <svg class="input-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="10" cy="7" r="3.5" stroke="#8c6e5e" stroke-width="1.5"/>
+                                    <path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="#8c6e5e" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                <input type="text" id="cardHolder" class="form-input" placeholder="NGUYEN VAN A" />
+                            </div>
+                            <span class="form-error" id="errCardHolder"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row two-col">
+                        <div class="form-group">
+                            <label class="form-label" for="cardExpiry">Ngày hết hạn <span class="required">*</span></label>
+                            <div class="input-wrapper">
+                                <svg class="input-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="2.5" y="3.5" width="15" height="15" rx="1.5" stroke="#8c6e5e" stroke-width="1.5"/>
+                                    <path d="M6.5 2v3M13.5 2v3M2.5 8h15" stroke="#8c6e5e" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                <input type="text" id="cardExpiry" class="form-input" placeholder="MM/YY" maxlength="5" inputmode="numeric" />
+                            </div>
+                            <span class="form-error" id="errCardExpiry"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="cardCvv">
+                                CVV / CVC <span class="required">*</span>
+                                <button type="button" class="cvv-help" id="cvvHelpBtn" aria-label="CVV là gì?">?</button>
+                            </label>
+                            <div class="input-wrapper">
+                                <svg class="input-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="3" y="8" width="14" height="9" rx="1.5" stroke="#8c6e5e" stroke-width="1.5"/>
+                                    <path d="M7 8V6a3 3 0 1 1 6 0v2" stroke="#8c6e5e" stroke-width="1.5" stroke-linecap="round"/>
+                                    <circle cx="10" cy="12.5" r="1.5" fill="#8c6e5e"/>
+                                </svg>
+                                <input type="password" id="cardCvv" class="form-input" placeholder="•••" maxlength="4" inputmode="numeric" />
+                            </div>
+                            <span class="form-error" id="errCardCvv"></span>
+                        </div>
+                    </div>
+
+                    <!-- CVV tooltip -->
+                    <div class="cvv-tooltip" id="cvvTooltip" hidden>
+                        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#8c6e5e" stroke-width="1.2"/><text x="5" y="12" font-size="9" fill="#8c6e5e" font-family="Inter,sans-serif" font-weight="700">?</text></svg>
+                        CVV/CVC là 3-4 chữ số ở mặt sau thẻ, dùng để xác thực giao dịch trực tuyến.
+                    </div>
+
+                    <label class="save-card-label">
+                        <input type="checkbox" id="saveCard" class="save-card-check" />
+                        <span class="custom-check"></span>
+                        Lưu thẻ để thanh toán lần sau
+                    </label>
+                </form>
+            </div>
+
+            <!-- ══ PANEL: QR CODE ══ -->
+            <div class="method-panel" id="panelQr">
+                <div class="qr-instructions">
+                    <p>Sử dụng ứng dụng ngân hàng hoặc ví điện tử để quét mã QR bên dưới.</p>
+                </div>
+                <div class="qr-container">
+                    <div class="qr-box">
+                        <!-- Placeholder QR pattern -->
+                        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="qr-svg">
+                            <rect width="200" height="200" fill="white"/>
+                            <!-- Corner squares -->
+                            <rect x="10" y="10" width="60" height="60" rx="4" fill="#171212"/>
+                            <rect x="18" y="18" width="44" height="44" rx="2" fill="white"/>
+                            <rect x="26" y="26" width="28" height="28" rx="1" fill="#171212"/>
+                            <rect x="130" y="10" width="60" height="60" rx="4" fill="#171212"/>
+                            <rect x="138" y="18" width="44" height="44" rx="2" fill="white"/>
+                            <rect x="146" y="26" width="28" height="28" rx="1" fill="#171212"/>
+                            <rect x="10" y="130" width="60" height="60" rx="4" fill="#171212"/>
+                            <rect x="18" y="138" width="44" height="44" rx="2" fill="white"/>
+                            <rect x="26" y="146" width="28" height="28" rx="1" fill="#171212"/>
+                            <!-- Data dots pattern -->
+                            <rect x="80" y="10" width="8" height="8" fill="#171212"/>
+                            <rect x="92" y="10" width="8" height="8" fill="#171212"/>
+                            <rect x="104" y="10" width="8" height="8" fill="#171212"/>
+                            <rect x="116" y="10" width="8" height="8" fill="#171212"/>
+                            <rect x="80" y="22" width="8" height="8" fill="#171212"/>
+                            <rect x="104" y="22" width="8" height="8" fill="#171212"/>
+                            <rect x="80" y="34" width="8" height="8" fill="#171212"/>
+                            <rect x="92" y="34" width="8" height="8" fill="#171212"/>
+                            <rect x="116" y="34" width="8" height="8" fill="#171212"/>
+                            <rect x="80" y="46" width="8" height="8" fill="#171212"/>
+                            <rect x="104" y="46" width="8" height="8" fill="#171212"/>
+                            <rect x="80" y="58" width="8" height="8" fill="#171212"/>
+                            <rect x="92" y="58" width="8" height="8" fill="#171212"/>
+                            <rect x="104" y="58" width="8" height="8" fill="#171212"/>
+                            <rect x="10" y="80" width="8" height="8" fill="#171212"/>
+                            <rect x="22" y="80" width="8" height="8" fill="#171212"/>
+                            <rect x="46" y="80" width="8" height="8" fill="#171212"/>
+                            <rect x="58" y="80" width="8" height="8" fill="#171212"/>
+                            <rect x="80" y="80" width="8" height="8" fill="#171212"/>
+                            <rect x="104" y="80" width="8" height="8" fill="#171212"/>
+                            <rect x="128" y="80" width="8" height="8" fill="#171212"/>
+                            <rect x="140" y="80" width="8" height="8" fill="#171212"/>
+                            <rect x="164" y="80" width="8" height="8" fill="#171212"/>
+                            <rect x="176" y="80" width="8" height="8" fill="#171212"/>
+                            <rect x="10" y="92" width="8" height="8" fill="#171212"/>
+                            <rect x="34" y="92" width="8" height="8" fill="#171212"/>
+                            <rect x="58" y="92" width="8" height="8" fill="#171212"/>
+                            <rect x="92" y="92" width="8" height="8" fill="#171212"/>
+                            <rect x="116" y="92" width="8" height="8" fill="#171212"/>
+                            <rect x="140" y="92" width="8" height="8" fill="#171212"/>
+                            <rect x="164" y="92" width="8" height="8" fill="#171212"/>
+                            <rect x="10" y="104" width="8" height="8" fill="#171212"/>
+                            <rect x="22" y="104" width="8" height="8" fill="#171212"/>
+                            <rect x="46" y="104" width="8" height="8" fill="#171212"/>
+                            <rect x="80" y="104" width="8" height="8" fill="#171212"/>
+                            <rect x="104" y="104" width="8" height="8" fill="#171212"/>
+                            <rect x="128" y="104" width="8" height="8" fill="#171212"/>
+                            <rect x="152" y="104" width="8" height="8" fill="#171212"/>
+                            <rect x="176" y="104" width="8" height="8" fill="#171212"/>
+                            <rect x="10" y="116" width="8" height="8" fill="#171212"/>
+                            <rect x="34" y="116" width="8" height="8" fill="#171212"/>
+                            <rect x="58" y="116" width="8" height="8" fill="#171212"/>
+                            <rect x="92" y="116" width="8" height="8" fill="#171212"/>
+                            <rect x="140" y="116" width="8" height="8" fill="#171212"/>
+                            <rect x="164" y="116" width="8" height="8" fill="#171212"/>
+                            <rect x="80" y="128" width="8" height="8" fill="#171212"/>
+                            <rect x="104" y="128" width="8" height="8" fill="#171212"/>
+                            <rect x="128" y="128" width="8" height="8" fill="#171212"/>
+                            <rect x="152" y="128" width="8" height="8" fill="#171212"/>
+                            <rect x="176" y="128" width="8" height="8" fill="#171212"/>
+                            <rect x="80" y="140" width="8" height="8" fill="#171212"/>
+                            <rect x="92" y="140" width="8" height="8" fill="#171212"/>
+                            <rect x="116" y="140" width="8" height="8" fill="#171212"/>
+                            <rect x="140" y="140" width="8" height="8" fill="#171212"/>
+                            <rect x="164" y="140" width="8" height="8" fill="#171212"/>
+                            <rect x="80" y="152" width="8" height="8" fill="#171212"/>
+                            <rect x="104" y="152" width="8" height="8" fill="#171212"/>
+                            <rect x="128" y="152" width="8" height="8" fill="#171212"/>
+                            <rect x="152" y="152" width="8" height="8" fill="#171212"/>
+                            <rect x="80" y="164" width="8" height="8" fill="#171212"/>
+                            <rect x="92" y="164" width="8" height="8" fill="#171212"/>
+                            <rect x="116" y="164" width="8" height="8" fill="#171212"/>
+                            <rect x="140" y="164" width="8" height="8" fill="#171212"/>
+                            <rect x="176" y="164" width="8" height="8" fill="#171212"/>
+                            <rect x="80" y="176" width="8" height="8" fill="#171212"/>
+                            <rect x="104" y="176" width="8" height="8" fill="#171212"/>
+                            <rect x="128" y="176" width="8" height="8" fill="#171212"/>
+                            <rect x="164" y="176" width="8" height="8" fill="#171212"/>
+                        </svg>
+                        <div class="qr-logo-center">
+                            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                                <path d="M2 14V6L8 2L14 6V14H10V10H6V14H2Z" fill="#e55200"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="qr-info">
+                        <p class="qr-amount">Số tiền: <strong id="qrAmount">0 ₫</strong></p>
+                        <p class="qr-ref">Mã giao dịch: <strong id="qrRef">HTH-20260319-0001</strong></p>
+                        <p class="qr-expire">Mã QR hết hạn: <strong id="qrExpire">14:59</strong></p>
+                    </div>
+                    <button class="btn-outline" id="btnRefreshQr">
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 10a6 6 0 0 1 10.97-3M4.5 6.5H3.5a.5.5 0 0 0-.5.5v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M16 10a6 6 0 0 1-10.97 3M15.5 13.5h1a.5.5 0 0 0 .5-.5v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                        Làm mới mã QR
+                    </button>
+                </div>
+            </div>
+
+            <!-- ══ PANEL: VÍ ĐIỆN TỬ ══ -->
+            <div class="method-panel" id="panelWallet">
+                <p class="wallet-intro">Chọn ví điện tử để thanh toán nhanh chóng:</p>
+                <div class="wallet-grid">
+                    <label class="wallet-option" data-wallet="momo">
+                        <input type="radio" name="wallet" value="momo" class="wallet-radio" />
+                        <div class="wallet-card">
+                            <div class="wallet-icon momo">M</div>
+                            <span class="wallet-name">MoMo</span>
+                        </div>
+                    </label>
+                    <label class="wallet-option" data-wallet="zalopay">
+                        <input type="radio" name="wallet" value="zalopay" class="wallet-radio" />
+                        <div class="wallet-card">
+                            <div class="wallet-icon zalopay">Z</div>
+                            <span class="wallet-name">ZaloPay</span>
+                        </div>
+                    </label>
+                    <label class="wallet-option" data-wallet="vnpay">
+                        <input type="radio" name="wallet" value="vnpay" class="wallet-radio" />
+                        <div class="wallet-card">
+                            <div class="wallet-icon vnpay">V</div>
+                            <span class="wallet-name">VNPay</span>
+                        </div>
+                    </label>
+                    <label class="wallet-option" data-wallet="shopee">
+                        <input type="radio" name="wallet" value="shopee" class="wallet-radio" />
+                        <div class="wallet-card">
+                            <div class="wallet-icon shopee">S</div>
+                            <span class="wallet-name">ShopeePay</span>
+                        </div>
+                    </label>
+                </div>
+                <div class="wallet-redirect-info" id="walletRedirectInfo" hidden>
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="10" cy="10" r="7.5" stroke="#e55200" stroke-width="1.5"/>
+                        <path d="M10 9v5" stroke="#e55200" stroke-width="1.5" stroke-linecap="round"/>
+                        <circle cx="10" cy="6.5" r="0.75" fill="#e55200"/>
+                    </svg>
+                    <span>Bạn sẽ được chuyển đến ứng dụng <strong id="selectedWalletName"></strong> để hoàn tất thanh toán.</span>
+                </div>
+            </div>
+
+            <!-- ══ PANEL: TIỀN MẶT ══ -->
+            <div class="method-panel" id="panelCash">
+                <div class="cash-info">
+                    <div class="cash-icon">
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="24" cy="24" r="20" fill="#fff7f3" stroke="#e55200" stroke-width="2"/>
+                            <rect x="12" y="18" width="24" height="12" rx="2" stroke="#e55200" stroke-width="1.8"/>
+                            <circle cx="24" cy="24" r="4" stroke="#e55200" stroke-width="1.8"/>
+                            <path d="M16 18v-2M32 18v-2M16 30v2M32 30v2" stroke="#e55200" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="cash-text">
+                        <h3>Thanh toán tại quầy</h3>
+                        <p>Vui lòng mang theo xác nhận đặt phòng và thanh toán khi đến nhận phòng.</p>
+                        <ul class="cash-checklist">
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.2"/><path d="M5 8l2 2 4-4" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                Đặt phòng được xác nhận ngay lập tức
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.2"/><path d="M5 8l2 2 4-4" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                Thanh toán linh hoạt khi check-in
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" fill="#fff7f3" stroke="#e55200" stroke-width="1.2"/><path d="M8 5v3M8 10v1" stroke="#e55200" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                Hủy miễn phí trước 24 giờ check-in
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── SECURITY NOTE ── -->
+            <div class="security-note">
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 2l7 3v5c0 4-3 7-7 8C6 17 3 14 3 10V5l7-3Z" stroke="#22c55e" stroke-width="1.5" stroke-linejoin="round"/>
+                    <path d="M7 10l2 2 4-4" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Giao dịch được mã hóa SSL 256-bit. Thông tin thẻ của bạn được bảo mật tuyệt đối.
+            </div>
+
+            <!-- ── ACTION BUTTONS ── -->
+            <div class="form-actions">
+                <a th:href="@{/booking}" class="btn-back">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13 16l-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Quay lại
+                </a>
+                <button class="btn-pay" id="btnPay" type="button">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="1.5" y="4.5" width="17" height="11" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M1.5 8h17M5 12h2M9.5 12h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span id="btnPayText">Xác nhận thanh toán</span>
+                    <span class="btn-amount" id="btnPayAmount">0 ₫</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ===== RIGHT: ORDER SUMMARY ===== -->
+        <aside class="order-summary">
+            <div class="summary-header">
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 14V6L8 2L14 6V14H10V10H6V14H2Z" fill="#171212"/>
+                </svg>
+                <h3>Chi tiết đặt phòng</h3>
+            </div>
+
+            <!-- Room image placeholder -->
+            <div class="room-image">
+                <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&q=80" alt="Phòng Deluxe" id="summaryRoomImg" />
+                <div class="room-badge" id="summaryRoomBadge">Phổ biến</div>
+            </div>
+
+            <div class="summary-body">
+                <!-- Room info -->
+                <div class="summary-room-name" id="summaryRoomName">Phòng Deluxe</div>
+                <div class="summary-amenities">
+                    <span class="amenity-tag">
+                        <svg viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 1 0 10 0A5 5 0 0 0 2 7Z" stroke="#8c6e5e" stroke-width="1.2"/><path d="M7 4v3l2 1.5" stroke="#8c6e5e" stroke-width="1.2" stroke-linecap="round"/></svg>
+                        WiFi
+                    </span>
+                    <span class="amenity-tag">
+                        <svg viewBox="0 0 14 14" fill="none"><rect x="2" y="2" width="10" height="8" rx="1" stroke="#8c6e5e" stroke-width="1.2"/><path d="M5 12h4M7 10v2" stroke="#8c6e5e" stroke-width="1.2" stroke-linecap="round"/></svg>
+                        TV
+                    </span>
+                    <span class="amenity-tag">
+                        <svg viewBox="0 0 14 14" fill="none"><path d="M3 7.5C3 5 5 3 7 3s4 2 4 4.5v3H3v-3Z" stroke="#8c6e5e" stroke-width="1.2"/><path d="M5 10.5V12M9 10.5V12" stroke="#8c6e5e" stroke-width="1.2" stroke-linecap="round"/></svg>
+                        Điều hòa
+                    </span>
+                    <span class="amenity-tag">
+                        <svg viewBox="0 0 14 14" fill="none"><ellipse cx="7" cy="9" rx="5" ry="3" stroke="#8c6e5e" stroke-width="1.2"/><path d="M4 6.5C4 5 5 3.5 7 3.5s3 1.5 3 3" stroke="#8c6e5e" stroke-width="1.2"/></svg>
+                        Bồn tắm
+                    </span>
+                </div>
+
+                <!-- Divider -->
+                <div class="summary-divider"></div>
+
+                <!-- Booking details -->
+                <div class="summary-detail-list">
+                    <div class="summary-row">
+                        <span class="detail-label">
+                            <svg viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="1" stroke="#8c6e5e" stroke-width="1.2"/><path d="M4.5 1.5v2M9.5 1.5v2M1.5 5.5h11" stroke="#8c6e5e" stroke-width="1.2" stroke-linecap="round"/></svg>
+                            Nhận phòng
+                        </span>
+                        <span class="detail-value" id="summaryCheckin">–</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="detail-label">
+                            <svg viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="1" stroke="#8c6e5e" stroke-width="1.2"/><path d="M4.5 1.5v2M9.5 1.5v2M1.5 5.5h11" stroke="#8c6e5e" stroke-width="1.2" stroke-linecap="round"/></svg>
+                            Trả phòng
+                        </span>
+                        <span class="detail-value" id="summaryCheckout">–</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="detail-label">
+                            <svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="#8c6e5e" stroke-width="1.2"/><path d="M2 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#8c6e5e" stroke-width="1.2" stroke-linecap="round"/></svg>
+                            Khách
+                        </span>
+                        <span class="detail-value" id="summaryGuests">–</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="detail-label">
+                            <svg viewBox="0 0 14 14" fill="none"><rect x="1" y="4" width="12" height="8" rx="1" stroke="#8c6e5e" stroke-width="1.2"/><path d="M4 4V3a3 3 0 1 1 6 0v1" stroke="#8c6e5e" stroke-width="1.2" stroke-linecap="round"/></svg>
+                            Số phòng
+                        </span>
+                        <span class="detail-value" id="summaryRooms">–</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="detail-label">
+                            <svg viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#8c6e5e" stroke-width="1.2"/><path d="M7 4.5v2.5l1.5 1.5" stroke="#8c6e5e" stroke-width="1.2" stroke-linecap="round"/></svg>
+                            Số đêm
+                        </span>
+                        <span class="detail-value" id="summaryNights">–</span>
+                    </div>
+                </div>
+
+                <div class="summary-divider"></div>
+
+                <!-- Price breakdown -->
+                <div class="price-breakdown">
+                    <div class="price-row">
+                        <span class="price-label">Giá phòng / đêm</span>
+                        <span class="price-value" id="pricePer">–</span>
+                    </div>
+                    <div class="price-row" id="rowDiscount" style="display:none">
+                        <span class="price-label discount">Giảm giá thành viên</span>
+                        <span class="price-value discount" id="priceDiscount">–</span>
+                    </div>
+                    <div class="price-row" id="rowServices" style="display:none">
+                        <span class="price-label">Dịch vụ thêm</span>
+                        <span class="price-value" id="priceServices">–</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-label">Thuế VAT (10%)</span>
+                        <span class="price-value" id="priceVat">–</span>
+                    </div>
+                </div>
+
+                <div class="summary-divider"></div>
+
+                <!-- Total -->
+                <div class="total-row">
+                    <span class="total-label">Tổng thanh toán</span>
+                    <div class="total-right">
+                        <span class="total-amount" id="totalAmount">0 ₫</span>
+                        <span class="total-note">Đã bao gồm VAT</span>
+                    </div>
+                </div>
+
+                <!-- Promo code -->
+                <div class="promo-section">
+                    <div class="promo-bar">
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10.5 3H17v6.5l-7.5 7.5a1 1 0 0 1-1.41 0L3.01 11.9a1 1 0 0 1 0-1.41L10.5 3Z" stroke="#8c6e5e" stroke-width="1.5" stroke-linejoin="round"/>
+                            <circle cx="14" cy="6.5" r="1" fill="#8c6e5e"/>
+                        </svg>
+                        <input type="text" id="promoInput" class="promo-input" placeholder="Nhập mã khuyến mãi" />
+                        <button class="btn-promo" id="btnPromo">Áp dụng</button>
+                    </div>
+                    <span class="promo-msg" id="promoMsg"></span>
+                </div>
+
+                <!-- Loyalty points -->
+                <div class="loyalty-section" id="loyaltySection">
+                    <label class="loyalty-label">
+                        <input type="checkbox" id="usePoints" class="loyalty-check" />
+                        <span class="custom-check"></span>
+                        <div class="loyalty-text">
+                            <span>Dùng điểm thưởng</span>
+                            <span class="loyalty-points" id="loyaltyPoints">1.250 điểm = 125.000 ₫</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Guest info recap -->
+            <div class="guest-recap" id="guestRecap">
+                <div class="recap-header">
+                    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="8" cy="6" r="3" stroke="#8c6e5e" stroke-width="1.3"/>
+                        <path d="M2 14c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#8c6e5e" stroke-width="1.3" stroke-linecap="round"/>
+                    </svg>
+                    Thông tin khách
+                </div>
+                <div class="recap-row"><span>Họ tên:</span><strong id="recapName">–</strong></div>
+                <div class="recap-row"><span>Điện thoại:</span><strong id="recapPhone">–</strong></div>
+                <div class="recap-row"><span>Email:</span><strong id="recapEmail">–</strong></div>
+            </div>
+        </aside>
+
+    </div><!-- /payment-grid -->
+</main>
+
+<!-- ===== PROCESSING OVERLAY ===== -->
+<div class="processing-overlay" id="processingOverlay" hidden>
+    <div class="processing-card">
+        <div class="spinner"></div>
+        <h3 class="processing-title">Đang xử lý thanh toán</h3>
+        <p class="processing-sub">Vui lòng không đóng trình duyệt…</p>
+        <div class="processing-steps">
+            <div class="proc-step" id="procStep1">
+                <div class="proc-dot"></div>
+                <span>Xác thực thông tin thẻ</span>
+            </div>
+            <div class="proc-step" id="procStep2">
+                <div class="proc-dot"></div>
+                <span>Kết nối cổng thanh toán</span>
+            </div>
+            <div class="proc-step" id="procStep3">
+                <div class="proc-dot"></div>
+                <span>Hoàn tất giao dịch</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SUCCESS MODAL ===== -->
+<div class="modal-backdrop" id="successModal" hidden>
+    <div class="modal-card success-modal">
+        <div class="success-icon">
+            <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="30" cy="30" r="28" fill="#f0fdf4" stroke="#22c55e" stroke-width="2.5"/>
+                <path d="M17 30l9 9 17-17" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h2 class="modal-title">Thanh toán thành công!</h2>
+        <p class="modal-sub">Đặt phòng của bạn đã được xác nhận.</p>
+        <div class="booking-code-box">
+            <span class="booking-code-label">Mã đặt phòng</span>
+            <span class="booking-code" id="bookingCode">HTH-20260319-0001</span>
+            <button class="btn-copy" id="btnCopyCode" aria-label="Sao chép mã">
+                <svg viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M3 11V3h8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </button>
+        </div>
+        <div class="success-details">
+            <div class="suc-row"><span>Phòng:</span><strong id="sucRoom">–</strong></div>
+            <div class="suc-row"><span>Nhận phòng:</span><strong id="sucCheckin">–</strong></div>
+            <div class="suc-row"><span>Trả phòng:</span><strong id="sucCheckout">–</strong></div>
+            <div class="suc-row total"><span>Đã thanh toán:</span><strong id="sucTotal">–</strong></div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-outline" id="btnDownloadInvoice">
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 13V4M6 9l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 16h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Tải hóa đơn
+            </button>
+            <a th:href="@{/dashboard}" class="btn-primary">
+                Xem đặt phòng của tôi
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+<script th:src="@{/js/payment.js}"></script>
+</body>
+</html>
