@@ -437,10 +437,14 @@
     /* ───────────────────── MODAL ───────────────────── */
     let currentRoomName  = '';
     let currentRoomPrice = 0;
+    let currentRoomImg   = '';
+    let currentRoomBadge = '';
 
-    function openModal(roomName, roomPrice) {
+    function openModal(roomName, roomPrice, roomImg, roomBadge) {
         currentRoomName  = roomName;
         currentRoomPrice = roomPrice;
+        currentRoomImg   = roomImg;
+        currentRoomBadge = roomBadge;
 
         const nights = Math.max(1, nightsBetween(checkinVal, checkoutVal));
         const total  = roomPrice * nights;
@@ -465,7 +469,10 @@
 
     document.querySelectorAll('.btn-book').forEach(btn => {
         btn.addEventListener('click', () => {
-            openModal(btn.dataset.room, parseInt(btn.dataset.price));
+            const card  = btn.closest('.room-card');
+            const img   = card ? (card.querySelector('.room-img')?.src   || '') : '';
+            const badge = card ? (card.querySelector('.room-badge')?.textContent?.trim() || '') : '';
+            openModal(btn.dataset.room, parseInt(btn.dataset.price), img, badge);
         });
     });
 
@@ -525,9 +532,25 @@
             const data = await res.json().catch(() => ({}));
 
             if (res.ok || res.status === 201) {
-                closeModal();
-                showToast('🎉 Đặt phòng thành công! Chúng tôi sẽ liên hệ sớm.');
-                resetModalForm();
+                // Lưu thông tin đặt phòng vào sessionStorage để trang payment đọc
+                const pendingBooking = {
+                    bookingId:     data.id,
+                    roomName:      currentRoomName,
+                    roomBadge:     currentRoomBadge,
+                    roomImg:       currentRoomImg,
+                    checkin:       document.getElementById('checkinDate').textContent,
+                    checkout:      document.getElementById('checkoutDate').textContent,
+                    nights:        nights,
+                    adults:        guests.adults,
+                    children:      guests.children,
+                    rooms:         guests.rooms,
+                    pricePerNight: currentRoomPrice,
+                    guestName:     name,
+                    guestPhone:    phone,
+                    guestEmail:    email || '',
+                };
+                sessionStorage.setItem('pendingBooking', JSON.stringify(pendingBooking));
+                window.location.href = `/payment?bookingId=${data.id}`;
             } else if (res.status === 400 && data.fieldErrors) {
                 // Hiển thị lỗi validation từng field
                 const fe = data.fieldErrors;
