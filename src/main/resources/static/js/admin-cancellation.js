@@ -434,11 +434,14 @@ window.deleteRecord = async function(id) {
     if (!confirm('Bạn có chắc muốn xóa yêu cầu hủy phòng này?')) return;
     try {
         await apiFetch(CANCEL_API + '/' + id, 'DELETE');
-    } catch {
-        allRecords = allRecords.filter(r => r.id !== id);
+        showToast('Đã xóa yêu cầu hủy phòng.', 'success');
+        // Reload lại danh sách
+        await loadCancellations(currentPage);
+        await loadStats();
+    } catch (err) {
+        console.error('Delete error:', err);
+        showToast('Không thể xóa: ' + (err.message || 'Lỗi không xác định'), 'error');
     }
-    showToast('Đã xóa yêu cầu hủy phòng.', 'info');
-    loadCancellations(currentPage);
 };
 
 /* ═══════════════════════════════════════════════════

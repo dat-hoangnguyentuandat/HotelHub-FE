@@ -666,15 +666,30 @@ async function doCancelPayment(p) {
    REFUND MODAL
 ══════════════════════════════════════════════════════ */
 let _refundPayment = null;
+let _refundPolicies = [];
 
-function openRefundModal(p) {
+async function openRefundModal(p) {
     _refundPayment = p;
     document.getElementById('refundTxRef').textContent  = p.transactionRef || '–';
     document.getElementById('refundAmount').textContent = formatCurrency(p.totalAmount);
     document.getElementById('refundReason').value       = '';
     document.getElementById('refundNote').value         = '';
     document.getElementById('errRefundReason').textContent = '';
+    
+    // Ẩn policy preview ban đầu
+    const policyPreview = document.getElementById('policyPreview');
+    if (policyPreview) policyPreview.hidden = true;
+    
     document.getElementById('refundModal').hidden = false;
+    
+    // Load chính sách hoàn tiền
+    try {
+        const preview = await apiGet(`/api/payments/${p.id}/refund-preview`);
+        _refundPolicies = preview.policies || [];
+    } catch (err) {
+        console.error('Failed to load refund policies:', err);
+        _refundPolicies = [];
+    }
 }
 
 function closeRefundModal() {
@@ -698,7 +713,7 @@ async function submitRefund() {
     btn.textContent = 'Đang gửi...';
 
     try {
-        await apiPost(`/api/admin/payments/${p.id}/refund`, {
+        await apiPost(`/api/payments/${p.id}/refund`, {
             reason: reason + (note ? ` – ${note}` : '')
         });
         showToast('Yêu cầu hoàn tiền đã được gửi thành công!', 'success');
@@ -707,13 +722,7 @@ async function submitRefund() {
         await loadStats();
         closeDetail();
     } catch (err) {
-        // Nếu không có quyền admin, thông báo rõ ràng
-        if (err.message.includes('403') || err.message.includes('Forbidden')) {
-            showToast('Yêu cầu đã được ghi nhận và sẽ được xử lý trong 3-5 ngày làm việc.', 'success');
-            closeRefundModal();
-        } else {
-            showToast('Gửi yêu cầu thất bại: ' + err.message, 'error');
-        }
+        showToast('Gửi yêu cầu thất bại: ' + err.message, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = `<svg viewBox="0 0 20 20" fill="none"><path d="M17 5l-9.5 9.5L3 10" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Gửi yêu cầu`;
@@ -821,6 +830,9 @@ function initModalListeners() {
     document.getElementById('btnCancelRefund')?.addEventListener('click', closeRefundModal);
     document.getElementById('btnSubmitRefund')?.addEventListener('click', submitRefund);
 
+    // Hiển thị chính sách khi chọn lý do
+    document.getElementById('refundReason')?.addEventListener('change', showRefundPolicy);
+
     document.getElementById('refundModal')?.addEventListener('click', e => {
         if (e.target.id === 'refundModal') closeRefundModal();
     });
@@ -828,6 +840,44 @@ function initModalListeners() {
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') closeRefundModal();
     });
+}
+
+function showRefundPolicy() {
+    const policyPreview = document.getElementById('policyPreview');
+    if (!policyPreview || !_refundPolicies.length) return;
+    
+    // Tìm chính sách áp dụng (ưu tiên policy có isApplicable = true)
+    let applicable = _refundPolicies.find(p => p.isApplicable);
+    
+    // Nếu không có policy nào applicable, lấy policy có minHours nhỏ nhất (policy mặc định)
+    if (!applicable && _refundPolicies.length > 0) {
+        applicable = _refundPolicies.reduce((min, p) => 
+            p.minHours < min.minHours ? p : min
+        );
+    }
+    
+    if (!applicable) {
+        policyPreview.hidden = true;
+        return;
+    }
+    
+    // Hiển thị chính sách
+    policyPreview.hidden = false;
+    policyPreview.innerHTML = `
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:#e0f2fe;border:1px solid#bae6fd;border-radius:10px;">
+            <svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;flex-shrink:0;margin-top:1px;">
+                <circle cx="10" cy="10" r="7.5" stroke="#0284c7" stroke-width="1.5"/>
+                <path d="M10 7v4" stroke="#0284c7" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="10" cy="13.5" r="0.75" fill="#0284c7"/>
+            </svg>
+            <div style="flex:1;">
+                <div style="font-size:12.5px;font-weight:700;color:#0c4a6e;margin-bottom:4px;">Chính sách hoàn tiền áp dụng</div>
+                <div style="font-size:12px;color:#075985;line-height:1.5;">
+                    <strong>${applicable.description}</strong>: Hoàn <strong>${applicable.refundPercent}%</strong> 
+                    (${formatCurrency(applicable.refundAmount)})
+                </div>
+            </div>
+        </div>`;
 }
 
 /* ══════════════════════════════════════════════════════
