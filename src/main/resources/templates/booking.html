@@ -20,10 +20,9 @@
         <span class="brand-name">HotelHub</span>
     </div>
     <nav class="navbar-links">
-        <a href="#" class="nav-link active">Trang chủ</a>
-        <a href="#" class="nav-link">Phòng</a>
-        <a href="#" class="nav-link">Dịch vụ</a>
-        <a href="#" class="nav-link">Khách hàng</a>
+        <a href="#hero-section" class="nav-link active">Trang chủ</a>
+        <a href="#rooms-section" class="nav-link">Phòng</a>
+        <a href="/loyal-customers" class="nav-link">Khách hàng</a>
     </nav>
     <div class="navbar-actions">
         <button class="btn-icon" id="btnNotification" title="Thông báo" aria-label="Thông báo">
@@ -33,12 +32,28 @@
         </button>
         <div class="avatar-wrapper" id="avatarBtn" title="Tài khoản">
             <img class="avatar-img" src="https://www.figma.com/api/mcp/asset/ba02a468-8a32-4cfd-991a-f110d7044c2f" alt="Avatar" />
+            <div class="avatar-dropdown" id="avatarDropdown">
+                <div class="dropdown-user-info">
+                    <span class="dropdown-username" sec:authorize="isAuthenticated()" sec:authentication="name">Người dùng</span>
+                    <span class="dropdown-username" sec:authorize="isAnonymous()">Khách</span>
+                </div>
+                <hr class="dropdown-divider" />
+                <a href="/admin/dashboard" class="dropdown-item"
+                   sec:authorize="hasAnyRole('ADMIN','HOTEL_OWNER')">
+                    <svg viewBox="0 0 20 20" fill="none" width="16" height="16"><rect x="2" y="2" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="12" y="2" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="12" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="12" y="12" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>
+                    Quản trị
+                </a>
+                <button class="dropdown-item dropdown-logout" id="btnLogout">
+                    <svg viewBox="0 0 20 20" fill="none" width="16" height="16"><path d="M7 17H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h3M13 14l4-4-4-4M17 10H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Đăng xuất
+                </button>
+            </div>
         </div>
     </div>
 </header>
 
 <!-- ===== HERO ===== -->
-<section class="hero">
+<section class="hero" id="hero-section">
     <h1 class="hero-title">Trải nghiệm kỳ nghỉ tuyệt vời</h1>
 </section>
 
@@ -129,7 +144,7 @@
 </section>
 
 <!-- ===== ROOM SUGGESTIONS ===== -->
-<section class="rooms-section">
+<section class="rooms-section" id="rooms-section">
     <h2 class="section-title">Gợi ý Phòng</h2>
 
     <div class="rooms-grid" id="roomsGrid">
@@ -617,6 +632,30 @@
         toast.className = 'toast' + (isError ? ' toast-error' : '') + ' show';
         if (toastTimer) clearTimeout(toastTimer);
         toastTimer = setTimeout(() => { toast.className = toast.className.replace(' show', ''); }, 3500);
+    }
+</script>
+
+<!-- ===== AVATAR DROPDOWN & LOGOUT ===== -->
+<script>
+    /* ── Avatar dropdown toggle ── */
+    const avatarBtn = document.getElementById('avatarBtn');
+    const avatarDropdown = document.getElementById('avatarDropdown');
+    if (avatarBtn && avatarDropdown) {
+        avatarBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            avatarDropdown.classList.toggle('show');
+        });
+        document.addEventListener('click', () => avatarDropdown.classList.remove('show'));
+    }
+
+    /* ── Logout ── */
+    const btnLogout = document.getElementById('btnLogout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+        });
     }
 </script>
 
