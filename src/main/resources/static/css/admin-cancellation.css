@@ -116,6 +116,14 @@ body {
 .nav-item.active .nav-icon,
 .nav-item:hover .nav-icon { color: #17120f; }
 
+.nav-item-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.nav-item-disabled:hover { background: transparent; }
+.nav-item-disabled .nav-icon { color: #5a4540; }
+
 /* ═══════════════════════════════════════
    MAIN CONTENT
 ═══════════════════════════════════════ */
