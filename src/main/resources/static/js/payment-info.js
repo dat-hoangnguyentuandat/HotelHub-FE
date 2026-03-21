@@ -286,7 +286,7 @@ function showEmptyState(on, msg) {
     if (!el) return;
     el.hidden = !on;
     if (msg) {
-        const p = el.querySelector('p');
+        const p = el.querySelector('.empty-title');
         if (p) p.textContent = msg;
     }
 }
@@ -296,6 +296,9 @@ function renderList() {
     // Xóa items cũ (giữ skeleton)
     listEl.querySelectorAll('.payment-item').forEach(e => e.remove());
 
+    // Luôn ẩn empty state trước
+    showEmptyState(false);
+
     if (!state.payments.length) {
         showEmptyState(true,
             state.search || state.filterStatus || state.filterMethod
@@ -303,7 +306,6 @@ function renderList() {
                 : 'Bạn chưa có giao dịch nào.');
         return;
     }
-    showEmptyState(false);
 
     state.payments.forEach(p => {
         listEl.appendChild(buildPaymentItem(p));

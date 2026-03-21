@@ -27,12 +27,6 @@
             <h1 class="page-title">Thông tin thanh toán</h1>
             <p class="page-sub">Quản lý và tra cứu lịch sử thanh toán của bạn</p>
         </div>
-        <a th:href="@{/dashboard}" class="btn-outline">
-            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M13 16l-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Quay lại
-        </a>
     </div>
 
     <!-- ── STATS CARDS ── -->
@@ -136,18 +130,6 @@
                     <div class="skeleton-item"></div>
                     <div class="skeleton-item"></div>
                 </div>
-            </div>
-
-            <!-- Empty state -->
-            <div class="empty-state" id="emptyState" hidden>
-                <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="40" cy="40" r="36" fill="#f5f2f0" stroke="#e8e0dc" stroke-width="2"/>
-                    <rect x="22" y="28" width="36" height="26" rx="3" stroke="#d0c8c2" stroke-width="2"/>
-                    <path d="M22 36h36" stroke="#d0c8c2" stroke-width="2"/>
-                    <path d="M30 44h8M42 44h6" stroke="#d0c8c2" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                <p class="empty-title">Không tìm thấy giao dịch</p>
-                <p class="empty-sub">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
             </div>
 
             <!-- Pagination -->
@@ -415,10 +397,5 @@
 
 <script th:src="@{/js/payment-info.js}"></script>
 <script th:src="@{/js/navbar.js}"></script>
-</body>
-</html>
-        });
-    }
-</script>
 </body>
 </html>
