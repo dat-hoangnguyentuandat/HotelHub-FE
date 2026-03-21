@@ -59,8 +59,8 @@
             renderTransactions(data.recentTransactions);
         })
         .catch(function (err) {
-            console.warn('Dashboard API error, dùng dữ liệu tĩnh:', err.message);
-            renderFallback();
+            console.error('Dashboard API error:', err.message);
+            renderError('Không thể tải dữ liệu dashboard. Vui lòng kiểm tra kết nối hoặc đăng nhập lại.');
         });
     }
 
@@ -215,36 +215,27 @@
     }
 
     /* ══════════════════════════════════════════════════════════
-       FALLBACK – dữ liệu tĩnh khi API lỗi / chưa đăng nhập
+       FALLBACK – Hiển thị thông báo lỗi khi API không khả dụng
     ══════════════════════════════════════════════════════════ */
-    function renderFallback() {
-        renderStats({
-            occupancyRate: 75, occupancyRateChange: 5,
-            revPar: 150000,    revParChange: 10,
-            totalCheckIns: 350, totalCheckInsChange: 20,
-            pendingBookings: 15, pendingBookingsChange: -5
+    function renderError(message) {
+        // Hiển thị thông báo lỗi ở KPI cards
+        ['statOccupancy', 'statRevPar', 'statCheckIns', 'statPending'].forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = '–';
+        });
+        ['statOccupancyChange', 'statRevParChange', 'statCheckInsChange', 'statPendingChange'].forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el) { el.textContent = ''; el.className = 'stat-change'; }
         });
 
-        renderMonthlyChart({
-            labels: ['Tháng 10', 'Tháng 11', 'Tháng 12', 'Tháng 1', 'Tháng 2', 'Tháng 3'],
-            data: [98000000, 112000000, 126000000, 105000000, 134000000, 126250000],
-            currentMonthTotal: 126250000
-        });
-
-        renderRoomTypeChart({
-            labels: ['Phòng Đơn', 'Phòng Đôi', 'Phòng Gia Đình'],
-            data: [30000000, 60000000, 45000000],
-            total: 135000000,
-            monthLabel: 'Tháng 3'
-        });
-
-        renderTransactions([
-            { transactionCode: 'TXN00001', guestName: 'Nguyễn Văn A', roomType: 'Phòng Đôi',      checkIn: '2024-07-15', checkOut: '2024-07-17', totalAmount: 2000000, status: 'CHECKED_OUT', statusLabel: 'Đã trả phòng' },
-            { transactionCode: 'TXN00002', guestName: 'Trần Thị B',   roomType: 'Phòng Đơn',      checkIn: '2024-07-16', checkOut: '2024-07-18', totalAmount: 1500000, status: 'CHECKED_IN',  statusLabel: 'Đã nhận phòng' },
-            { transactionCode: 'TXN00003', guestName: 'Lê Văn C',     roomType: 'Phòng Gia Đình', checkIn: '2024-07-17', checkOut: '2024-07-20', totalAmount: 3500000, status: 'CONFIRMED',   statusLabel: 'Đã xác nhận' },
-            { transactionCode: 'TXN00004', guestName: 'Phạm Thị D',   roomType: 'Phòng Đôi',      checkIn: '2024-07-18', checkOut: '2024-07-21', totalAmount: 2500000, status: 'PENDING',     statusLabel: 'Chờ xác nhận' },
-            { transactionCode: 'TXN00005', guestName: 'Hoàng Văn E',  roomType: 'Phòng Đơn',      checkIn: '2024-07-19', checkOut: '2024-07-20', totalAmount: 1000000, status: 'CONFIRMED',   statusLabel: 'Đã xác nhận' }
-        ]);
+        // Hiển thị thông báo lỗi trong bảng giao dịch
+        const tbody = document.getElementById('transactionsTbody');
+        if (tbody) {
+            tbody.innerHTML =
+                '<tr><td colspan="7" style="text-align:center;padding:32px;color:#c0392b">' +
+                '⚠️ ' + escHtml(message) +
+                '</td></tr>';
+        }
     }
 
     /* ══════════════════════════════════════════════════════════

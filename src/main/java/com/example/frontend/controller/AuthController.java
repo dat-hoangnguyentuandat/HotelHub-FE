@@ -29,6 +29,12 @@ public class AuthController {
         return "booking";
     }
 
+    @GetMapping("/rooms")
+    public String rooms(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "rooms";
+    }
+
     @GetMapping("/admin/rooms")
     public String adminRooms(Model model) {
         model.addAttribute("backendUrl", backendUrl);
