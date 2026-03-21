@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dịch Vụ – HotelHub</title>
+    <meta name="backend-url" th:content="${backendUrl}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/navbar.css}" />
+    <link rel="stylesheet" th:href="@{/css/services.css}" />
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<header th:replace="~{fragments/navbar :: navbar('services')}"></header>
+
+<!-- ===== PAGE HERO ===== -->
+<section class="svc-hero">
+    <div class="svc-hero-inner">
+        <nav class="svc-breadcrumb" aria-label="breadcrumb">
+            <a href="/">Trang chủ</a>
+            <svg viewBox="0 0 16 16" fill="none" width="12" height="12"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span>Dịch vụ</span>
+        </nav>
+        <h1 class="svc-hero-title">Dịch vụ bổ sung</h1>
+        <p class="svc-hero-sub">Nâng tầm kỳ nghỉ với các dịch vụ được thiết kế riêng cho bạn</p>
+    </div>
+</section>
+
+<!-- ===== CONTROLS ===== -->
+<section class="svc-controls-wrap">
+    <div class="svc-controls">
+
+        <!-- Search -->
+        <div class="svc-search-box">
+            <svg class="svc-search-icon" viewBox="0 0 20 20" fill="none">
+                <circle cx="9" cy="9" r="5.5" stroke="#9c877d" stroke-width="1.5"/>
+                <path d="M13.5 13.5L17 17" stroke="#9c877d" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <input type="text" id="svcSearch" class="svc-search-input" placeholder="Tìm dịch vụ..." />
+        </div>
+
+        <!-- Category tabs -->
+        <div class="svc-category-tabs" id="categoryTabs">
+            <button class="svc-tab active" data-cat="">Tất cả</button>
+            <button class="svc-tab" data-cat="Gói ưu đãi">Gói ưu đãi</button>
+            <button class="svc-tab" data-cat="Ẩm thực">Ẩm thực</button>
+            <button class="svc-tab" data-cat="Spa &amp; Làm đẹp">Spa &amp; Làm đẹp</button>
+            <button class="svc-tab" data-cat="Vé tham quan">Vé tham quan</button>
+            <button class="svc-tab" data-cat="Vận chuyển">Vận chuyển</button>
+            <button class="svc-tab" data-cat="Dịch vụ khác">Dịch vụ khác</button>
+        </div>
+
+        <!-- Sort -->
+        <select class="svc-sort" id="svcSort">
+            <option value="default">Mặc định</option>
+            <option value="price-asc">Giá tăng dần</option>
+            <option value="price-desc">Giá giảm dần</option>
+            <option value="name-asc">Tên A → Z</option>
+        </select>
+    </div>
+</section>
+
+<!-- ===== MAIN GRID ===== -->
+<main class="svc-main">
+
+    <!-- Kết quả đếm -->
+    <div class="svc-result-count" id="svcResultCount">Đang tải...</div>
+
+    <!-- Grid dịch vụ -->
+    <div class="svc-grid" id="svcGrid">
+        <!-- Skeleton loading -->
+        <div class="svc-skeleton"></div>
+        <div class="svc-skeleton"></div>
+        <div class="svc-skeleton"></div>
+        <div class="svc-skeleton"></div>
+        <div class="svc-skeleton"></div>
+        <div class="svc-skeleton"></div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="svc-empty" id="svcEmpty" style="display:none">
+        <svg viewBox="0 0 64 64" fill="none" width="56" height="56">
+            <circle cx="32" cy="32" r="30" stroke="#e8ddd8" stroke-width="2"/>
+            <path d="M20 32h24M32 20v24" stroke="#c9b5a8" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <p>Không tìm thấy dịch vụ phù hợp</p>
+        <button class="svc-empty-reset" id="svcEmptyReset">Xem tất cả dịch vụ</button>
+    </div>
+
+</main>
+
+<!-- ===== MODAL CHI TIẾT ===== -->
+<div class="svc-modal-overlay" id="svcModalOverlay" role="dialog" aria-modal="true" aria-labelledby="svcModalTitle">
+    <div class="svc-modal" id="svcModal">
+        <button class="svc-modal-close" id="svcModalClose" aria-label="Đóng">
+            <svg viewBox="0 0 20 20" fill="none" width="18" height="18">
+                <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+
+        <!-- Ảnh -->
+        <div class="svc-modal-img-wrap">
+            <img class="svc-modal-img" id="svcModalImg" src="" alt="" />
+            <span class="svc-modal-badge" id="svcModalBadge"></span>
+        </div>
+
+        <!-- Nội dung -->
+        <div class="svc-modal-body">
+            <span class="svc-modal-cat" id="svcModalCat"></span>
+            <h2 class="svc-modal-title" id="svcModalTitle"></h2>
+            <p class="svc-modal-desc" id="svcModalDesc"></p>
+
+            <div class="svc-modal-meta">
+                <div class="svc-modal-price-wrap">
+                    <span class="svc-modal-price-label">Đơn giá</span>
+                    <span class="svc-modal-price" id="svcModalPrice"></span>
+                    <span class="svc-modal-unit" id="svcModalUnit"></span>
+                </div>
+            </div>
+
+            <div class="svc-modal-actions">
+                <button class="svc-modal-btn-book" id="svcModalBtnBook">
+                    <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+                        <path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    Đặt dịch vụ
+                </button>
+                <button class="svc-modal-btn-contact">
+                    <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+                        <path d="M2 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6l-4 3V4Z"
+                              stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                    </svg>
+                    Liên hệ tư vấn
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== FOOTER (copy từ booking.html) ===== -->
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <svg viewBox="0 0 16 16" fill="none" width="20" height="20"><path d="M2 14V6L8 2L14 6V14H10V10H6V14H2Z" fill="#fff"/></svg>
+                <span>HotelHub</span>
+            </div>
+            <p class="footer-tagline">Trải nghiệm nghỉ dưỡng đẳng cấp,<br/>dịch vụ tận tâm mỗi ngày.</p>
+            <div class="footer-socials">
+                <a href="#" class="footer-social" aria-label="Facebook">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                </a>
+                <a href="#" class="footer-social" aria-label="Instagram">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                </a>
+            </div>
+        </div>
+        <div class="footer-col">
+            <h4 class="footer-col-title">Khám phá</h4>
+            <ul class="footer-links">
+                <li><a href="/">Trang chủ</a></li>
+                <li><a href="/rooms">Danh sách phòng</a></li>
+                <li><a href="/services">Dịch vụ</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4 class="footer-col-title">Tài khoản</h4>
+            <ul class="footer-links">
+                <li><a href="/loyal-customers">Khách hàng thân thiết</a></li>
+                <li><a href="/payment-info">Lịch sử thanh toán</a></li>
+                <li><a href="/login">Đăng nhập</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4 class="footer-col-title">Liên hệ</h4>
+            <ul class="footer-links">
+                <li>📍 123 Nguyễn Huệ, Q.1, TP.HCM</li>
+                <li>📞 1800 1234</li>
+                <li>✉️ hello@hotelhub.vn</li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 HotelHub. All rights reserved.</span>
+        <div class="footer-bottom-links">
+            <a href="#">Chính sách bảo mật</a>
+            <a href="#">Điều khoản</a>
+        </div>
+    </div>
+</footer>
+
+<script th:src="@{/js/services.js}"></script>
+<script th:src="@{/js/navbar.js}"></script>
+</body>
+</html>
