@@ -180,7 +180,11 @@
                 localStorage.setItem('accessToken', data.accessToken);
                 localStorage.setItem('user', JSON.stringify(data.user));
                 showAlert('success', 'Đăng nhập thành công! Đang chuyển hướng...');
-                setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
+                const role = data.user?.role;
+                const redirectUrl = (role === 'ADMIN' || role === 'HOTEL_OWNER')
+                    ? '/admin/dashboard'
+                    : '/';
+                setTimeout(() => { window.location.href = redirectUrl; }, 1500);
                 return;
             }
 

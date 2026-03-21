@@ -1101,3 +1101,34 @@ body {
     .stat-card { padding: 12px 14px; gap: 10px; }
     .stat-val { font-size: 22px; }
 }
+
+/* ── Sidebar Bottom Actions ── */
+.sidebar-bottom {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid #f0ebe7;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.sidebar-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #5c4033;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: background 0.15s, color 0.15s;
+}
+.sidebar-action-btn:hover { background: #fdf6f1; color: #17120f; }
+.sidebar-logout-btn { color: #c0392b; }
+.sidebar-logout-btn:hover { background: #fff5f5; color: #a93226; }

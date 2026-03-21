@@ -17,6 +17,7 @@
     <!-- ═══════════════════════════════════════
          SIDEBAR
     ═══════════════════════════════════════ -->
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('dashboard')}"></aside>
     <aside class="sidebar">
         <!-- User Profile -->
         <div class="sidebar-profile">
@@ -210,5 +211,7 @@
 <!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script th:src="@{/js/dashboard.js}"></script>
+<div th:replace="~{fragments/admin-sidebar :: sidebar-script}"></div>
+
 </body>
 </html>
