@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+    Fragment: navbar
+    ─────────────────────────────────────────────────────────────────
+    Sử dụng:
+        <header th:replace="~{fragments/navbar :: navbar('home')}"></header>
+
+    Các giá trị activePage hợp lệ:
+        'home'         → /  (Trang chủ)
+        'rooms'        → /rooms
+        'customers'    → /loyal-customers
+        'payment-info' → /payment-info
+        'payment'      → /payment
+    ─────────────────────────────────────────────────────────────────
+-->
+<header th:fragment="navbar(activePage)" class="navbar">
+
+    <!-- ── Logo ── -->
+    <a href="/" class="navbar-brand" aria-label="HotelHub – Trang chủ">
+        <svg class="brand-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M2 14V6L8 2L14 6V14H10V10H6V14H2Z" fill="#171212"/>
+        </svg>
+        <span class="brand-name">HotelHub</span>
+    </a>
+
+    <!-- ── Nav links ── -->
+    <nav class="navbar-links" aria-label="Điều hướng chính">
+        <a href="/"
+           th:classappend="${activePage == 'home'} ? 'active'"
+           class="nav-link">Trang chủ</a>
+
+        <a href="/rooms"
+           th:classappend="${activePage == 'rooms'} ? 'active'"
+           class="nav-link">Phòng</a>
+
+        <a href="/loyal-customers"
+           th:classappend="${activePage == 'customers'} ? 'active'"
+           class="nav-link">Khách hàng</a>
+
+        <a href="/payment-info"
+           th:classappend="${activePage == 'payment-info'} ? 'active'"
+           class="nav-link">Lịch sử thanh toán</a>
+    </nav>
+
+    <!-- ── Actions ── -->
+    <div class="navbar-actions">
+
+        <!-- Nút đăng nhập (hiện khi chưa login) -->
+        <a href="/login" class="navbar-btn-login" id="navBtnLogin" style="display:none"
+           aria-label="Đăng nhập">
+            <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+                <path d="M13 3h4a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-4M9 14l4-4-4-4M13 10H3"
+                      stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Đăng nhập
+        </a>
+
+        <!-- Avatar + dropdown (hiện khi đã login) -->
+        <div class="avatar-wrapper" id="avatarBtn" title="Tài khoản" aria-haspopup="true" aria-expanded="false" style="display:none">
+            <img class="avatar-img" id="avatarImg"
+                 src="data:image/svg+xml,%3Csvg viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23f0ebe7'/%3E%3Ccircle cx='20' cy='15' r='6' fill='%23c9b5a8'/%3E%3Cpath d='M6 36c0-7.732 6.268-14 14-14s14 6.268 14 14' fill='%23c9b5a8'/%3E%3C/svg%3E"
+                 alt="Avatar" />
+
+            <div class="avatar-dropdown" id="avatarDropdown" role="menu">
+                <div class="dropdown-user-info">
+                    <span class="dropdown-username" id="dropdownUsername">Người dùng</span>
+                    <span class="dropdown-role"    id="dropdownRole"></span>
+                </div>
+                <hr class="dropdown-divider" />
+
+                <a href="/payment-info" class="dropdown-item" role="menuitem">
+                    <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+                        <rect x="2" y="4" width="16" height="13" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M2 8h16M6 12h3M6 14.5h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    Lịch sử thanh toán
+                </a>
+
+                <a href="/admin/dashboard" class="dropdown-item" id="adminLink"
+                   style="display:none" role="menuitem">
+                    <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+                        <rect x="2"  y="2"  width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                        <rect x="12" y="2"  width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                        <rect x="2"  y="12" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                        <rect x="12" y="12" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    Quản trị
+                </a>
+
+                <hr class="dropdown-divider" />
+
+                <button class="dropdown-item dropdown-logout" id="btnLogout" role="menuitem">
+                    <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+                        <path d="M7 17H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h3
+                                 M13 14l4-4-4-4M17 10H7"
+                              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Đăng xuất
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+</body>
+</html>

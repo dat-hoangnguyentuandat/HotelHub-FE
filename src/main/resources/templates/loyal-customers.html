@@ -7,44 +7,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/navbar.css}" />
     <link rel="stylesheet" th:href="@{/css/loyal-customers.css}" />
 </head>
 <body>
 
 <!-- ═══════════════════════════════════════
-     NAVBAR (theo đúng thiết kế Figma)
+     NAVBAR
 ═══════════════════════════════════════ -->
-<header class="navbar">
-    <div class="navbar-brand">
-        <svg class="brand-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="28" height="28" rx="6" fill="#17120f"/>
-            <rect x="6" y="10" width="16" height="12" rx="1.5" fill="#f5f2f0"/>
-            <rect x="11" y="10" width="6" height="12" fill="#17120f"/>
-            <rect x="9" y="6" width="10" height="6" rx="1" fill="#c17c5a"/>
-        </svg>
-        <span class="brand-name">HotelHub</span>
-    </div>
-    <nav class="navbar-nav">
-        <a href="/admin/dashboard" class="nav-link">Trang chủ</a>
-        <a href="/admin/rooms" class="nav-link">Phòng</a>
-        <a href="#" class="nav-link">Dịch vụ</a>
-        <a href="/loyal-customers" class="nav-link active">Khách hàng</a>
-    </nav>
-    <div class="navbar-actions">
-        <button class="btn-icon" title="Thông báo">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-        <button class="avatar-btn" title="Tài khoản">
-            <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="18" cy="18" r="18" fill="#c17c5a"/>
-                <circle cx="18" cy="14" r="5" fill="#f5ddd0"/>
-                <path d="M7 31C7 25.5 12 21 18 21s11 4.5 11 10" fill="#f5ddd0"/>
-            </svg>
-        </button>
-    </div>
-</header>
+<header th:replace="~{fragments/navbar :: navbar('customers')}"></header>
 
 <!-- ═══════════════════════════════════════
      MAIN CONTENT
@@ -374,5 +345,6 @@
         </div>
     </div>
 </div>
+<script th:src="@{/js/navbar.js}"></script>
 </body>
 </html>
