@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -27,8 +28,23 @@
                 </svg>
             </div>
             <div class="profile-info">
-                <span class="profile-name">Quản trị viên Khách sạn</span>
-                <span class="profile-role">Quản trị viên</span>
+                <!-- Hiển thị tên đăng nhập từ Spring Security context -->
+                <span class="profile-name"
+                      sec:authorize="isAuthenticated()"
+                      sec:authentication="name">Quản trị viên Khách sạn</span>
+                <!-- Fallback khi chưa xác thực qua Spring Security (dùng JWT client-side) -->
+                <span class="profile-name"
+                      sec:authorize="isAnonymous()">Quản trị viên Khách sạn</span>
+
+                <!-- Role hiển thị theo quyền thực tế -->
+                <span class="profile-role"
+                      sec:authorize="hasRole('ADMIN')">Quản trị viên</span>
+                <span class="profile-role"
+                      sec:authorize="hasRole('HOTEL_OWNER')">Chủ khách sạn</span>
+                <span class="profile-role"
+                      sec:authorize="hasRole('STAFF')">Nhân viên</span>
+                <span class="profile-role"
+                      sec:authorize="isAnonymous()">Quản trị viên</span>
             </div>
         </div>
 

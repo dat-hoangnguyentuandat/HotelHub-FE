@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -31,9 +32,25 @@
                 <path d="M10 2a6 6 0 0 0-6 6v3l-1.5 2.5h15L16 11V8a6 6 0 0 0-6-6ZM8.5 16.5a1.5 1.5 0 0 0 3 0" stroke="#171212" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </button>
-        <div class="avatar-wrapper" id="avatarBtn" title="Tài khoản">
+
+        <!-- Hiển thị tên người dùng nếu đã xác thực qua Spring Security -->
+        <span class="navbar-username" sec:authorize="isAuthenticated()"
+              sec:authentication="name"></span>
+
+        <!-- Link Đăng nhập / Đăng ký khi chưa xác thực -->
+        <div sec:authorize="isAnonymous()" class="navbar-auth-links">
+            <a th:href="@{/login}" class="nav-link">Đăng nhập</a>
+            <a th:href="@{/register}" class="nav-link">Đăng ký</a>
+        </div>
+
+        <!-- Avatar + link admin chỉ hiện khi đã xác thực -->
+        <div sec:authorize="isAuthenticated()" class="avatar-wrapper" id="avatarBtn" title="Tài khoản">
             <img class="avatar-img" src="https://www.figma.com/api/mcp/asset/ba02a468-8a32-4cfd-991a-f110d7044c2f" alt="Avatar" />
         </div>
+
+        <!-- Link vào trang Admin — chỉ hiện với ROLE_ADMIN hoặc ROLE_HOTEL_OWNER -->
+        <a th:href="@{/admin/dashboard}" class="nav-link nav-link-admin"
+           sec:authorize="hasAnyRole('ADMIN','HOTEL_OWNER')">Quản trị</a>
     </div>
 </header>
 
