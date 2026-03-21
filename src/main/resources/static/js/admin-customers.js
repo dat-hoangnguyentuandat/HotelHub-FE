@@ -54,7 +54,8 @@ function roleBadge(role) {
         HOTEL_OWNER: '<svg viewBox="0 0 16 16" fill="none"><rect x="1" y="5" width="14" height="9" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M1 9H15M5 9V7C5 6.4 5.4 6 6 6H10C10.6 6 11 6.4 11 7V9" stroke="currentColor" stroke-width="1.5"/></svg>',
         ADMIN:       '<svg viewBox="0 0 16 16" fill="none"><path d="M8 1L2 4.5V8C2 11 4.7 13.8 8 14.7C11.3 13.8 14 11 14 8V4.5L8 1Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M6 8l1.5 1.5L11 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
     };
-    return `<span class="role-badge ${role}">${icons[role] || ''}${roleLabel(role)}</span>`;
+    const cls = role ? role.toLowerCase().replace('_', '-') : '';
+    return `<span class="role-badge role-${cls}">${icons[role] || ''}${roleLabel(role)}</span>`;
 }
 
 function getInitials(name) {

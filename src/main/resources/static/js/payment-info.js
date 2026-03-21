@@ -23,11 +23,7 @@ const BACKEND_URL = (() => {
    AUTH HELPERS
 ══════════════════════════════════════════════════════ */
 function getToken() {
-    return localStorage.getItem('accessToken')
-        || sessionStorage.getItem('accessToken')
-        || localStorage.getItem('token')
-        || sessionStorage.getItem('token')
-        || '';
+    return localStorage.getItem('accessToken') || '';
 }
 
 function authHeaders() {

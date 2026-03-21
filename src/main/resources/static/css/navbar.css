@@ -96,27 +96,10 @@
     flex-shrink: 0;
 }
 
-/* Nút đăng nhập */
-.navbar-btn-login {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 0 16px;
-    height: 36px;
-    border-radius: 10px;
-    background: #e55200;
-    color: #fff;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background 0.2s, transform 0.1s;
-    white-space: nowrap;
-}
-.navbar-btn-login:hover  { background: #c44700; }
-.navbar-btn-login:active { transform: scale(0.97); }
+/* Nút đăng nhập (dự phòng, ẩn mặc định) */
+.navbar-btn-login { display: none !important; }
 
-/* ── Avatar ── */
+/* ── Avatar – luôn hiển thị ── */
 .avatar-wrapper {
     position: relative;
     width: 36px;
@@ -126,11 +109,11 @@
     cursor: pointer;
     transition: border-color 0.2s;
     flex-shrink: 0;
-    overflow: visible;       /* dropdown không bị clip */
+    overflow: visible;
 }
 
-.avatar-wrapper:hover       { border-color: #e55200; }
-.avatar-wrapper[aria-expanded="true"] { border-color: #e55200; }
+.avatar-wrapper:hover                { border-color: #e55200; }
+.avatar-wrapper[aria-expanded="true"]{ border-color: #e55200; }
 
 .avatar-img {
     width: 100%;
@@ -147,11 +130,11 @@
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
-    min-width: 200px;
+    min-width: 220px;
     background: #ffffff;
     border: 1px solid #f0ebe7;
-    border-radius: 14px;
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+    border-radius: 16px;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.13);
     padding: 6px 0;
     z-index: 300;
     animation: dropdownFadeIn 0.18s ease;
@@ -160,10 +143,11 @@
 .avatar-dropdown.open { display: flex; }
 
 @keyframes dropdownFadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(8px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)   scale(1); }
 }
 
+/* ── Trạng thái ĐÃ đăng nhập ── */
 .dropdown-user-info {
     padding: 12px 16px 10px;
     display: flex;
@@ -187,12 +171,62 @@
     letter-spacing: 0.4px;
 }
 
+/* ── Trạng thái CHƯA đăng nhập ── */
+.dropdown-guest-info {
+    padding: 16px 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.dropdown-guest-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #17120f;
+}
+
+.dropdown-guest-sub {
+    font-size: 12px;
+    color: #9c877d;
+    line-height: 1.4;
+    margin-bottom: 4px;
+}
+
+.dropdown-btn-login,
+.dropdown-btn-register {
+    display: block;
+    text-align: center;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.dropdown-btn-login {
+    background: #e55200;
+    color: #fff;
+}
+.dropdown-btn-login:hover { background: #c44700; }
+
+.dropdown-btn-register {
+    background: #f5f0ec;
+    color: #4a3728;
+    margin-top: 2px;
+}
+.dropdown-btn-register:hover { background: #ede5df; }
+
+/* ── Divider ── */
 .dropdown-divider {
     margin: 4px 0;
     border: none;
     border-top: 1px solid #f5f0ec;
 }
 
+/* ── Menu items ── */
 .dropdown-item {
     display: flex;
     align-items: center;
@@ -213,12 +247,13 @@
 
 .dropdown-item svg { flex-shrink: 0; color: #9c877d; transition: color 0.15s; }
 
-.dropdown-item:hover { background: #fdf6f1; color: #e55200; }
+.dropdown-item:hover     { background: #fdf6f1; color: #e55200; }
 .dropdown-item:hover svg { color: #e55200; }
 
 .dropdown-logout       { color: #b91c1c; }
 .dropdown-logout svg   { color: #b91c1c; }
 .dropdown-logout:hover { background: #fff5f5; color: #991b1b; }
+.dropdown-logout:hover svg { color: #991b1b; }
 
 /* ════════════════════════════════════════
    RESPONSIVE
@@ -229,7 +264,6 @@
 }
 
 @media (max-width: 768px) {
-    .navbar          { padding: 0 20px; }
-    .navbar-links    { display: none; }      /* ẩn khi màn hình nhỏ */
-    .navbar-btn-login { font-size: 12px; padding: 0 12px; }
+    .navbar       { padding: 0 20px; }
+    .navbar-links { display: none; }
 }

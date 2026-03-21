@@ -416,9 +416,9 @@ body {
     white-space: nowrap;
 }
 
-.role-badge.GUEST        { background: #dcfce7; color: #15803d; }
-.role-badge.HOTEL_OWNER  { background: #dbeafe; color: #1d4ed8; }
-.role-badge.ADMIN        { background: #f3e8ff; color: #7c3aed; }
+.role-badge.role-guest        { background: #dcfce7; color: #15803d; }
+.role-badge.role-hotel-owner  { background: #dbeafe; color: #1d4ed8; }
+.role-badge.role-admin        { background: #f3e8ff; color: #7c3aed; }
 
 .role-badge svg { width: 12px; height: 12px; flex-shrink: 0; }
 

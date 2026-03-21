@@ -26,7 +26,7 @@
         <span class="brand-name">HotelHub</span>
     </a>
 
-    <!-- ── Nav links ── -->
+    <!-- ── Nav links (3 mục cố định) ── -->
     <nav class="navbar-links" aria-label="Điều hướng chính">
         <a href="/"
            th:classappend="${activePage == 'home'} ? 'active'"
@@ -36,13 +36,9 @@
            th:classappend="${activePage == 'rooms'} ? 'active'"
            class="nav-link">Phòng</a>
 
-        <a href="/loyal-customers"
-           th:classappend="${activePage == 'customers'} ? 'active'"
-           class="nav-link">Khách hàng</a>
-
-        <a href="/payment-info"
-           th:classappend="${activePage == 'payment-info'} ? 'active'"
-           class="nav-link">Lịch sử thanh toán</a>
+        <a href="/services"
+           th:classappend="${activePage == 'services'} ? 'active'"
+           class="nav-link">Dịch vụ</a>
     </nav>
 
     <!-- ── Actions ── -->
@@ -58,20 +54,43 @@
             Đăng nhập
         </a>
 
-        <!-- Avatar + dropdown (hiện khi đã login) -->
-        <div class="avatar-wrapper" id="avatarBtn" title="Tài khoản" aria-haspopup="true" aria-expanded="false" style="display:none">
+        <!-- Icon user (hiện luôn khi chưa login, chuyển thành avatar khi đã login) -->
+        <div class="avatar-wrapper" id="avatarBtn" aria-haspopup="true" aria-expanded="false">
+            <!-- Ảnh avatar (thay bằng icon mặc định nếu chưa login) -->
             <img class="avatar-img" id="avatarImg"
                  src="data:image/svg+xml,%3Csvg viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23f0ebe7'/%3E%3Ccircle cx='20' cy='15' r='6' fill='%23c9b5a8'/%3E%3Cpath d='M6 36c0-7.732 6.268-14 14-14s14 6.268 14 14' fill='%23c9b5a8'/%3E%3C/svg%3E"
-                 alt="Avatar" />
+                 alt="Tài khoản" />
 
             <div class="avatar-dropdown" id="avatarDropdown" role="menu">
-                <div class="dropdown-user-info">
-                    <span class="dropdown-username" id="dropdownUsername">Người dùng</span>
-                    <span class="dropdown-role"    id="dropdownRole"></span>
-                </div>
-                <hr class="dropdown-divider" />
 
-                <a href="/payment-info" class="dropdown-item" role="menuitem">
+                <!-- Khi ĐÃ đăng nhập: thông tin user -->
+                <div class="dropdown-user-info" id="dropdownLoggedIn" style="display:none">
+                    <span class="dropdown-username" id="dropdownUsername">Người dùng</span>
+                    <span class="dropdown-role"     id="dropdownRole"></span>
+                </div>
+
+                <!-- Khi CHƯA đăng nhập: prompt login -->
+                <div class="dropdown-guest-info" id="dropdownGuest">
+                    <span class="dropdown-guest-title">Chào mừng!</span>
+                    <span class="dropdown-guest-sub">Đăng nhập để trải nghiệm đầy đủ</span>
+                    <a href="/login" class="dropdown-btn-login">Đăng nhập</a>
+                    <a href="/register" class="dropdown-btn-register">Tạo tài khoản</a>
+                </div>
+
+                <hr class="dropdown-divider" id="dropdownDivider1" style="display:none" />
+
+                <!-- Menu items (chỉ hiện khi đã đăng nhập) -->
+                <a href="/loyal-customers" class="dropdown-item dropdown-auth-item"
+                   style="display:none" role="menuitem">
+                    <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+                        <path d="M10 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L10 14.4l-4.8 2.5.9-5.4L2.2 7.7l5.4-.8L10 2z"
+                              stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                    </svg>
+                    Khách hàng thân thiết
+                </a>
+
+                <a href="/payment-info" class="dropdown-item dropdown-auth-item"
+                   style="display:none" role="menuitem">
                     <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
                         <rect x="2" y="4" width="16" height="13" rx="2" stroke="currentColor" stroke-width="1.5"/>
                         <path d="M2 8h16M6 12h3M6 14.5h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -79,7 +98,7 @@
                     Lịch sử thanh toán
                 </a>
 
-                <a href="/admin/dashboard" class="dropdown-item" id="adminLink"
+                <a href="/admin/dashboard" class="dropdown-item dropdown-auth-item" id="adminLink"
                    style="display:none" role="menuitem">
                     <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
                         <rect x="2"  y="2"  width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
@@ -90,12 +109,13 @@
                     Quản trị
                 </a>
 
-                <hr class="dropdown-divider" />
+                <hr class="dropdown-divider dropdown-auth-item" id="dropdownDivider2"
+                    style="display:none" />
 
-                <button class="dropdown-item dropdown-logout" id="btnLogout" role="menuitem">
+                <button class="dropdown-item dropdown-logout dropdown-auth-item"
+                        id="btnLogout" style="display:none" role="menuitem">
                     <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
-                        <path d="M7 17H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h3
-                                 M13 14l4-4-4-4M17 10H7"
+                        <path d="M7 17H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h3M13 14l4-4-4-4M17 10H7"
                               stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     Đăng xuất

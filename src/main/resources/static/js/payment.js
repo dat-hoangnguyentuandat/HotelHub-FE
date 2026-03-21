@@ -20,7 +20,7 @@
 const API_BASE = 'http://localhost:8081/api';
 
 async function apiPost(path, body) {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     const res = await fetch(API_BASE + path, {
         method: 'POST',
         headers: {
@@ -35,7 +35,7 @@ async function apiPost(path, body) {
 }
 
 async function apiGet(path) {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     const res = await fetch(API_BASE + path, {
         headers: token ? { Authorization: 'Bearer ' + token } : {},
     });
@@ -45,7 +45,7 @@ async function apiGet(path) {
 }
 
 async function apiPatch(path, body = {}) {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     const res = await fetch(API_BASE + path, {
         method: 'PATCH',
         headers: {
@@ -385,7 +385,7 @@ function removePromo() {
 ═══════════════════════════════════════ */
 function initLoyalty() {
     // Fetch điểm loyalty thật từ API nếu user đã đăng nhập
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (token) {
         apiGet('/loyalty/me')
             .then(data => {

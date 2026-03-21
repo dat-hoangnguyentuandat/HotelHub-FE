@@ -107,6 +107,12 @@ public class AuthController {
         return "admin-customers";
     }
 
+    @GetMapping("/services")
+    public String services(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "services";
+    }
+
     @GetMapping("/admin/admin-reviews")
     public String adminreviews(Model model) {
         model.addAttribute("backendUrl", backendUrl);

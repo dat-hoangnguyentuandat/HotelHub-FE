@@ -7,7 +7,6 @@
 (function () {
     'use strict';
 
-    /* ── Khởi tạo sau khi DOM sẵn sàng ── */
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
@@ -21,58 +20,63 @@
     }
 
     /* ════════════════════════════════════════
-       AUTH STATE  –  đồng bộ UI theo token
+       AUTH STATE
     ════════════════════════════════════════ */
     function syncAuthState() {
         const token = localStorage.getItem('accessToken');
-        const loginBtn   = document.getElementById('navBtnLogin');
-        const avatarWrap = document.getElementById('avatarBtn');
+
+        const loggedInInfo  = document.getElementById('dropdownLoggedIn');
+        const guestInfo     = document.getElementById('dropdownGuest');
+        const authItems     = document.querySelectorAll('.dropdown-auth-item');
+        const divider1      = document.getElementById('dropdownDivider1');
 
         if (!token) {
-            /* Chưa đăng nhập: hiện nút "Đăng nhập", ẩn avatar */
-            if (loginBtn)   loginBtn.style.display   = 'inline-flex';
-            if (avatarWrap) avatarWrap.style.display = 'none';
+            /* ── CHƯA đăng nhập: hiện guest panel, ẩn auth items ── */
+            if (guestInfo)    guestInfo.style.display    = 'flex';
+            if (loggedInInfo) loggedInInfo.style.display = 'none';
+            authItems.forEach(el => el.style.display = 'none');
+            if (divider1) divider1.style.display = 'none';
             return;
         }
 
-        /* Đã đăng nhập */
-        if (loginBtn)   loginBtn.style.display   = 'none';
-        if (avatarWrap) avatarWrap.style.display = 'flex';
+        /* ── ĐÃ đăng nhập: ẩn guest panel, hiện auth items ── */
+        if (guestInfo)    guestInfo.style.display    = 'none';
+        if (loggedInInfo) loggedInInfo.style.display = 'flex';
+        authItems.forEach(el => el.style.display = 'flex');
+        if (divider1) divider1.style.display = 'block';
 
         /* Điền thông tin user */
         try {
             const user = JSON.parse(localStorage.getItem('user') || 'null');
             if (!user) return;
 
-            const nameEl = document.getElementById('dropdownUsername');
-            const roleEl = document.getElementById('dropdownRole');
+            const nameEl  = document.getElementById('dropdownUsername');
+            const roleEl  = document.getElementById('dropdownRole');
             const adminEl = document.getElementById('adminLink');
             const imgEl   = document.getElementById('avatarImg');
 
             if (nameEl) nameEl.textContent = user.fullName || user.email || 'Người dùng';
 
-            /* Nhãn role hiển thị tiếng Việt */
             const ROLE_LABELS = {
-                ADMIN:        'Quản trị viên',
-                HOTEL_OWNER:  'Chủ khách sạn',
-                GUEST:        'Khách hàng',
+                ADMIN:       'Quản trị viên',
+                HOTEL_OWNER: 'Chủ khách sạn',
+                GUEST:       'Khách hàng',
             };
             if (roleEl) roleEl.textContent = ROLE_LABELS[user.role] || user.role || '';
 
-            /* Hiện link Quản trị nếu ADMIN / HOTEL_OWNER */
+            /* Chỉ ADMIN / HOTEL_OWNER thấy link Quản trị */
             const isAdmin = user.role === 'ADMIN' || user.role === 'HOTEL_OWNER';
             if (adminEl) adminEl.style.display = isAdmin ? 'flex' : 'none';
 
-            /* Avatar từ Pravatar dựa theo ID (hợp lệ 1-70) */
-            if (imgEl && user.id) {
-                const avatarIdx = (Number(user.id) % 70) + 1;
-                imgEl.src = `https://i.pravatar.cc/40?img=${avatarIdx}`;
+            /* Avatar mặc định – không phụ thuộc dịch vụ ngoài */
+            if (imgEl) {
+                imgEl.src = "data:image/svg+xml,%3Csvg viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23f0ebe7'/%3E%3Ccircle cx='20' cy='15' r='6' fill='%23c9b5a8'/%3E%3Cpath d='M6 36c0-7.732 6.268-14 14-14s14 6.268 14 14' fill='%23c9b5a8'/%3E%3C/svg%3E";
             }
-        } catch (_) { /* JSON parse lỗi – bỏ qua */ }
+        } catch (_) {}
     }
 
     /* ════════════════════════════════════════
-       DROPDOWN  –  mở / đóng
+       DROPDOWN
     ════════════════════════════════════════ */
     function initDropdown() {
         const btn  = document.getElementById('avatarBtn');
@@ -86,7 +90,6 @@
             btn.setAttribute('aria-expanded', String(!isOpen));
         });
 
-        /* Đóng khi click bên ngoài */
         document.addEventListener('click', function () {
             if (menu.classList.contains('open')) {
                 menu.classList.remove('open');
@@ -94,7 +97,6 @@
             }
         });
 
-        /* Đóng khi nhấn Escape */
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && menu.classList.contains('open')) {
                 menu.classList.remove('open');

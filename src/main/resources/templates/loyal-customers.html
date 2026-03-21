@@ -29,7 +29,9 @@
         <!-- Bảng trái: thông tin khách -->
         <div class="customer-profile-card">
             <div class="customer-avatar">
-                <img src="https://i.pravatar.cc/120?img=11" alt="Avatar khách hàng" />
+                <img id="customerAvatarImg"
+                     src="data:image/svg+xml,%3Csvg viewBox='0 0 120 120' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='60' cy='60' r='60' fill='%23f0ebe7'/%3E%3Ccircle cx='60' cy='45' r='22' fill='%23c9b5a8'/%3E%3Cpath d='M12 108c0-26.51 21.49-48 48-48s48 21.49 48 48' fill='%23c9b5a8'/%3E%3C/svg%3E"
+                     alt="Avatar khách hàng" />
             </div>
             <p class="customer-name" id="customerName">Lê Nguyễn Thế Kiệt</p>
             <span class="membership-badge gold" id="membershipBadge">Gold Member</span>
@@ -193,112 +195,6 @@
         <!-- Nút xem thêm -->
         <div class="load-more-wrap">
             <button class="btn-load-more" id="btnLoadMore">Xem thêm</button>
-        </div>
-    </section> khách hàng thân thiết (Admin) ── -->
-    <section class="customers-section">
-        <div class="customers-header">
-            <h2 class="section-heading">Danh sách khách hàng thân thiết</h2>
-            <div class="search-bar">
-                <svg class="search-icon" viewBox="0 0 24 24" fill="none">
-                    <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
-                    <path d="M20 20L16.5 16.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
-                <input type="text" class="search-input" id="searchInput" placeholder="Tìm theo tên, email..." />
-            </div>
-        </div>
-
-        <div class="customers-grid" id="customersGrid">
-
-            <!-- Card 1 -->
-            <div class="customer-card">
-                <div class="cc-avatar">
-                    <img src="https://i.pravatar.cc/80?img=11" alt="avatar" />
-                </div>
-                <div class="cc-info">
-                    <p class="cc-name">Lê Nguyễn Thế Kiệt</p>
-                    <p class="cc-email">thekiet@gmail.com</p>
-                </div>
-                <div class="cc-meta">
-                    <span class="membership-badge gold">Gold</span>
-                    <span class="cc-points">780 điểm</span>
-                </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="customer-card">
-                <div class="cc-avatar">
-                    <img src="https://i.pravatar.cc/80?img=5" alt="avatar" />
-                </div>
-                <div class="cc-info">
-                    <p class="cc-name">Nguyễn Thị Mai</p>
-                    <p class="cc-email">mai.nguyen@gmail.com</p>
-                </div>
-                <div class="cc-meta">
-                    <span class="membership-badge platinum">Platinum</span>
-                    <span class="cc-points">1240 điểm</span>
-                </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="customer-card">
-                <div class="cc-avatar">
-                    <img src="https://i.pravatar.cc/80?img=7" alt="avatar" />
-                </div>
-                <div class="cc-info">
-                    <p class="cc-name">Trần Văn Hùng</p>
-                    <p class="cc-email">hung.tran@company.vn</p>
-                </div>
-                <div class="cc-meta">
-                    <span class="membership-badge silver">Silver</span>
-                    <span class="cc-points">320 điểm</span>
-                </div>
-            </div>
-
-            <!-- Card 4 -->
-            <div class="customer-card">
-                <div class="cc-avatar">
-                    <img src="https://i.pravatar.cc/80?img=20" alt="avatar" />
-                </div>
-                <div class="cc-info">
-                    <p class="cc-name">Phạm Thị Lan</p>
-                    <p class="cc-email">lan.pham@outlook.com</p>
-                </div>
-                <div class="cc-meta">
-                    <span class="membership-badge gold">Gold</span>
-                    <span class="cc-points">610 điểm</span>
-                </div>
-            </div>
-
-            <!-- Card 5 -->
-            <div class="customer-card">
-                <div class="cc-avatar">
-                    <img src="https://i.pravatar.cc/80?img=15" alt="avatar" />
-                </div>
-                <div class="cc-info">
-                    <p class="cc-name">Hoàng Minh Tuấn</p>
-                    <p class="cc-email">tuan.hm@gmail.com</p>
-                </div>
-                <div class="cc-meta">
-                    <span class="membership-badge platinum">Platinum</span>
-                    <span class="cc-points">1850 điểm</span>
-                </div>
-            </div>
-
-            <!-- Card 6 -->
-            <div class="customer-card">
-                <div class="cc-avatar">
-                    <img src="https://i.pravatar.cc/80?img=25" alt="avatar" />
-                </div>
-                <div class="cc-info">
-                    <p class="cc-name">Vũ Thị Hoa</p>
-                    <p class="cc-email">hoa.vu@hotmail.com</p>
-                </div>
-                <div class="cc-meta">
-                    <span class="membership-badge silver">Silver</span>
-                    <span class="cc-points">150 điểm</span>
-                </div>
-            </div>
-
         </div>
     </section>
 

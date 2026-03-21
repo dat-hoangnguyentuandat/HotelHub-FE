@@ -20,15 +20,8 @@
             </svg>
         </div>
         <div class="profile-info">
-            <span class="profile-name"
-                  sec:authorize="isAuthenticated()"
-                  sec:authentication="name">Quản trị viên</span>
-            <span class="profile-name"
-                  sec:authorize="isAnonymous()">Quản trị viên</span>
-            <span class="profile-role" sec:authorize="hasRole('ADMIN')">Quản trị viên</span>
-            <span class="profile-role" sec:authorize="hasRole('HOTEL_OWNER')">Chủ khách sạn</span>
-            <span class="profile-role" sec:authorize="hasRole('STAFF')">Nhân viên</span>
-            <span class="profile-role" sec:authorize="isAnonymous()">Quản trị viên</span>
+            <span class="profile-name" id="sidebarProfileName">Quản trị viên</span>
+            <span class="profile-role" id="sidebarProfileRole">Quản trị viên</span>
         </div>
     </div>
 
@@ -133,6 +126,20 @@
 </aside>
 
 <script th:fragment="sidebar-script">
+    /* Admin sidebar – điền thông tin user từ localStorage */
+    (function () {
+        const roleLabels = { ADMIN: 'Quản trị viên', HOTEL_OWNER: 'Chủ khách sạn', GUEST: 'Khách hàng' };
+        try {
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            if (user) {
+                const nameEl = document.getElementById('sidebarProfileName');
+                const roleEl = document.getElementById('sidebarProfileRole');
+                if (nameEl) nameEl.textContent = user.fullName || 'Quản trị viên';
+                if (roleEl) roleEl.textContent = roleLabels[user.role] || user.role || 'Quản trị viên';
+            }
+        } catch (_) {}
+    })();
+
     /* Admin sidebar logout */
     const btnAdminLogout = document.getElementById('btnAdminLogout');
     if (btnAdminLogout) {

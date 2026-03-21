@@ -39,7 +39,7 @@
        FETCH & RENDER
     ══════════════════════════════════════════════════════════ */
     function loadDashboard() {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('accessToken');
 
         fetch(DASHBOARD_URL, {
             method: 'GET',
