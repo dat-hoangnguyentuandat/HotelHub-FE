@@ -71,6 +71,12 @@ public class AuthController {
         return "admin-cancellation";
     }
 
+    @GetMapping("/admin/customers")
+    public String adminCustomers(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "admin-customers";
+    }
+
     @GetMapping("/admin/admin-services")
     public String adminservices(Model model) {
         model.addAttribute("backendUrl", backendUrl);
@@ -87,5 +93,17 @@ public class AuthController {
     public String paymentinfo(Model model) {
         model.addAttribute("backendUrl", backendUrl);
         return "payment-info";
+    }
+
+    @GetMapping("/admin/admin-customers")
+    public String admincustomers(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "admin-customers";
+    }
+
+    @GetMapping("/admin/admin-reviews")
+    public String adminreviews(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "admin-reviews";
     }
 }
