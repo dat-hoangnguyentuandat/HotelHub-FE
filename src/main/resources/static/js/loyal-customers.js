@@ -10,7 +10,7 @@ const API_BASE = 'http://localhost:8081';   // Cổng backend Spring Boot
 
 /** Lấy JWT token đã lưu sau khi đăng nhập */
 function getToken() {
-    return localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
+    return localStorage.getItem('accessToken') || '';
 }
 
 /** Wrapper fetch có Bearer token */
@@ -37,7 +37,6 @@ async function apiFetch(path, options = {}) {
 let currentAccount   = null;   // LoyaltyAccountResponse
 let currentPage      = 0;
 let isLastPage       = false;
-let isAdminView      = false;  // true nếu có role ADMIN / HOTEL_OWNER
 
 /* ─────────────────────────────────────────
    INIT
@@ -46,7 +45,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         await loadMyAccount();
         initFilter();
-        initSearch();
         initRedeemModal();
     } catch (e) {
         console.error('Lỗi khởi tạo:', e);
@@ -63,9 +61,7 @@ async function loadMyAccount() {
         renderHeroSection(currentAccount);
         highlightCurrentTier(currentAccount.tier);
         await loadTransactionHistory();
-        await loadAllLoyaltyCustomers();
     } catch (e) {
-        // Nếu chưa đăng nhập hoặc token hết hạn
         if (e.message.includes('401') || e.message.includes('403')) {
             window.location.href = '/login';
         } else {
@@ -115,10 +111,10 @@ function renderHeroSection(acc) {
             .join('');
     }
 
-    // Avatar nếu có
+    // Avatar nếu có từ backend
     if (acc.avatarUrl) {
-        const imgs = document.querySelectorAll('.customer-avatar img');
-        imgs.forEach(img => img.src = acc.avatarUrl);
+        const img = document.getElementById('customerAvatarImg');
+        if (img) img.src = acc.avatarUrl;
     }
 }
 
@@ -223,66 +219,6 @@ function initFilter() {
             loadTransactionHistory(false);
         });
     }
-}
-
-/* ─────────────────────────────────────────
-   DANH SÁCH KHÁCH HÀNG THÂN THIẾT (Admin)
-───────────────────────────────────────── */
-async function loadAllLoyaltyCustomers() {
-    try {
-        // Thử gọi admin endpoint – nếu 403 thì ẩn section
-        const data = await apiFetch('/api/loyalty/admin?page=0&size=20');
-        renderCustomersGrid(data.content);
-        isAdminView = true;
-    } catch (e) {
-        if (e.message.includes('403')) {
-            // Không phải admin – ẩn section
-            const section = document.querySelector('.customers-section');
-            if (section) section.style.display = 'none';
-        }
-    }
-}
-
-function renderCustomersGrid(accounts) {
-    const grid = document.getElementById('customersGrid');
-    if (!grid || !accounts?.length) return;
-
-    grid.innerHTML = accounts.map(acc => {
-        const tierCls   = acc.tier.toLowerCase();
-        const avatarSrc = acc.avatarUrl || `https://i.pravatar.cc/80?u=${acc.userId}`;
-        return `
-          <div class="customer-card" data-user-id="${acc.userId}">
-            <div class="cc-avatar">
-              <img src="${avatarSrc}" alt="avatar" onerror="this.src='https://i.pravatar.cc/80?u=${acc.userId}'" />
-            </div>
-            <div class="cc-info">
-              <p class="cc-name">${escapeHtml(acc.userFullName)}</p>
-              <p class="cc-email">${escapeHtml(acc.userEmail)}</p>
-            </div>
-            <div class="cc-meta">
-              <span class="membership-badge ${tierCls}">${acc.tier.charAt(0) + acc.tier.slice(1).toLowerCase()}</span>
-              <span class="cc-points">${acc.currentPoints.toLocaleString('vi-VN')} điểm</span>
-            </div>
-          </div>`;
-    }).join('');
-}
-
-/* ─────────────────────────────────────────
-   TÌM KIẾM KHÁCH HÀNG
-───────────────────────────────────────── */
-function initSearch() {
-    const input = document.getElementById('searchInput');
-    if (!input) return;
-
-    input.addEventListener('input', () => {
-        const q     = input.value.toLowerCase().trim();
-        const cards = document.querySelectorAll('#customersGrid .customer-card');
-        cards.forEach(card => {
-            const name  = card.querySelector('.cc-name')?.textContent.toLowerCase()  || '';
-            const email = card.querySelector('.cc-email')?.textContent.toLowerCase() || '';
-            card.style.display = (!q || name.includes(q) || email.includes(q)) ? '' : 'none';
-        });
-    });
 }
 
 /* ─────────────────────────────────────────

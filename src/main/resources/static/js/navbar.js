@@ -68,10 +68,9 @@
             const isAdmin = user.role === 'ADMIN' || user.role === 'HOTEL_OWNER';
             if (adminEl) adminEl.style.display = isAdmin ? 'flex' : 'none';
 
-            /* Avatar theo ID */
-            if (imgEl && user.id) {
-                const idx = (Number(user.id) % 70) + 1;
-                imgEl.src = `https://i.pravatar.cc/40?img=${idx}`;
+            /* Avatar mặc định – không phụ thuộc dịch vụ ngoài */
+            if (imgEl) {
+                imgEl.src = "data:image/svg+xml,%3Csvg viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23f0ebe7'/%3E%3Ccircle cx='20' cy='15' r='6' fill='%23c9b5a8'/%3E%3Cpath d='M6 36c0-7.732 6.268-14 14-14s14 6.268 14 14' fill='%23c9b5a8'/%3E%3C/svg%3E";
             }
         } catch (_) {}
     }

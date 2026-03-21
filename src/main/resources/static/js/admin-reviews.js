@@ -10,7 +10,7 @@ const API_BASE = 'http://localhost:8081/api';
 
 /** Lấy JWT từ localStorage (được lưu khi đăng nhập) */
 function getToken() {
-    return localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+    return localStorage.getItem('accessToken') || '';
 }
 
 /** Headers dùng chung cho mọi request */
