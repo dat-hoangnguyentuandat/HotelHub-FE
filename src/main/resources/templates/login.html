@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -30,6 +31,13 @@
         <div class="title-block">
             <h1>Chào mừng trở lại!</h1>
             <p class="subtitle">Nhập thông tin của bạn để truy cập vào tài khoản.</p>
+        </div>
+
+        <!-- Thông báo khi người dùng đã đăng nhập (Spring Security session) -->
+        <div sec:authorize="isAuthenticated()" class="alert-banner success" style="display:block">
+            Bạn đã đăng nhập với tư cách
+            <strong sec:authentication="name"></strong>.
+            <a th:href="@{/booking}">Về trang chủ</a>
         </div>
 
         <!-- Alert banner (success từ register / error từ server) -->
