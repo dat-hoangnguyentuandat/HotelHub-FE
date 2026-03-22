@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class AuthController {
@@ -129,5 +130,31 @@ public class AuthController {
     public String adminVouchers(Model model) {
         model.addAttribute("backendUrl", backendUrl);
         return "admin-vouchers";
+    }
+
+    @GetMapping("/admin/reports")
+    public String adminReports(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "admin-report";
+    }
+
+    @GetMapping("/admin/bookings/{id}")
+    public String adminBookingDetail(@PathVariable Long id, Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        model.addAttribute("bookingId", id);
+        return "admin-booking-detail";
+    }
+
+    @GetMapping("/admin/group-bookings")
+    public String adminGroupBookings(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "admin-group-bookings";
+    }
+
+    @GetMapping("/admin/group-bookings/{id}")
+    public String adminGroupBookingDetail(@PathVariable Long id, Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        model.addAttribute("groupBookingId", id);
+        return "admin-group-booking-detail";
     }
 }
