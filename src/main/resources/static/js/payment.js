@@ -64,7 +64,7 @@ async function apiPatch(path, body = {}) {
 ═══════════════════════════════════════ */
 const state = {
     method: 'card',
-    promo: null,          // { code, discountRate, label }
+    promo: null,          // { code, discountRate, label, isVoucher, voucherValue, discountAmount }
     usePoints: false,
     baseAmount: 0,
     vatRate: 0.10,
@@ -172,7 +172,17 @@ function renderPrices() {
 
     let discount = 0;
     if (state.promo) {
-        discount = Math.round(subtotal * state.promo.discountRate);
+        if (state.promo.isVoucher) {
+            // Voucher: giảm tiền cố định
+            discount = Math.min(
+                Math.round(state.promo.voucherValue || 0),
+                subtotal
+            );
+        } else {
+            // PromoCode: giảm theo %
+            discount = Math.round(subtotal * (state.promo.discountRate || 0));
+        }
+
         if ($('rowDiscount')) $('rowDiscount').style.display = 'flex';
         if ($('priceDiscount')) $('priceDiscount').textContent = `−${fmt(discount)}`;
         subtotal -= discount;
@@ -357,7 +367,16 @@ async function applyPromo() {
         });
 
         if (result.valid) {
-            state.promo = { code, discountRate: result.discountRate, label: result.label };
+            // Lưu đủ thông tin: phân biệt voucher cố định vs promo %
+            state.promo = {
+                code:         result.code || code,
+                discountRate: result.discountRate  || 0,
+                label:        result.label || code,
+                isVoucher:    result.voucher === true || result.isVoucher === true,
+                voucherValue: result.voucherValue   || 0,
+                discountAmount: result.discountAmount || 0,
+            };
+
             if (msg) { msg.textContent = `✓ ${result.message}`; msg.className = 'promo-msg success'; }
             if ($('promoInput')) $('promoInput').disabled = true;
             if ($('btnPromo'))   { $('btnPromo').textContent = 'Xóa'; $('btnPromo').onclick = removePromo; }
@@ -533,7 +552,11 @@ function buildPaymentPayload() {
         bookingId: b.bookingId,
         method: state.method.toUpperCase(),
         promoCode: state.promo?.code || null,
-        promoDiscountRate: state.promo?.discountRate || 0,
+        // Voucher giảm tiền cố định: gửi rate = 0, backend sẽ tự tính từ user_vouchers
+        // PromoCode truyền thống: gửi rate % để backend xác minh
+        promoDiscountRate: (state.promo && !state.promo.isVoucher)
+            ? (state.promo.discountRate || 0)
+            : 0,
         loyaltyPointsUsed: state.usePoints ? state.loyaltyPoints : 0,
     };
 

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Voucher – HotelHub Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/admin-vouchers.css}" />
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <!-- ═══════════════════════════════════════
+         SIDEBAR
+    ═══════════════════════════════════════ -->
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('vouchers')}"></aside>
+
+    <!-- ═══════════════════════════════════════
+         MAIN CONTENT
+    ═══════════════════════════════════════ -->
+    <main class="main-content">
+
+        <!-- Top bar -->
+        <div class="topbar">
+            <h1 class="page-title">Quản lý Voucher</h1>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 20 20" fill="none">
+                        <circle cx="9" cy="9" r="6" stroke="#8c7b72" stroke-width="1.5"/>
+                        <path d="M13.5 13.5L17 17" stroke="#8c7b72" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Tìm tên voucher..." />
+                </div>
+                <select class="filter-select" id="filterStatus">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="true">Đang hoạt động</option>
+                    <option value="false">Đã tắt</option>
+                </select>
+                <button class="btn-add" id="btnAddVoucher">
+                    <svg viewBox="0 0 20 20" fill="none">
+                        <path d="M10 4V16M4 10H16" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+                    </svg>
+                    + Thêm Voucher
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats row -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <span class="stat-label">Tổng voucher</span>
+                <span class="stat-value" id="statTotal">–</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Đang hoạt động</span>
+                <span class="stat-value green" id="statActive">–</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Đã đổi tổng cộng</span>
+                <span class="stat-value amber" id="statRedeemed">–</span>
+            </div>
+        </div>
+
+        <!-- Table card -->
+        <div class="table-card">
+            <table class="voucher-table" id="voucherTable">
+                <thead>
+                    <tr>
+                        <th class="col-name">Tên Voucher</th>
+                        <th class="col-category">Phân loại</th>
+                        <th class="col-points">Điểm đổi</th>
+                        <th class="col-value">Giá trị</th>
+                        <th class="col-limit">Giới hạn</th>
+                        <th class="col-redeemed">Đã đổi</th>
+                        <th class="col-status">Trạng thái</th>
+                        <th class="col-action">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="voucherTableBody">
+                    <tr class="loading-row">
+                        <td colspan="8">
+                            <div class="skeleton-wrap">
+                                <div class="skeleton"></div>
+                                <div class="skeleton"></div>
+                                <div class="skeleton"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-state" id="emptyState" style="display:none;">
+            <svg viewBox="0 0 64 64" fill="none">
+                <path d="M54.59 36.41l-19.17 19.17a5.33 5.33 0 0 1-7.54 0L4 31.67V8h23.67l19.92 19.93a5.33 5.33 0 0 1 0 7.54z" stroke="#c9b5a8" stroke-width="2.5" stroke-linejoin="round"/>
+                <circle cx="18" cy="18" r="4" fill="#c9b5a8"/>
+            </svg>
+            <p>Chưa có voucher nào.<br>Nhấn <strong>+ Thêm Voucher</strong> để tạo mới.</p>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="paginationWrap">
+            <button class="page-btn" id="btnPrev" disabled>‹ Trước</button>
+            <span class="page-info" id="pageInfo">Trang 1</span>
+            <button class="page-btn" id="btnNext">Tiếp ›</button>
+        </div>
+
+    </main><!-- /main-content -->
+
+</div><!-- /admin-layout -->
+
+<!-- ═══════════════════════════════════════
+     MODAL THÊM / CHỈNH SỬA VOUCHER
+═══════════════════════════════════════ -->
+<div id="modalOverlay" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 id="modalTitle">Thêm Voucher mới</h2>
+            <button class="modal-close" id="btnCloseModal">✕</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editVoucherId" />
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label>Tên voucher <span class="required">*</span></label>
+                    <input type="text" id="fldName" placeholder="VD: Giảm 50.000đ cho phòng Standard" />
+                    <span class="err" id="errName"></span>
+                </div>
+                <div class="form-group full">
+                    <label>Mô tả</label>
+                    <textarea id="fldDesc" rows="2" placeholder="Mô tả chi tiết quyền lợi voucher..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Số điểm cần đổi <span class="required">*</span></label>
+                    <input type="number" id="fldPoints" min="1" placeholder="VD: 100" />
+                    <span class="err" id="errPoints"></span>
+                </div>
+                <div class="form-group">
+                    <label>Giá trị voucher (VNĐ) <span class="required">*</span></label>
+                    <input type="number" id="fldValue" min="1000" step="1000" placeholder="VD: 50000" />
+                    <span class="err" id="errValue"></span>
+                </div>
+                <div class="form-group">
+                    <label>Phân loại</label>
+                    <select id="fldCategory">
+                        <option value="Giảm giá">Giảm giá</option>
+                        <option value="Dịch vụ">Dịch vụ</option>
+                        <option value="Ẩm thực">Ẩm thực</option>
+                        <option value="Spa">Spa</option>
+                        <option value="Vận chuyển">Vận chuyển</option>
+                        <option value="Đặc biệt">Đặc biệt</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Giới hạn lượt đổi</label>
+                    <input type="number" id="fldMax" min="1" placeholder="Để trống = không giới hạn" />
+                </div>
+                <div class="form-group full">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="fldActive" checked />
+                        <span class="toggle-slider"></span>
+                        Đang hoạt động
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" id="btnCancelModal">Hủy</button>
+            <button class="btn-save" id="btnSaveVoucher">Lưu voucher</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL XÁC NHẬN XÓA
+═══════════════════════════════════════ -->
+<div id="deleteOverlay" class="modal-overlay" style="display:none;">
+    <div class="modal-box modal-sm">
+        <div class="modal-header">
+            <h2>Xác nhận xóa</h2>
+            <button class="modal-close" id="btnCloseDelete">✕</button>
+        </div>
+        <div class="modal-body">
+            <p>Bạn có chắc muốn xóa voucher <strong id="deleteVoucherName"></strong>?<br>
+            Hành động này không thể hoàn tác.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" id="btnCancelDelete">Hủy</button>
+            <button class="btn-delete" id="btnConfirmDelete">Xóa</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast" style="display:none;"></div>
+
+<script th:inline="javascript">
+    window.BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+</script>
+<script th:src="@{/js/admin-vouchers.js}"></script>
+<th:block th:replace="~{fragments/admin-sidebar :: sidebar-script}"></th:block>
+</body>
+</html>
