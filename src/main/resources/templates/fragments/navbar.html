@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="sr-widget-head">
+    <link rel="stylesheet" th:href="@{/css/special-request-widget.css}" />
+</head>
 <body>
 
 <!--
@@ -124,6 +127,14 @@
         </div>
     </div>
 </header>
+
+<!-- ═══════════════════════════════════════
+     SPECIAL REQUEST WIDGET – nút chat nổi góc dưới phải
+     (Tự ẩn trên trang /admin/*)
+═══════════════════════════════════════ -->
+<th:block th:fragment="sr-widget-script">
+    <script th:src="@{/js/special-request-widget.js}"></script>
+</th:block>
 
 </body>
 </html>

@@ -114,6 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initDrawer();
     initModal();
     initPagination();
+    initHighlightFromUrl();
 });
 
 /* ─── Dates ─── */
@@ -255,7 +256,9 @@ function renderRooms() {
 }
 
 function renderCard(r) {
-    const img      = ROOM_IMAGES[r.roomType] || ROOM_IMAGES[r.roomName] || ROOM_IMG_DEFAULT;
+    const img      = (r.imageUrl && r.imageUrl.trim())
+                     ? r.imageUrl
+                     : (ROOM_IMAGES[r.roomType] || ROOM_IMAGES[r.roomName] || ROOM_IMG_DEFAULT);
     const badge    = BADGE_MAP[r.roomType] || BADGE_MAP[r.roomName];
     const badgeHtml = badge
         ? `<span class="room-badge ${badge.gold ? 'badge-gold' : ''}">${badge.text}</span>`
@@ -350,7 +353,7 @@ function openDrawer(id) {
     if (!activeRoom) return;
     const r = activeRoom;
 
-    document.getElementById('drawerImg').src     = ROOM_IMAGES[r.roomType] || ROOM_IMAGES[r.roomName] || ROOM_IMG_DEFAULT;
+    document.getElementById('drawerImg').src     = (r.imageUrl && r.imageUrl.trim()) ? r.imageUrl : (ROOM_IMAGES[r.roomType] || ROOM_IMAGES[r.roomName] || ROOM_IMG_DEFAULT);
     document.getElementById('drawerImg').alt     = r.roomName;
     document.getElementById('drawerName').textContent  = r.roomName || '—';
     document.getElementById('drawerType').textContent  = r.roomType || '';
@@ -667,4 +670,95 @@ function initViewToggle() {
         document.getElementById('btnGrid').classList.remove('active');
         renderRooms();
     });
+}
+
+/* ──────────────────────────────────────────────────
+   HIGHLIGHT FROM URL  (?highlight=Tên+Phòng)
+   - Đọc query param ?highlight= khi trang load
+   - Tìm card phòng có roomType hoặc roomName khớp
+   - Scroll đến card đó và bật hiệu ứng nhấp sáng
+────────────────────────────────────────────────── */
+function initHighlightFromUrl() {
+    const params    = new URLSearchParams(window.location.search);
+    const highlight = params.get('highlight');
+    if (!highlight) return;
+
+    /* Lọc tên phòng từ URL (không phân biệt hoa/thường) */
+    const targetName = highlight.trim().toLowerCase();
+
+    /* Sau khi rooms được fetch và render, tìm card tương ứng.
+       fetchRooms() là async nên dùng polling đơn giản. */
+    const MAX_WAIT = 5000; // 5 giây timeout
+    const INTERVAL = 150; // kiểm tra mỗi 150ms
+    let elapsed = 0;
+
+    const timer = setInterval(() => {
+        elapsed += INTERVAL;
+
+        /* Tìm card trong DOM đang hiển thị */
+        const cards = document.querySelectorAll('#roomsGrid .room-card');
+        if (cards.length === 0) {
+            if (elapsed >= MAX_WAIT) clearInterval(timer);
+            return;
+        }
+
+        /* Tìm card khớp với tên phòng từ URL */
+        let matchCard = null;
+        cards.forEach(card => {
+            const nameEl = card.querySelector('.room-name');
+            const name   = (nameEl?.textContent || '').toLowerCase();
+            if (name.includes(targetName) || targetName.includes(name)) {
+                matchCard = card;
+            }
+        });
+
+        /* Nếu chưa tìm thấy trong trang hiện tại, tìm trong allRooms
+           và chuyển đến đúng trang */
+        if (!matchCard) {
+            const roomIdx = filtered.findIndex(r => {
+                const n = (r.roomName || r.roomType || '').toLowerCase();
+                return n.includes(targetName) || targetName.includes(n);
+            });
+            if (roomIdx >= 0) {
+                const targetPage = Math.floor(roomIdx / PAGE_SIZE);
+                if (targetPage !== currentPage) {
+                    currentPage = targetPage;
+                    renderRooms();
+                    clearInterval(timer);
+                    /* Chiamata ricorsiva dopo re-render */
+                    setTimeout(() => highlightCardByName(targetName), 200);
+                    return;
+                }
+            }
+            if (elapsed >= MAX_WAIT) clearInterval(timer);
+            return;
+        }
+
+        clearInterval(timer);
+        highlightCardByName(targetName);
+
+    }, INTERVAL);
+}
+
+function highlightCardByName(targetName) {
+    const cards = document.querySelectorAll('#roomsGrid .room-card');
+    let matchCard = null;
+
+    cards.forEach(card => {
+        const nameEl = card.querySelector('.room-name');
+        const name   = (nameEl?.textContent || '').toLowerCase();
+        if (name.includes(targetName) || targetName.includes(name)) {
+            matchCard = card;
+        }
+    });
+
+    if (!matchCard) return;
+
+    /* Scroll đến card với offset phù hợp */
+    const offset = matchCard.getBoundingClientRect().top + window.scrollY - 100;
+    window.scrollTo({ top: offset, behavior: 'smooth' });
+
+    /* Thêm class highlight để bật animation */
+    matchCard.classList.add('room-card--highlight');
+    setTimeout(() => matchCard.classList.remove('room-card--highlight'), 3000);
 }

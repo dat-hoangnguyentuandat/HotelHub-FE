@@ -1,0 +1,406 @@
+/* ==========================================================
+   special-request-widget.css – HotelHub
+   Nút chat nổi + form gửi yêu cầu đặc biệt (giao diện user)
+========================================================== */
+
+/* ── Floating Button ── */
+.sr-fab {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 1200;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #c0392b 0%, #e55200 100%);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(229, 82, 0, 0.45);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+}
+
+.sr-fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 28px rgba(229, 82, 0, 0.55);
+}
+
+.sr-fab:active {
+    transform: scale(0.96);
+}
+
+.sr-fab svg {
+    width: 26px;
+    height: 26px;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+/* Icon close khi mở form */
+.sr-fab .sr-fab-icon-close {
+    display: none;
+}
+
+.sr-fab.open .sr-fab-icon-open {
+    display: none;
+}
+
+.sr-fab.open .sr-fab-icon-close {
+    display: block;
+}
+
+/* Pulse animation khi chưa ai nhấn */
+.sr-fab::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(229, 82, 0, 0.35);
+    animation: sr-pulse 2.4s ease-out infinite;
+}
+
+.sr-fab.open::after {
+    animation: none;
+    display: none;
+}
+
+@keyframes sr-pulse {
+    0%   { transform: scale(1);   opacity: 0.7; }
+    70%  { transform: scale(1.55); opacity: 0;  }
+    100% { transform: scale(1.55); opacity: 0;  }
+}
+
+/* Tooltip label */
+.sr-fab-tooltip {
+    position: absolute;
+    right: 64px;
+    white-space: nowrap;
+    background: #1a0f0a;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateX(8px);
+    transition: opacity 0.18s, transform 0.18s;
+}
+
+.sr-fab:hover .sr-fab-tooltip {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ── Popup Panel ── */
+.sr-panel {
+    position: fixed;
+    bottom: 96px;
+    right: 28px;
+    z-index: 1199;
+    width: 360px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(26, 15, 10, 0.18);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    animation: sr-slide-up 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    font-family: 'Inter', 'Manrope', sans-serif;
+}
+
+.sr-panel.open {
+    display: flex;
+}
+
+@keyframes sr-slide-up {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* Panel header */
+.sr-panel-header {
+    background: linear-gradient(135deg, #c0392b 0%, #e55200 100%);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #fff;
+}
+
+.sr-panel-header-icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.sr-panel-header-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.sr-panel-header-text h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+.sr-panel-header-text p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    opacity: 0.85;
+}
+
+/* Panel body */
+.sr-panel-body {
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.sr-panel-body::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sr-panel-body::-webkit-scrollbar-thumb {
+    background: #e8ddd9;
+    border-radius: 4px;
+}
+
+/* Form fields */
+.sr-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sr-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #5c3d2e;
+    letter-spacing: 0.02em;
+}
+
+.sr-label .req {
+    color: #e55200;
+    margin-left: 2px;
+}
+
+.sr-input,
+.sr-select,
+.sr-textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid #e8ddd9;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #2d1a12;
+    background: #fdf9f7;
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.sr-input:focus,
+.sr-select:focus,
+.sr-textarea:focus {
+    border-color: #e55200;
+    box-shadow: 0 0 0 3px rgba(229, 82, 0, 0.12);
+    background: #fff;
+}
+
+.sr-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%238c6e5e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 14px;
+    padding-right: 32px;
+    cursor: pointer;
+}
+
+.sr-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.sr-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* Panel footer */
+.sr-panel-footer {
+    padding: 12px 20px 16px;
+    border-top: 1px solid #f0ebe7;
+    display: flex;
+    gap: 10px;
+}
+
+.sr-btn-cancel {
+    flex: 1;
+    padding: 9px 0;
+    border: 1.5px solid #e8ddd9;
+    border-radius: 8px;
+    background: #fff;
+    color: #5c3d2e;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.16s, border-color 0.16s;
+    font-family: inherit;
+}
+
+.sr-btn-cancel:hover {
+    background: #fdf9f7;
+    border-color: #c9b5a8;
+}
+
+.sr-btn-submit {
+    flex: 2;
+    padding: 9px 0;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #c0392b 0%, #e55200 100%);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: opacity 0.18s, transform 0.15s;
+    font-family: inherit;
+    letter-spacing: 0.01em;
+}
+
+.sr-btn-submit:hover {
+    opacity: 0.9;
+}
+
+.sr-btn-submit:active {
+    transform: scale(0.97);
+}
+
+.sr-btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.sr-btn-submit svg {
+    width: 15px;
+    height: 15px;
+}
+
+/* ── Success state ── */
+.sr-success {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 24px;
+    text-align: center;
+    gap: 12px;
+}
+
+.sr-success.show {
+    display: flex;
+}
+
+.sr-success-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: sr-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.sr-success-icon svg {
+    width: 28px;
+    height: 28px;
+    color: #fff;
+}
+
+@keyframes sr-pop {
+    from { transform: scale(0); }
+    to   { transform: scale(1); }
+}
+
+.sr-success h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a0f0a;
+}
+
+.sr-success p {
+    margin: 0;
+    font-size: 13px;
+    color: #7a5c50;
+    line-height: 1.5;
+}
+
+/* ── Toast (dùng riêng cho widget) ── */
+.sr-toast {
+    position: fixed;
+    bottom: 100px;
+    right: 28px;
+    z-index: 1300;
+    padding: 11px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.25s, transform 0.25s;
+    font-family: 'Inter', sans-serif;
+    max-width: 280px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+}
+
+.sr-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.sr-toast.success { background: #27ae60; }
+.sr-toast.error   { background: #c0392b; }
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+    .sr-panel {
+        width: calc(100vw - 32px);
+        right: 16px;
+        bottom: 84px;
+    }
+
+    .sr-fab {
+        right: 16px;
+        bottom: 16px;
+    }
+
+    .sr-toast {
+        right: 16px;
+        max-width: calc(100vw - 32px);
+    }
+}

@@ -217,6 +217,17 @@
                     <label class="form-label" for="fFloor">Tầng</label>
                     <input type="number" class="form-input" id="fFloor" placeholder="VD: 3" min="1" max="50"/>
                 </div>
+
+                <div class="form-group span-2">
+                    <label class="form-label" for="fImageUrl">URL ảnh phòng</label>
+                    <input type="url" class="form-input" id="fImageUrl"
+                           placeholder="VD: https://example.com/room.jpg"
+                           oninput="previewRoomImage(this.value)" />
+                    <span class="form-hint">Dán link ảnh trực tiếp (JPG, PNG, WebP…). Để trống sẽ dùng ảnh mặc định.</span>
+                    <div class="img-preview-wrap" id="imgPreviewWrap" style="display:none">
+                        <img id="imgPreview" src="" alt="Xem trước ảnh phòng" class="img-preview" />
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -284,9 +295,9 @@
             const data = await res.json();
             // Hỗ trợ cả mảng thẳng lẫn paged { content: [...] }
             allRooms = Array.isArray(data) ? data : (data.content || []);
-        } catch {
-            // Nếu chưa có API, dùng dữ liệu demo
-            allRooms = DEMO_ROOMS;
+        } catch (err) {
+            console.error('[HotelHub] fetchRooms:', err);
+            allRooms = [];
         }
         applyFilter();
         renderStats();
@@ -315,21 +326,6 @@
             throw new Error('Không thể xoá phòng');
         }
     }
-
-    /* ═══════════════════════════════════════════════════════════
-       DEMO DATA (fallback khi chưa có API)
-    ═══════════════════════════════════════════════════════════ */
-    const DEMO_ROOMS = [
-        { id: 1, roomName: 'Phòng 101', roomType: 'Phòng Tiêu Chuẩn', description: 'Phòng cơ bản, giá rẻ', status: 'Đã Đặt',  schedule: 'Thứ 7: 8 giờ sáng – CN: 5 giờ chiều', maintenance: false, price: 200000, capacity: 2, amenities: ['WiFi','TV','Điều hòa'], floor: 1 },
-        { id: 2, roomName: 'Phòng 201', roomType: 'Phòng Vip',         description: 'Phòng cao cấp, rộng hơn, tiện nghi tốt hơn và giá cao hơn', status: 'Đang ở', schedule: 'Thứ 3: 9 giờ chiều – Thứ 5: 10 giờ tối', maintenance: false, price: 350000, capacity: 2, amenities: ['WiFi','TV','Mini bar'], floor: 2 },
-        { id: 3, roomName: 'Phòng 301', roomType: 'Phòng Deluxe',      description: 'Phòng cao cấp hơn Standard, tiện nghi tốt hơn', status: 'Trống',   schedule: '', maintenance: true,  price: 500000, capacity: 3, amenities: ['WiFi','Bồn tắm','View biển'], floor: 3 },
-        { id: 4, roomName: 'Phòng 401', roomType: 'Phòng Cao Cấp',     description: 'Phòng cao hơn Standard, tiện nghi tốt hơn', status: 'Trống',   schedule: '', maintenance: false, price: 700000, capacity: 2, amenities: ['WiFi','Spa','Butler'], floor: 4 },
-        { id: 5, roomName: 'Phòng 501', roomType: 'Phòng Double',       description: 'Phòng có 1 giường đôi, phù hợp 2 người.', status: 'Hết Phòng', schedule: '', maintenance: false, price: 1000000, capacity: 2, amenities: ['WiFi','TV'], floor: 5 },
-        { id: 6, roomName: 'Phòng 601', roomType: 'Phòng Tổng Thống',   description: 'Căn phòng sang trọng bậc nhất dành cho VIP', status: 'Trống',  schedule: '', maintenance: false, price: 2000000, capacity: 4, amenities: ['WiFi','Jacuzzi','Phòng họp','Butler'], floor: 6 },
-        { id: 7, roomName: 'Phòng 102', roomType: 'Phòng Tiêu Chuẩn', description: 'Phòng cơ bản, nhìn ra sân vườn', status: 'Trống', schedule: '', maintenance: false, price: 200000, capacity: 2, amenities: ['WiFi','TV'], floor: 1 },
-        { id: 8, roomName: 'Phòng 202', roomType: 'Phòng Vip',          description: 'Phòng Vip hướng hồ bơi', status: 'Đã Đặt', schedule: 'Thứ 6: 2 giờ chiều – CN: 12 giờ trưa', maintenance: false, price: 350000, capacity: 2, amenities: ['WiFi','TV','Mini bar','Ban công'], floor: 2 },
-        { id: 9, roomName: 'Phòng 302', roomType: 'Phòng Deluxe',      description: 'Phòng Deluxe hướng biển', status: 'Đang ở', schedule: 'Thứ 2: 3 giờ chiều – Thứ 4: 11 giờ sáng', maintenance: false, price: 500000, capacity: 3, amenities: ['WiFi','Bồn tắm','View biển','Ban công'], floor: 3 },
-    ];
 
     /* ═══════════════════════════════════════════════════════════
        FILTER & RENDER
@@ -466,6 +462,8 @@
         document.getElementById('fStatus').value      = room.status     || 'Trống';
         document.getElementById('fMaintenance').value = String(room.maintenance || false);
         document.getElementById('fFloor').value       = room.floor      || '';
+        document.getElementById('fImageUrl').value    = room.imageUrl   || '';
+        previewRoomImage(room.imageUrl || '');
         // Amenities
         document.querySelectorAll('.amenity-check input').forEach(cb => {
             cb.checked = (room.amenities || []).includes(cb.value);
@@ -481,13 +479,16 @@
     }
 
     function clearModalForm() {
-        ['fRoomName','fRoomType','fDescription','fPrice','fFloor'].forEach(id => {
+        ['fRoomName','fRoomType','fDescription','fPrice','fFloor','fImageUrl'].forEach(id => {
             document.getElementById(id).value = '';
         });
         document.getElementById('fCapacity').value    = '2';
         document.getElementById('fStatus').value      = 'Trống';
         document.getElementById('fMaintenance').value = 'false';
         document.querySelectorAll('.amenity-check input').forEach(cb => cb.checked = false);
+        /* reset preview */
+        document.getElementById('imgPreviewWrap').style.display = 'none';
+        document.getElementById('imgPreview').src = '';
         clearFormErrors();
     }
 
@@ -521,6 +522,7 @@
             status:       document.getElementById('fStatus').value,
             maintenance:  document.getElementById('fMaintenance').value === 'true',
             floor:        parseInt(document.getElementById('fFloor').value) || null,
+            imageUrl:     document.getElementById('fImageUrl').value.trim() || null,
             amenities
         };
 
@@ -552,6 +554,24 @@
         document.getElementById(inputId).classList.add('error');
         document.getElementById(errId).textContent = msg;
     }
+
+    /* ═══════════════════════════════════════════════════════════
+       IMAGE PREVIEW
+    ═══════════════════════════════════════════════════════════ */
+    function previewRoomImage(url) {
+        const wrap = document.getElementById('imgPreviewWrap');
+        const img  = document.getElementById('imgPreview');
+        if (!url || !url.trim()) {
+            wrap.style.display = 'none';
+            img.src = '';
+            return;
+        }
+        img.src = url.trim();
+        wrap.style.display = 'block';
+        img.onerror = () => { wrap.style.display = 'none'; };
+        img.onload  = () => { wrap.style.display = 'block'; };
+    }
+    window.previewRoomImage = previewRoomImage;
 
     /* ═══════════════════════════════════════════════════════════
        MODAL DELETE
