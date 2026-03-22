@@ -238,8 +238,7 @@ function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 function updatePayBtnLabel() {
     const labels = {
         card: 'Xác nhận thanh toán',
-        qr: 'Đã thanh toán QR',
-        wallet: 'Tiếp tục với ví',
+        wallet: 'Thanh toán với MoMo',
         cash: 'Xác nhận đặt phòng',
     };
     if ($('btnPayText')) $('btnPayText').textContent = labels[state.method] || 'Xác nhận thanh toán';
@@ -254,6 +253,26 @@ function initCardForm() {
     const expiryInput = $('cardExpiry');
     const cvvInput    = $('cardCvv');
     if (!numInput) return;
+
+    // ── MOCK: Tự động điền dữ liệu thẻ giả ──
+    const mockCardData = {
+        number: '4532123456789012',
+        holder: 'NGUYEN VAN A',
+        expiry: '12/28',
+        cvv: '123'
+    };
+
+    // Điền dữ liệu giả vào form
+    numInput.value = mockCardData.number.replace(/(.{4})/g,'$1 ').trim();
+    holderInput.value = mockCardData.holder;
+    expiryInput.value = mockCardData.expiry;
+    cvvInput.value = mockCardData.cvv;
+
+    // Cập nhật preview thẻ
+    if ($('cardNumberDisplay')) $('cardNumberDisplay').textContent = formatDisplay(mockCardData.number, '•••• •••• •••• ••••', 4);
+    if ($('cardHolderDisplay')) $('cardHolderDisplay').textContent = mockCardData.holder;
+    if ($('cardExpiryDisplay')) $('cardExpiryDisplay').textContent = mockCardData.expiry;
+    detectCardType(mockCardData.number);
 
     numInput.addEventListener('input', () => {
         let v = numInput.value.replace(/\D/g,'').slice(0,16);
@@ -328,20 +347,7 @@ function initCvvHelp() {
    WALLET
 ═══════════════════════════════════════ */
 function initWallet() {
-    $$('.wallet-radio').forEach(radio => {
-        radio.addEventListener('change', () => {
-            const labels = { momo: 'MoMo', zalopay: 'ZaloPay', vnpay: 'VNPay', shopee: 'ShopeePay' };
-            if ($('selectedWalletName')) $('selectedWalletName').textContent = labels[radio.value] || radio.value;
-            if ($('walletRedirectInfo')) $('walletRedirectInfo').hidden = false;
-        });
-    });
-
-    $('btnRefreshQr')?.addEventListener('click', () => {
-        const newRef = `HTH-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${String(Math.floor(Math.random()*9999)+1).padStart(4,'0')}`;
-        if ($('qrRef')) $('qrRef').textContent = newRef;
-        state.timerSec = 14 * 60 + 59;
-        showToast('Mã QR mới đã được tạo.', 'success');
-    });
+    // Ví MoMo không cần xử lý gì thêm, chỉ hiển thị thông tin
 }
 
 /* ═══════════════════════════════════════
