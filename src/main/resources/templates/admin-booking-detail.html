@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết Đặt phòng - HotelHub Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/admin-booking-detail.css}">
+</head>
+<body>
+<div class="admin-container">
+    <!-- Sidebar -->
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('bookings')}"></aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="content-header">
+            <div class="header-left">
+                <button class="btn-back" onclick="history.back()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M19 12H5M12 19l-7-7 7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Quay lại
+                </button>
+                <h1>Chi tiết Đặt phòng</h1>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state">
+            <div class="spinner"></div>
+            <p>Đang tải thông tin...</p>
+        </div>
+
+        <!-- Content -->
+        <div id="detailContent" class="detail-content" style="display: none;">
+            <!-- Booking Info Card -->
+            <div class="info-card">
+                <h2>Thông tin đặt phòng</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Mã đặt phòng:</span>
+                        <span class="value" id="bookingCode">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Trạng thái:</span>
+                        <span class="value"><span id="bookingStatus" class="status-badge">-</span></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Ngày tạo:</span>
+                        <span class="value" id="createdAt">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Loại phòng:</span>
+                        <span class="value" id="roomType">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Nhận phòng:</span>
+                        <span class="value" id="checkIn">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Trả phòng:</span>
+                        <span class="value" id="checkOut">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Số đêm:</span>
+                        <span class="value" id="nights">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Số phòng:</span>
+                        <span class="value" id="rooms">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Người lớn:</span>
+                        <span class="value" id="adults">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Trẻ em:</span>
+                        <span class="value" id="children">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guest Info Card -->
+            <div class="info-card">
+                <h2>Thông tin khách hàng</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Họ tên:</span>
+                        <span class="value" id="guestName">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Số điện thoại:</span>
+                        <span class="value" id="guestPhone">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Email:</span>
+                        <span class="value" id="guestEmail">-</span>
+                    </div>
+                </div>
+                <div class="info-item full-width" id="noteSection" style="display: none;">
+                    <span class="label">Ghi chú:</span>
+                    <span class="value" id="note">-</span>
+                </div>
+            </div>
+
+            <!-- Payment Info Card -->
+            <div class="info-card">
+                <h2>Thông tin thanh toán</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Giá mỗi đêm:</span>
+                        <span class="value" id="pricePerNight">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Tổng tiền:</span>
+                        <span class="value total-amount" id="totalAmount">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script th:inline="javascript">
+    const bookingId = /*[[${bookingId}]]*/ 0;
+</script>
+<script th:src="@{/js/admin-booking-detail.js}"></script>
+<div th:replace="~{fragments/admin-sidebar :: sidebar-script}"></div>
+</body>
+</html>

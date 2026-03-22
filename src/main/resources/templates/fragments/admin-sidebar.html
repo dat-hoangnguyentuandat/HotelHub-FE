@@ -55,6 +55,15 @@
             <span>Lịch trình</span>
         </a>
 
+        <a href="/admin/group-bookings" class="nav-item" th:classappend="${activeMenu == 'group-bookings'} ? ' active'" id="navGroupBookings">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            <span>Đặt phòng khách đoàn</span>
+        </a>
+
         <a href="/admin/rooms" class="nav-item" th:classappend="${activeMenu == 'rooms'} ? ' active'" id="navRooms">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
                 <rect x="2" y="7" width="20" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/>
@@ -63,8 +72,7 @@
             <span>Quản lý phòng</span>
         </a>
 
-        <a href="#" class="nav-item nav-item-disabled" id="navReports"
-           title="Chức năng đang phát triển" onclick="return false;">
+        <a href="/admin/reports" class="nav-item" th:classappend="${activeMenu == 'reports'} ? ' active'" id="navReports">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none">
                 <path d="M18 20H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h9l6 6v9a1 1 0 0 1-1 1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
                 <path d="M13 4v5h5M7 13h5M7 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
