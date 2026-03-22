@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Đặt phòng Khách Đoàn - HotelHub</title>
+    <link rel="stylesheet" th:href="@{/css/admin-group-bookings.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/admin-sidebar :: sidebar('group-bookings')}"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="topbar">
+                <h1 class="page-title">Quản lý Đặt phòng Khách Đoàn</h1>
+                <div class="topbar-right">
+                    <button class="btn-add" onclick="openCreateModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        Đặt phòng mới
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="check-in">Check-in hàng loạt</button>
+                <button class="tab-btn" data-tab="list">In danh sách đoàn</button>
+            </div>
+
+            <!-- Tab Content: Check-in hàng loạt -->
+            <div class="tab-content active" id="check-in-tab">
+                
+                <!-- Danh sách đoàn khách -->
+                <div class="section-header">
+                    <h2 class="section-title">Danh sách đoàn khách</h2>
+                </div>
+
+                <!-- Group Bookings Table -->
+                <div class="table-card">
+                    <table class="room-table" id="groupBookingsTable">
+                        <thead>
+                            <tr>
+                                <th>Tên đoàn</th>
+                                <th>Số lượng phòng</th>
+                                <th>Ngày đến (Check-in)</th>
+                                <th>Ngày đi (Check-out)</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="groupBookingsBody">
+                            <!-- Data loaded by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Rooms Table (shown when group selected) -->
+                <div id="roomsContainer" style="display: none; margin-top: 24px;">
+                    <div class="section-header">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h2 class="section-title">Danh sách phân phòng</h2>
+                                <p class="section-subtitle">Của <span id="selectedGroupName" style="font-weight: 600;"></span></p>
+                            </div>
+                            <button class="btn-add" onclick="openAddRoomModal()" style="height: 36px; padding: 0 16px; font-size: 13px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                </svg>
+                                Thêm phòng
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-card">
+                        <table class="room-table" id="roomsTable">
+                            <thead>
+                                <tr>
+                                    <th>Tên khách</th>
+                                    <th>Loại phòng</th>
+                                    <th>Số phòng</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="roomsBody">
+                                <!-- Data loaded by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination"></div>
+            </div>
+
+            <!-- Tab Content: In danh sách đoàn -->
+            <div class="tab-content" id="list-tab">
+                <div class="print-section">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" />
+                    </svg>
+                    <p>Chức năng in danh sách đoàn</p>
+                    <span>Sẽ được phát triển sau</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Group Booking Modal -->
+    <div id="groupBookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeGroupBookingModal()">&times;</span>
+            <h2 id="modalTitle">Tạo đặt phòng đoàn mới</h2>
+            <form id="groupBookingForm">
+                <input type="hidden" id="groupBookingId">
+                
+                <div class="form-group">
+                    <label>Tên đoàn <span class="required">*</span></label>
+                    <input type="text" id="groupName" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Người liên hệ <span class="required">*</span></label>
+                        <input type="text" id="contactPerson" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại <span class="required">*</span></label>
+                        <input type="tel" id="contactPhone" pattern="^0\d{9}$" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="contactEmail">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Số lượng phòng <span class="required">*</span></label>
+                        <input type="number" id="totalRooms" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày check-in <span class="required">*</span></label>
+                        <input type="date" id="checkIn" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày check-out <span class="required">*</span></label>
+                        <input type="date" id="checkOut" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ghi chú</label>
+                    <textarea id="note" rows="3"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeGroupBookingModal()">Hủy</button>
+                    <button type="submit" class="btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Room Modal -->
+    <div id="roomModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRoomModal()">&times;</span>
+            <h2 id="roomModalTitle">Thêm phòng mới</h2>
+            <form id="roomForm">
+                <input type="hidden" id="roomId">
+                
+                <div class="form-group">
+                    <label>Tên khách <span class="required">*</span></label>
+                    <input type="text" id="guestName" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Loại phòng <span class="required">*</span></label>
+                        <select id="roomType" required>
+                            <option value="">-- Chọn loại phòng --</option>
+                            <option value="Deluxe">Deluxe</option>
+                            <option value="Superior">Superior</option>
+                            <option value="Suite">Suite</option>
+                            <option value="Standard">Standard</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Số phòng</label>
+                        <input type="text" id="roomNumber" placeholder="VD: 101">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Giá <span class="required">*</span></label>
+                        <input type="number" id="roomPrice" min="0" step="1000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Trạng thái <span class="required">*</span></label>
+                        <select id="roomStatus" required>
+                            <option value="PENDING">Chờ xác nhận</option>
+                            <option value="CONFIRMED">Đã xác nhận</option>
+                            <option value="CHECKED_IN">Đã check-in</option>
+                            <option value="COMPLETED">Hoàn thành</option>
+                            <option value="CANCELLED">Đã hủy</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ghi chú</label>
+                    <textarea id="roomNote" rows="3"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeRoomModal()">Hủy</button>
+                    <button type="submit" class="btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const backendUrl = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+    </script>
+    <script th:src="@{/js/admin-group-bookings.js}"></script>
+    <div th:replace="~{fragments/admin-sidebar :: sidebar-script}"></div>
+</body>
+</html>

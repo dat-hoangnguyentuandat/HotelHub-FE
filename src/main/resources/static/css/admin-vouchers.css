@@ -1,11 +1,18 @@
 /* ===== RESET ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html {
+    font-size: 16px;
+}
+
 body {
     font-family: 'Manrope', 'Inter', sans-serif;
     background: #f5f2f0;
     color: #17120f;
     min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* ═══════════════════════════════════════
@@ -44,11 +51,19 @@ body {
 /* ═══════════════════════════════════════
    MAIN CONTENT
 ═══════════════════════════════════════ */
-.main-content { flex: 1; padding: 28px 32px; overflow-y: auto; min-width: 0; }
+.main-content { 
+    flex: 1; 
+    padding: 28px 32px 48px; 
+    overflow-y: auto; 
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 
 /* TOPBAR */
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
-.page-title { font-family: 'Manrope', sans-serif; font-size: 22px; font-weight: 700; color: #17120f; }
+.page-title { font-family: 'Manrope', sans-serif; font-size: 24px; font-weight: 700; color: #17120f; }
 .topbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .search-box { position: relative; display: flex; align-items: center; }
 .search-icon { position: absolute; left: 10px; width: 16px; height: 16px; pointer-events: none; }
