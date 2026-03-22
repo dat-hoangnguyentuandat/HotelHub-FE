@@ -222,7 +222,7 @@ function initFilter() {
 }
 
 /* ─────────────────────────────────────────
-   MODAL ĐỔI ĐIỂM
+   MODAL ĐỔI ĐIỂM LẤY VOUCHER
 ───────────────────────────────────────── */
 function initRedeemModal() {
     // Nút "Đổi điểm" trên Hero Section
@@ -230,18 +230,42 @@ function initRedeemModal() {
         btn.addEventListener('click', openRedeemModal);
     });
 
-    // Nút submit trong modal
-    const submitBtn = document.getElementById('btnConfirmRedeem');
-    if (submitBtn) submitBtn.addEventListener('click', handleRedeem);
-
-    // Đóng modal
+    // Đóng modal chính
     document.getElementById('btnCloseRedeemModal')
         ?.addEventListener('click', closeRedeemModal);
+
+    // Đóng modal xác nhận
+    document.getElementById('btnCancelConfirmRedeem')
+        ?.addEventListener('click', closeConfirmModal);
+
+    // Xác nhận đổi
+    document.getElementById('btnDoRedeem')
+        ?.addEventListener('click', handleRedeemVoucher);
+
+    // Xem voucher đã đổi
+    document.getElementById('btnViewMyVouchers')
+        ?.addEventListener('click', openMyVouchersModal);
+
+    // Đóng modal voucher đã đổi
+    document.getElementById('btnCloseMyVouchers')
+        ?.addEventListener('click', closeMyVouchersModal);
 }
 
-function openRedeemModal() {
+let selectedVoucherId = null;
+let selectedVoucherPoints = 0;
+let selectedVoucherName = '';
+
+async function openRedeemModal() {
     const modal = document.getElementById('redeemModal');
-    if (modal) modal.style.display = 'flex';
+    if (!modal) return;
+    modal.style.display = 'flex';
+
+    // Cập nhật điểm hiện tại
+    const pts = currentAccount ? currentAccount.currentPoints : 0;
+    const ptEl = document.getElementById('redeemModalPoints');
+    if (ptEl) ptEl.textContent = pts.toLocaleString('vi-VN');
+
+    await loadVoucherList(pts);
 }
 
 function closeRedeemModal() {
@@ -249,37 +273,236 @@ function closeRedeemModal() {
     if (modal) modal.style.display = 'none';
 }
 
-async function handleRedeem() {
-    const pointsInput = document.getElementById('redeemPoints');
-    const descInput   = document.getElementById('redeemDesc');
-    if (!pointsInput || !descInput) return;
+async function loadVoucherList(myPoints) {
+    const area = document.getElementById('voucherListArea');
+    const loading = document.getElementById('voucherLoadingState');
+    if (!area) return;
 
-    const points = parseInt(pointsInput.value, 10);
-    const desc   = descInput.value.trim();
-
-    if (!points || points <= 0) { alert('Vui lòng nhập số điểm hợp lệ'); return; }
-    if (!desc)                  { alert('Vui lòng nhập mô tả');          return; }
-    if (currentAccount && points > currentAccount.currentPoints) {
-        alert(`Bạn chỉ có ${currentAccount.currentPoints} điểm`); return;
-    }
+    loading.style.display = 'block';
 
     try {
-        currentAccount = await apiFetch('/api/loyalty/me/redeem', {
-            method: 'POST',
-            body: JSON.stringify({ points, description: desc }),
+        const vouchers = await fetch(`${API_BASE}/api/vouchers`)
+            .then(r => r.json());
+
+        loading.style.display = 'none';
+
+        // Xóa các voucher card cũ (giữ loading div)
+        Array.from(area.children).forEach(el => {
+            if (el.id !== 'voucherLoadingState') el.remove();
         });
-        renderHeroSection(currentAccount);
-        closeRedeemModal();
-        await loadTransactionHistory(true);
-        showToast('Đổi điểm thành công!');
+
+        if (!vouchers || vouchers.length === 0) {
+            area.insertAdjacentHTML('beforeend', `
+                <div style="text-align:center; padding:32px; color:#8c7b72;">
+                    <div style="font-size:32px; margin-bottom:8px;">🎫</div>
+                    <p>Hiện chưa có voucher nào để đổi.<br>Vui lòng quay lại sau!</p>
+                </div>
+            `);
+            return;
+        }
+
+        vouchers.forEach(v => {
+            const canRedeem = v.available && myPoints >= v.pointsRequired;
+            const limitText = v.maxRedemptions != null
+                ? `${v.redeemedCount}/${v.maxRedemptions} lượt`
+                : 'Không giới hạn';
+            const notEnough = !canRedeem && myPoints < v.pointsRequired;
+
+            area.insertAdjacentHTML('beforeend', `
+                <div style="border:1.5px solid ${canRedeem ? '#e0dad4' : '#f0ebe7'};
+                     border-radius:14px; padding:16px; background:${canRedeem ? '#fff' : '#fdfaf8'};
+                     display:flex; flex-direction:column; gap:8px; opacity:${canRedeem ? '1' : '0.65'};">
+
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                        <div style="flex:1;">
+                            <p style="font-family:'Manrope',sans-serif; font-size:15px; font-weight:700;
+                                       color:#17120f; margin:0 0 4px;">${escapeHtml(v.name)}</p>
+                            ${v.description
+                                ? `<p style="font-size:13px; color:#8c7b72; margin:0;">${escapeHtml(v.description)}</p>`
+                                : ''}
+                        </div>
+                        <span style="background:#fef3e2; color:#c17c5a; font-size:12px; font-weight:700;
+                               padding:4px 10px; border-radius:20px; white-space:nowrap; flex-shrink:0;">
+                            🎫 ${escapeHtml(v.category)}
+                        </span>
+                    </div>
+
+                    <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+                        <span style="font-size:14px; color:#16a34a; font-weight:600;">
+                            Trị giá: ${Number(v.value).toLocaleString('vi-VN')}đ
+                        </span>
+                        <span style="font-size:13px; color:#5a4540;">
+                            Lượt đổi: ${limitText}
+                        </span>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                        <span style="font-size:13px; font-weight:700; color:#c17c5a;">
+                            🎯 ${v.pointsRequired} điểm
+                        </span>
+                        ${canRedeem
+                            ? `<button
+                                onclick="selectVoucher(${v.id}, ${v.pointsRequired}, '${escapeHtml(v.name)}')"
+                                style="height:36px; padding:0 18px; background:#c17c5a; color:#fff;
+                                       border:none; border-radius:10px; font-size:13px; font-weight:700;
+                                       cursor:pointer; font-family:'Manrope',sans-serif; transition:background .15s;"
+                                onmouseover="this.style.background='#a5643f'"
+                                onmouseout="this.style.background='#c17c5a'">
+                                Đổi ngay
+                               </button>`
+                            : `<span style="font-size:12px; color:#b94040; font-weight:500;">
+                                ${notEnough
+                                    ? '⚠ Không đủ điểm'
+                                    : (v.available ? '' : '⚠ Hết lượt')
+                                }
+                               </span>`
+                        }
+                    </div>
+                </div>
+            `);
+        });
+
     } catch (e) {
-        alert('Lỗi đổi điểm: ' + e.message);
+        loading.style.display = 'none';
+        console.error('Lỗi tải voucher:', e);
+        area.insertAdjacentHTML('beforeend', `
+            <p style="text-align:center; color:#b94040; padding:20px;">Không thể tải danh sách voucher.</p>
+        `);
     }
+}
+
+function selectVoucher(id, points, name) {
+    selectedVoucherId = id;
+    selectedVoucherPoints = points;
+    selectedVoucherName = name;
+
+    const textEl = document.getElementById('confirmRedeemText');
+    if (textEl) {
+        textEl.innerHTML = `Bạn muốn dùng <strong style="color:#c17c5a;">${points} điểm</strong>
+            để đổi lấy voucher <strong>"${escapeHtml(name)}"</strong>?`;
+    }
+
+    const confirmModal = document.getElementById('confirmRedeemModal');
+    if (confirmModal) confirmModal.style.display = 'flex';
+}
+
+function closeConfirmModal() {
+    const m = document.getElementById('confirmRedeemModal');
+    if (m) m.style.display = 'none';
+    selectedVoucherId = null;
+}
+
+async function handleRedeemVoucher() {
+    if (!selectedVoucherId) return;
+
+    const btn = document.getElementById('btnDoRedeem');
+    if (btn) { btn.disabled = true; btn.textContent = 'Đang xử lý...'; }
+
+    try {
+        const result = await apiFetch('/api/vouchers/redeem', {
+            method: 'POST',
+            body: JSON.stringify({ voucherId: selectedVoucherId }),
+        });
+
+        closeConfirmModal();
+        closeRedeemModal();
+
+        // Reload tài khoản để cập nhật điểm
+        await loadMyAccount();
+
+        // Hiển thị thông báo thành công + mã voucher
+        showLcToast(`🎉 Đổi thành công! Mã voucher của bạn: ${result.redeemedCode}`, 'success', 6000);
+
+    } catch (e) {
+        showLcToast('Lỗi: ' + e.message, 'error');
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Xác nhận đổi'; }
+    }
+}
+
+/* ─────────────────────────────────────────
+   MODAL VOUCHER ĐÃ ĐỔI
+───────────────────────────────────────── */
+async function openMyVouchersModal() {
+    const modal = document.getElementById('myVouchersModal');
+    if (modal) modal.style.display = 'flex';
+
+    const content = document.getElementById('myVouchersContent');
+    content.innerHTML = '<p style="text-align:center; color:#8c7b72; padding:24px;">Đang tải...</p>';
+
+    try {
+        const data = await apiFetch('/api/vouchers/my?page=0&size=20');
+        const list = data.content || [];
+
+        if (list.length === 0) {
+            content.innerHTML = `
+                <div style="text-align:center; padding:32px; color:#8c7b72;">
+                    <div style="font-size:32px; margin-bottom:8px;">🎫</div>
+                    <p>Bạn chưa đổi voucher nào.</p>
+                </div>`;
+            return;
+        }
+
+        content.innerHTML = list.map(uv => `
+            <div style="border:1.5px solid #f0ebe7; border-radius:12px; padding:14px 16px;
+                         display:flex; flex-direction:column; gap:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="font-size:14px; color:#17120f;">${escapeHtml(uv.voucherName)}</strong>
+                    <span style="font-size:12px; padding:3px 8px; border-radius:20px; font-weight:600;
+                           background:${uv.status === 'ACTIVE' ? '#dcfce7' : '#f3f4f6'};
+                           color:${uv.status === 'ACTIVE' ? '#16a34a' : '#6b7280'};">
+                        ${uv.status === 'ACTIVE' ? '✓ Còn dùng được' : uv.status === 'USED' ? 'Đã dùng' : 'Hết hạn'}
+                    </span>
+                </div>
+                <p style="font-size:13px; color:#8c7b72; margin:0;">
+                    Trị giá: <strong style="color:#16a34a;">${Number(uv.voucherValue).toLocaleString('vi-VN')}đ</strong>
+                    · Đã đổi: ${uv.pointsSpent} điểm
+                </p>
+                <div style="background:#f5f2f0; border-radius:8px; padding:8px 12px;
+                             display:flex; align-items:center; justify-content:space-between;">
+                    <span style="font-family:monospace; font-size:14px; font-weight:700;
+                           color:#5a4540; letter-spacing:.05em;">${escapeHtml(uv.redeemedCode)}</span>
+                    <button onclick="copyCode('${escapeHtml(uv.redeemedCode)}')"
+                        style="border:none; background:none; cursor:pointer; font-size:12px;
+                               color:#c17c5a; font-weight:600;">📋 Sao chép</button>
+                </div>
+                <p style="font-size:12px; color:#b5a9a2; margin:0;">
+                    Đổi ngày ${new Date(uv.redeemedAt).toLocaleDateString('vi-VN')}
+                </p>
+            </div>
+        `).join('');
+
+    } catch (e) {
+        content.innerHTML = `<p style="text-align:center; color:#b94040; padding:20px;">Lỗi tải dữ liệu: ${escapeHtml(e.message)}</p>`;
+    }
+}
+
+function closeMyVouchersModal() {
+    const m = document.getElementById('myVouchersModal');
+    if (m) m.style.display = 'none';
+}
+
+function copyCode(code) {
+    navigator.clipboard.writeText(code).then(() => {
+        showLcToast('Đã sao chép mã: ' + code, 'success');
+    }).catch(() => {
+        showLcToast('Không thể sao chép. Mã: ' + code, 'error');
+    });
 }
 
 /* ─────────────────────────────────────────
    TOAST NOTIFICATION
 ───────────────────────────────────────── */
+function showLcToast(message, type = 'success', duration = 4000) {
+    const t = document.getElementById('lcToast');
+    if (!t) return showToast(message);
+    t.textContent = message;
+    t.style.background = type === 'success' ? '#16a34a' : '#b94040';
+    t.style.display = 'block';
+    clearTimeout(t._tid);
+    t._tid = setTimeout(() => { t.style.display = 'none'; }, duration);
+}
+
 function showToast(message) {
     const existing = document.getElementById('toastMsg');
     if (existing) existing.remove();
@@ -291,7 +514,6 @@ function showToast(message) {
         background:#17120f; color:#fff; padding:14px 24px;
         border-radius:12px; font-size:14px; font-weight:500;
         box-shadow:0 8px 32px rgba(0,0,0,.25);
-        animation: fadeInUp .3s ease;
     `;
     toast.textContent = message;
     document.body.appendChild(toast);
