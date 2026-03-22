@@ -113,6 +113,12 @@ public class AuthController {
         return "services";
     }
 
+    @GetMapping("/reviews")
+    public String reviews(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "reviews";
+    }
+
     @GetMapping("/admin/admin-reviews")
     public String adminreviews(Model model) {
         model.addAttribute("backendUrl", backendUrl);
