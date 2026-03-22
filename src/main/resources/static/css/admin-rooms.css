@@ -1,11 +1,18 @@
 /* ===== RESET ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html {
+    font-size: 16px;
+}
+
 body {
     font-family: 'Manrope', 'Inter', sans-serif;
     background: #f5f2f0;
     color: #17120f;
     min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* ═══════════════════════════════════════

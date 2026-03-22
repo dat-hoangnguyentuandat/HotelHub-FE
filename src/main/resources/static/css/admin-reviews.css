@@ -1,12 +1,19 @@
 /* ===== RESET ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html {
+    font-size: 16px;
+}
+
 /* ===== BASE ===== */
 body {
-    font-family: 'Inter', 'Manrope', sans-serif;
+    font-family: 'Manrope', 'Inter', sans-serif;
     background: #f5f2f0;
     color: #17120f;
     min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* ═══════════════════════════════════════
@@ -128,27 +135,41 @@ body {
 .main-content {
     flex: 1;
     min-width: 0;
+    padding: 28px 32px 48px;
     display: flex;
     flex-direction: column;
+    gap: 20px;
     overflow-y: auto;
 }
 
-/* ── Page Header ── */
-.page-header {
+/* ── Topbar ── */
+.topbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 24px 28px 12px;
+    padding: 0 0 12px;
     gap: 16px;
+    flex-wrap: wrap;
+}
+
+.topbar-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .page-title {
     font-family: 'Manrope', sans-serif;
-    font-size: 28px;
-    font-weight: 800;
+    font-size: 24px;
+    font-weight: 700;
     color: #17120f;
     line-height: 1.25;
-    letter-spacing: -0.5px;
 }
 
 .page-subtitle {
@@ -1339,7 +1360,7 @@ body {
     }
     .sidebar-profile { display: none; }
     .sidebar-nav { flex-direction: row; flex-wrap: wrap; gap: 4px; }
-    .page-header { padding: 16px 16px 8px; flex-wrap: wrap; }
+    .topbar { padding: 0; flex-wrap: wrap; }
     .section { padding: 0 16px 16px; }
     .overview-score-card { flex-direction: column; }
     .score-main { border-right: none; border-bottom: 1px solid #f0ebe7; padding-bottom: 16px; }
