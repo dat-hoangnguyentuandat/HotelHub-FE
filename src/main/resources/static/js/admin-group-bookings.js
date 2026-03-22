@@ -363,7 +363,7 @@ async function editRoom(roomId) {
         document.getElementById('roomStatus').value = room.status;
         document.getElementById('roomNote').value = room.note || '';
         
-        document.getElementById('roomModal').style.display = 'block';
+        document.getElementById('roomModal').style.display = 'flex';
     } catch (error) {
         console.error('Error loading room:', error);
         alert('Lỗi khi tải thông tin phòng');
@@ -386,9 +386,15 @@ function getRoomStatusText(status) {
 
 // Close modal when clicking outside
 window.onclick = function(event) {
-    const modal = document.getElementById('groupBookingModal');
-    if (event.target === modal) {
+    const groupModal = document.getElementById('groupBookingModal');
+    const roomModal = document.getElementById('roomModal');
+    
+    if (event.target === groupModal) {
         closeGroupBookingModal();
+    }
+    
+    if (event.target === roomModal) {
+        closeRoomModal();
     }
 }
 
@@ -403,7 +409,7 @@ function openAddRoomModal() {
     document.getElementById('roomModalTitle').textContent = 'Thêm phòng mới';
     document.getElementById('roomForm').reset();
     document.getElementById('roomId').value = '';
-    document.getElementById('roomModal').style.display = 'block';
+    document.getElementById('roomModal').style.display = 'flex';
 }
 
 function closeRoomModal() {

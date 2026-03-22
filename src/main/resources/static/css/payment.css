@@ -506,6 +506,42 @@ body {
     margin-bottom: 18px;
 }
 
+/* MoMo Wallet Container */
+.wallet-momo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 32px 24px;
+}
+
+.momo-logo-large {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 16px;
+}
+
+.momo-features {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.momo-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #166534;
+    text-align: left;
+}
+
 .wallet-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

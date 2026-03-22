@@ -48,6 +48,21 @@
 
 <!-- ===== MAIN CONTENT ===== -->
 <main class="payment-main">
+    <!-- Mock Mode Banner -->
+    <div style="background: #fff7ed; border: 1px solid #fb923c; border-radius: 8px; padding: 12px 16px; margin: 0 auto 20px; max-width: 1200px; display: flex; align-items: center; gap: 12px;">
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; flex-shrink: 0;">
+            <circle cx="10" cy="10" r="8" stroke="#fb923c" stroke-width="1.5"/>
+            <path d="M10 6v5M10 13v1" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span style="color: #9a3412; font-size: 14px; line-height: 1.5;">
+            <strong>Chế độ Demo:</strong> Thẻ ngân hàng đã được điền sẵn dữ liệu giả. 
+            Mã khuyến mãi hợp lệ: <code style="background: #fed7aa; padding: 2px 6px; border-radius: 4px; font-family: monospace;">SUMMER2026</code>, 
+            <code style="background: #fed7aa; padding: 2px 6px; border-radius: 4px; font-family: monospace;">WELCOME10</code>, 
+            <code style="background: #fed7aa; padding: 2px 6px; border-radius: 4px; font-family: monospace;">VIP200K</code>, 
+            <code style="background: #fed7aa; padding: 2px 6px; border-radius: 4px; font-family: monospace;">FLASH50K</code>
+        </span>
+    </div>
+    
     <div class="payment-grid">
 
         <!-- ===== LEFT: PAYMENT FORM ===== -->
@@ -74,22 +89,13 @@
                     </svg>
                     Thẻ ngân hàng
                 </button>
-                <button class="method-tab" data-method="qr" role="tab" aria-selected="false">
-                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="2" y="2" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
-                        <rect x="12" y="2" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
-                        <rect x="2" y="12" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
-                        <path d="M13 13h1m2 0h1m-3 2h1m2-2v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                    </svg>
-                    Quét QR
-                </button>
                 <button class="method-tab" data-method="wallet" role="tab" aria-selected="false">
                     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect x="2" y="5" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
                         <path d="M2 9h16" stroke="currentColor" stroke-width="1.5"/>
                         <circle cx="15" cy="13" r="1.5" fill="currentColor"/>
                     </svg>
-                    Ví điện tử
+                    Ví MoMo
                 </button>
                 <button class="method-tab" data-method="cash" role="tab" aria-selected="false">
                     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -224,157 +230,42 @@
                 </form>
             </div>
 
-            <!-- ══ PANEL: QR CODE ══ -->
-            <div class="method-panel" id="panelQr">
-                <div class="qr-instructions">
-                    <p>Sử dụng ứng dụng ngân hàng hoặc ví điện tử để quét mã QR bên dưới.</p>
-                </div>
-                <div class="qr-container">
-                    <div class="qr-box">
-                        <!-- Placeholder QR pattern -->
-                        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="qr-svg">
-                            <rect width="200" height="200" fill="white"/>
-                            <!-- Corner squares -->
-                            <rect x="10" y="10" width="60" height="60" rx="4" fill="#171212"/>
-                            <rect x="18" y="18" width="44" height="44" rx="2" fill="white"/>
-                            <rect x="26" y="26" width="28" height="28" rx="1" fill="#171212"/>
-                            <rect x="130" y="10" width="60" height="60" rx="4" fill="#171212"/>
-                            <rect x="138" y="18" width="44" height="44" rx="2" fill="white"/>
-                            <rect x="146" y="26" width="28" height="28" rx="1" fill="#171212"/>
-                            <rect x="10" y="130" width="60" height="60" rx="4" fill="#171212"/>
-                            <rect x="18" y="138" width="44" height="44" rx="2" fill="white"/>
-                            <rect x="26" y="146" width="28" height="28" rx="1" fill="#171212"/>
-                            <!-- Data dots pattern -->
-                            <rect x="80" y="10" width="8" height="8" fill="#171212"/>
-                            <rect x="92" y="10" width="8" height="8" fill="#171212"/>
-                            <rect x="104" y="10" width="8" height="8" fill="#171212"/>
-                            <rect x="116" y="10" width="8" height="8" fill="#171212"/>
-                            <rect x="80" y="22" width="8" height="8" fill="#171212"/>
-                            <rect x="104" y="22" width="8" height="8" fill="#171212"/>
-                            <rect x="80" y="34" width="8" height="8" fill="#171212"/>
-                            <rect x="92" y="34" width="8" height="8" fill="#171212"/>
-                            <rect x="116" y="34" width="8" height="8" fill="#171212"/>
-                            <rect x="80" y="46" width="8" height="8" fill="#171212"/>
-                            <rect x="104" y="46" width="8" height="8" fill="#171212"/>
-                            <rect x="80" y="58" width="8" height="8" fill="#171212"/>
-                            <rect x="92" y="58" width="8" height="8" fill="#171212"/>
-                            <rect x="104" y="58" width="8" height="8" fill="#171212"/>
-                            <rect x="10" y="80" width="8" height="8" fill="#171212"/>
-                            <rect x="22" y="80" width="8" height="8" fill="#171212"/>
-                            <rect x="46" y="80" width="8" height="8" fill="#171212"/>
-                            <rect x="58" y="80" width="8" height="8" fill="#171212"/>
-                            <rect x="80" y="80" width="8" height="8" fill="#171212"/>
-                            <rect x="104" y="80" width="8" height="8" fill="#171212"/>
-                            <rect x="128" y="80" width="8" height="8" fill="#171212"/>
-                            <rect x="140" y="80" width="8" height="8" fill="#171212"/>
-                            <rect x="164" y="80" width="8" height="8" fill="#171212"/>
-                            <rect x="176" y="80" width="8" height="8" fill="#171212"/>
-                            <rect x="10" y="92" width="8" height="8" fill="#171212"/>
-                            <rect x="34" y="92" width="8" height="8" fill="#171212"/>
-                            <rect x="58" y="92" width="8" height="8" fill="#171212"/>
-                            <rect x="92" y="92" width="8" height="8" fill="#171212"/>
-                            <rect x="116" y="92" width="8" height="8" fill="#171212"/>
-                            <rect x="140" y="92" width="8" height="8" fill="#171212"/>
-                            <rect x="164" y="92" width="8" height="8" fill="#171212"/>
-                            <rect x="10" y="104" width="8" height="8" fill="#171212"/>
-                            <rect x="22" y="104" width="8" height="8" fill="#171212"/>
-                            <rect x="46" y="104" width="8" height="8" fill="#171212"/>
-                            <rect x="80" y="104" width="8" height="8" fill="#171212"/>
-                            <rect x="104" y="104" width="8" height="8" fill="#171212"/>
-                            <rect x="128" y="104" width="8" height="8" fill="#171212"/>
-                            <rect x="152" y="104" width="8" height="8" fill="#171212"/>
-                            <rect x="176" y="104" width="8" height="8" fill="#171212"/>
-                            <rect x="10" y="116" width="8" height="8" fill="#171212"/>
-                            <rect x="34" y="116" width="8" height="8" fill="#171212"/>
-                            <rect x="58" y="116" width="8" height="8" fill="#171212"/>
-                            <rect x="92" y="116" width="8" height="8" fill="#171212"/>
-                            <rect x="140" y="116" width="8" height="8" fill="#171212"/>
-                            <rect x="164" y="116" width="8" height="8" fill="#171212"/>
-                            <rect x="80" y="128" width="8" height="8" fill="#171212"/>
-                            <rect x="104" y="128" width="8" height="8" fill="#171212"/>
-                            <rect x="128" y="128" width="8" height="8" fill="#171212"/>
-                            <rect x="152" y="128" width="8" height="8" fill="#171212"/>
-                            <rect x="176" y="128" width="8" height="8" fill="#171212"/>
-                            <rect x="80" y="140" width="8" height="8" fill="#171212"/>
-                            <rect x="92" y="140" width="8" height="8" fill="#171212"/>
-                            <rect x="116" y="140" width="8" height="8" fill="#171212"/>
-                            <rect x="140" y="140" width="8" height="8" fill="#171212"/>
-                            <rect x="164" y="140" width="8" height="8" fill="#171212"/>
-                            <rect x="80" y="152" width="8" height="8" fill="#171212"/>
-                            <rect x="104" y="152" width="8" height="8" fill="#171212"/>
-                            <rect x="128" y="152" width="8" height="8" fill="#171212"/>
-                            <rect x="152" y="152" width="8" height="8" fill="#171212"/>
-                            <rect x="80" y="164" width="8" height="8" fill="#171212"/>
-                            <rect x="92" y="164" width="8" height="8" fill="#171212"/>
-                            <rect x="116" y="164" width="8" height="8" fill="#171212"/>
-                            <rect x="140" y="164" width="8" height="8" fill="#171212"/>
-                            <rect x="176" y="164" width="8" height="8" fill="#171212"/>
-                            <rect x="80" y="176" width="8" height="8" fill="#171212"/>
-                            <rect x="104" y="176" width="8" height="8" fill="#171212"/>
-                            <rect x="128" y="176" width="8" height="8" fill="#171212"/>
-                            <rect x="164" y="176" width="8" height="8" fill="#171212"/>
-                        </svg>
-                        <div class="qr-logo-center">
-                            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-                                <path d="M2 14V6L8 2L14 6V14H10V10H6V14H2Z" fill="#e55200"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="qr-info">
-                        <p class="qr-amount">Số tiền: <strong id="qrAmount">0 ₫</strong></p>
-                        <p class="qr-ref">Mã giao dịch: <strong id="qrRef">HTH-20260319-0001</strong></p>
-                        <p class="qr-expire">Mã QR hết hạn: <strong id="qrExpire">14:59</strong></p>
-                    </div>
-                    <button class="btn-outline" id="btnRefreshQr">
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 10a6 6 0 0 1 10.97-3M4.5 6.5H3.5a.5.5 0 0 0-.5.5v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                            <path d="M16 10a6 6 0 0 1-10.97 3M15.5 13.5h1a.5.5 0 0 0 .5-.5v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                        </svg>
-                        Làm mới mã QR
-                    </button>
-                </div>
-            </div>
-
-            <!-- ══ PANEL: VÍ ĐIỆN TỬ ══ -->
+            <!-- ══ PANEL: VÍ MOMO ══ -->
             <div class="method-panel" id="panelWallet">
-                <p class="wallet-intro">Chọn ví điện tử để thanh toán nhanh chóng:</p>
-                <div class="wallet-grid">
-                    <label class="wallet-option" data-wallet="momo">
-                        <input type="radio" name="wallet" value="momo" class="wallet-radio" />
-                        <div class="wallet-card">
-                            <div class="wallet-icon momo">M</div>
-                            <span class="wallet-name">MoMo</span>
+                <div class="wallet-momo-container">
+                    <div class="momo-logo-large">
+                        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="48" fill="#a50064"/>
+                            <text x="50" y="70" font-family="Inter, sans-serif" font-size="48" font-weight="700" fill="white" text-anchor="middle">M</text>
+                        </svg>
+                    </div>
+                    <h3 style="font-size: 20px; font-weight: 600; color: #17120f; margin: 16px 0 8px;">Thanh toán qua Ví MoMo</h3>
+                    <p style="color: #8c6e5e; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+                        Bạn sẽ được chuyển đến ứng dụng MoMo để hoàn tất thanh toán một cách nhanh chóng và bảo mật.
+                    </p>
+                    <div class="momo-features">
+                        <div class="momo-feature-item">
+                            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; flex-shrink: 0;">
+                                <circle cx="10" cy="10" r="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+                                <path d="M6.5 10l2.5 2.5 4.5-5" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Thanh toán trong 30 giây</span>
                         </div>
-                    </label>
-                    <label class="wallet-option" data-wallet="zalopay">
-                        <input type="radio" name="wallet" value="zalopay" class="wallet-radio" />
-                        <div class="wallet-card">
-                            <div class="wallet-icon zalopay">Z</div>
-                            <span class="wallet-name">ZaloPay</span>
+                        <div class="momo-feature-item">
+                            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; flex-shrink: 0;">
+                                <circle cx="10" cy="10" r="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+                                <path d="M6.5 10l2.5 2.5 4.5-5" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Bảo mật tuyệt đối</span>
                         </div>
-                    </label>
-                    <label class="wallet-option" data-wallet="vnpay">
-                        <input type="radio" name="wallet" value="vnpay" class="wallet-radio" />
-                        <div class="wallet-card">
-                            <div class="wallet-icon vnpay">V</div>
-                            <span class="wallet-name">VNPay</span>
+                        <div class="momo-feature-item">
+                            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 20px; height: 20px; flex-shrink: 0;">
+                                <circle cx="10" cy="10" r="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+                                <path d="M6.5 10l2.5 2.5 4.5-5" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Hoàn tiền nếu có sự cố</span>
                         </div>
-                    </label>
-                    <label class="wallet-option" data-wallet="shopee">
-                        <input type="radio" name="wallet" value="shopee" class="wallet-radio" />
-                        <div class="wallet-card">
-                            <div class="wallet-icon shopee">S</div>
-                            <span class="wallet-name">ShopeePay</span>
-                        </div>
-                    </label>
-                </div>
-                <div class="wallet-redirect-info" id="walletRedirectInfo" hidden>
-                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="10" cy="10" r="7.5" stroke="#e55200" stroke-width="1.5"/>
-                        <path d="M10 9v5" stroke="#e55200" stroke-width="1.5" stroke-linecap="round"/>
-                        <circle cx="10" cy="6.5" r="0.75" fill="#e55200"/>
-                    </svg>
-                    <span>Bạn sẽ được chuyển đến ứng dụng <strong id="selectedWalletName"></strong> để hoàn tất thanh toán.</span>
+                    </div>
                 </div>
             </div>
 
