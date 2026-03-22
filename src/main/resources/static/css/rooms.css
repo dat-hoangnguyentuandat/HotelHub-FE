@@ -574,3 +574,22 @@ body {
     .footer-inner { grid-template-columns: 1fr; }
     .footer-bottom { flex-direction: column; gap: 10px; text-align: center; }
 }
+
+/* ═══════════════════════════════════════
+   HIGHLIGHT CARD (từ trang chủ chuyển đến)
+═══════════════════════════════════════ */
+@keyframes highlightPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(193, 110, 55, 0.55), 0 4px 24px rgba(0,0,0,0.10); transform: scale(1); }
+    25%  { box-shadow: 0 0 0 8px rgba(193, 110, 55, 0.25), 0 8px 32px rgba(193, 110, 55, 0.20); transform: scale(1.025); }
+    50%  { box-shadow: 0 0 0 14px rgba(193, 110, 55, 0.10), 0 8px 32px rgba(193, 110, 55, 0.15); transform: scale(1.015); }
+    75%  { box-shadow: 0 0 0 8px rgba(193, 110, 55, 0.08), 0 6px 24px rgba(193, 110, 55, 0.10); transform: scale(1.01); }
+    100% { box-shadow: 0 0 0 0 rgba(193, 110, 55, 0), 0 4px 24px rgba(0,0,0,0.10); transform: scale(1); }
+}
+
+.room-card--highlight {
+    animation: highlightPulse 1.2s ease-out 1;
+    outline: 2.5px solid #c16e37;
+    outline-offset: 2px;
+    position: relative;
+    z-index: 2;
+}

@@ -24,20 +24,89 @@ body {
     flex: 1;
     position: relative;
     overflow: hidden;
+    background-color: #fff7ed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px 24px 24px;
 }
 
 .left-panel img.hotel-bg {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    top: 24px;
+    left: 24px;
+    right: 20px;
+    bottom: 24px;
+    width: calc(100% - 44px);
+    height: calc(100% - 48px);
     object-fit: cover;
+    border-radius: 20px;
+    display: block;
 }
 
 .left-panel .overlay {
     position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.2));
+    top: 24px;
+    left: 24px;
+    right: 20px;
+    bottom: 24px;
+    border-radius: 20px;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.05) 0%,
+        rgba(0, 0, 0, 0.0) 40%,
+        rgba(0, 0, 0, 0.55) 100%
+    );
+}
+
+.left-panel .panel-logo {
+    position: absolute;
+    top: 44px;
+    left: 44px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    z-index: 2;
+    text-decoration: none;
+}
+
+.left-panel .panel-logo svg {
+    width: 28px;
+    height: 28px;
+    background: #ea580c;
+    border-radius: 7px;
+    padding: 5px;
+    flex-shrink: 0;
+}
+
+.left-panel .panel-text {
+    position: absolute;
+    bottom: 52px;
+    left: 44px;
+    right: 40px;
+    z-index: 2;
+    color: #fff;
+}
+
+.left-panel .panel-text h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 10px;
+    letter-spacing: -0.3px;
+}
+
+.left-panel .panel-text p {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.82);
+    max-width: 280px;
 }
 
 /* ===== RIGHT PANEL ===== */
