@@ -142,6 +142,62 @@
     </div>
 </div>
 
+<!-- ===== MODAL ĐặT DỊCH VỤ ===== -->
+<div class="booking-modal-overlay" id="bookingModalOverlay" style="display: none;">
+    <div class="booking-modal">
+        <button class="booking-modal-close" id="bookingModalClose" aria-label="Đóng">
+            <svg viewBox="0 0 20 20" fill="none" width="18" height="18">
+                <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+
+        <h2 class="booking-modal-title">Xác nhận đặt dịch vụ</h2>
+        
+        <div class="booking-modal-service-info">
+            <div class="booking-modal-service-name" id="bookingServiceName"></div>
+            <div class="booking-modal-service-price" id="bookingServicePrice"></div>
+        </div>
+
+        <form class="booking-modal-form" id="bookingForm">
+            <div class="booking-form-group">
+                <label class="booking-form-label">Họ và tên <span class="required">*</span></label>
+                <input type="text" class="booking-form-input" id="bookingGuestName" required placeholder="Nhập họ và tên" />
+            </div>
+
+            <div class="booking-form-row">
+                <div class="booking-form-group">
+                    <label class="booking-form-label">Số điện thoại <span class="required">*</span></label>
+                    <input type="tel" class="booking-form-input" id="bookingGuestPhone" required placeholder="0912345678" />
+                </div>
+                <div class="booking-form-group">
+                    <label class="booking-form-label">Email <span class="required">*</span></label>
+                    <input type="email" class="booking-form-input" id="bookingGuestEmail" required placeholder="email@example.com" />
+                </div>
+            </div>
+
+            <div class="booking-form-group">
+                <label class="booking-form-label">Số lượng</label>
+                <input type="number" class="booking-form-input" id="bookingQuantity" value="1" min="1" />
+            </div>
+
+            <div class="booking-form-group">
+                <label class="booking-form-label">Ghi chú</label>
+                <textarea class="booking-form-textarea" id="bookingNote" rows="3" placeholder="Yêu cầu đặc biệt (nếu có)"></textarea>
+            </div>
+
+            <div class="booking-modal-total">
+                <span>Tổng cộng:</span>
+                <strong id="bookingTotalAmount">0 đ</strong>
+            </div>
+
+            <div class="booking-modal-actions">
+                <button type="button" class="booking-btn-cancel" id="bookingBtnCancel">Hủy</button>
+                <button type="submit" class="booking-btn-confirm" id="bookingBtnConfirm">Xác nhận đặt dịch vụ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- ===== FOOTER (copy từ booking.html) ===== -->
 <footer class="site-footer">
     <div class="footer-inner">
@@ -193,6 +249,9 @@
         </div>
     </div>
 </footer>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div class="toast-container" id="toastContainer"></div>
 
 <script th:src="@{/js/services.js}"></script>
 <script th:src="@{/js/navbar.js}"></script>

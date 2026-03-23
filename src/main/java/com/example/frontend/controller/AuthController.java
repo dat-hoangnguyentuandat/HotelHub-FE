@@ -90,6 +90,12 @@ public class AuthController {
         return "admin-services";
     }
 
+    @GetMapping("/admin/service-bookings")
+    public String adminServiceBookings(Model model) {
+        model.addAttribute("backendUrl", backendUrl);
+        return "admin-service-bookings";
+    }
+
     @GetMapping("/payment")
     public String payment(Model model) {
         model.addAttribute("backendUrl", backendUrl);
