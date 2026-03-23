@@ -17,7 +17,7 @@
 /* ═══════════════════════════════════════
    API CONFIG
 ═══════════════════════════════════════ */
-const API_BASE = 'http://localhost:8081/api';
+const API_BASE = (window.BACKEND_URL || 'http://localhost:8081') + '/api';
 
 async function apiPost(path, body) {
     const token = localStorage.getItem('accessToken');

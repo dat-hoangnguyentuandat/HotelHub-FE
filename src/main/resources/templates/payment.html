@@ -550,6 +550,11 @@
 <!-- ===== TOAST ===== -->
 <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
+<!-- Inject backend URL for JavaScript -->
+<script th:inline="javascript">
+    window.BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+</script>
+
 <script th:src="@{/js/payment.js}"></script>
 <script th:src="@{/js/navbar.js}"></script>
 <script th:src="@{/js/special-request-widget.js}"></script>
