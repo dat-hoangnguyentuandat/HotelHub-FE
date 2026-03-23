@@ -11,6 +11,9 @@
     padding: 0;
 }
 
+/* Đảm bảo thuộc tính [hidden] luôn ẩn element, kể cả khi CSS đặt display: flex/block */
+[hidden] { display: none !important; }
+
 body {
     font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
     background-color: #f5f2f0;
@@ -135,6 +138,65 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
+}
+
+/* ── Tab Switcher ── */
+.tab-switcher {
+    display: flex;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 6px;
+    gap: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 9px 14px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: #8c7b72;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .18s, color .18s;
+    position: relative;
+}
+
+.tab-btn svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+}
+
+.tab-btn:hover {
+    background: #faf8f7;
+    color: #5c504a;
+}
+
+.tab-btn.active {
+    background: #fff3ee;
+    color: #e55200;
+}
+
+.tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #e55200;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 17px;
+    height: 17px;
+    border-radius: 9px;
+    padding: 0 4px;
+    line-height: 1;
 }
 
 /* ── Filter bar ── */
@@ -805,6 +867,9 @@ body {
     padding: 0;
     max-width: 460px;
     width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
     box-shadow: 0 24px 64px rgba(0,0,0,0.18);
     animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     overflow: hidden;
@@ -834,6 +899,25 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    min-height: 0;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+.modal-body::-webkit-scrollbar-track {
+    background: #f5f3ff;
+    border-radius: 3px;
+}
+.modal-body::-webkit-scrollbar-thumb {
+    background: #d0c8c3;
+    border-radius: 3px;
+}
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #b5a49c;
 }
 
 .modal-footer {
@@ -976,6 +1060,239 @@ body {
     line-height: 1.55;
 }
 .refund-warning svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+
+.refund-warn-voucher {
+    background: #f5f3ff;
+    border-color: #ddd6fe;
+    color: #4c1d95;
+}
+
+/* ── Refund type selector ── */
+.refund-type-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #3d3330;
+    margin-bottom: 10px;
+}
+
+.refund-type-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.refund-type-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1.5px solid #e8e0dc;
+    border-radius: 12px;
+    cursor: pointer;
+    background: #faf8f7;
+    transition: border-color .15s, background .15s, box-shadow .15s;
+    position: relative;
+}
+.refund-type-card input[type="radio"] { display: none; }
+.refund-type-card:hover {
+    border-color: #c4b8b0;
+    background: #fff;
+}
+.refund-type-card.selected {
+    border-color: #e55200;
+    background: #fff8f5;
+    box-shadow: 0 0 0 3px rgba(229,82,0,.08);
+}
+
+.rtc-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.rtc-icon svg { width: 20px; height: 20px; }
+.rtc-icon--cash    { background: #fef3c7; color: #d97706; }
+.rtc-icon--voucher { background: #ede9fe; color: #7c3aed; }
+
+.rtc-body { flex: 1; }
+.rtc-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #1c1917;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.rtc-badge-instant {
+    display: inline-block;
+    background: #d1fae5;
+    color: #065f46;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    letter-spacing: .3px;
+}
+.rtc-desc {
+    font-size: 12px;
+    color: #8c7b72;
+    margin-top: 2px;
+    line-height: 1.45;
+}
+
+.rtc-check {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: #d0c8c3;
+    transition: color .15s;
+}
+.refund-type-card.selected .rtc-check { color: #e55200; }
+
+/* ── Voucher suggestion box ── */
+#voucherSuggestionBox {
+    overflow: visible;
+}
+
+.vsb-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #4c1d95;
+    margin: 12px 0 8px;
+}
+.vsb-header svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+.vsb-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    max-height: 200px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: #c4b5fd #f5f3ff;
+}
+
+.vsb-list::-webkit-scrollbar {
+    width: 6px;
+}
+.vsb-list::-webkit-scrollbar-track {
+    background: #f5f3ff;
+    border-radius: 3px;
+}
+.vsb-list::-webkit-scrollbar-thumb {
+    background: #c4b5fd;
+    border-radius: 3px;
+}
+.vsb-list::-webkit-scrollbar-thumb:hover {
+    background: #a78bfa;
+}
+
+.vsb-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: #faf5ff;
+    border: 1px solid #e9d5ff;
+    border-radius: 10px;
+}
+.vsb-item-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: #ede9fe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.vsb-item-icon svg { width: 16px; height: 16px; }
+.vsb-item-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.vsb-item-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1c1917;
+}
+.vsb-item-desc {
+    font-size: 11.5px;
+    color: #8c7b72;
+}
+.vsb-item-value {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #7c3aed;
+    white-space: nowrap;
+}
+
+.vsb-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 12px;
+    background: #f5f3ff;
+    border-radius: 10px;
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #3d3330;
+}
+.vsb-total-amt {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    color: #7c3aed;
+    font-weight: 700;
+}
+.vsb-bonus {
+    font-size: 10.5px;
+    font-weight: 500;
+    color: #059669;
+    background: #d1fae5;
+    padding: 1px 6px;
+    border-radius: 10px;
+}
+
+.vsb-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: #8c7b72;
+    padding: 12px 0;
+}
+.vsb-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e8e0dc;
+    border-top-color: #7c3aed;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+}
+.vsb-empty {
+    font-size: 12.5px;
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-top: 8px;
+}
 
 /* ═══════════════════════════════════════
    TOAST

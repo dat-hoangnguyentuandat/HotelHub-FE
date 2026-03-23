@@ -692,3 +692,351 @@ body {
     .footer-inner    { grid-template-columns: 1fr; gap: 24px; }
     .footer-bottom   { flex-direction: column; gap: 8px; text-align: center; }
 }
+
+
+/* ════════════════════════════════════════
+   BOOKING MODAL
+════════════════════════════════════════ */
+.booking-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(23, 18, 15, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+}
+
+.booking-modal {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 32px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(23, 18, 15, 0.3);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.booking-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f5f2f0;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #17120f;
+    transition: all 0.2s;
+}
+
+.booking-modal-close:hover {
+    background: #e8ddd8;
+    transform: rotate(90deg);
+}
+
+.booking-modal-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #17120f;
+    margin: 0 0 20px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.booking-modal-service-info {
+    background: #fff7f3;
+    border: 1px solid #fcd5bc;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.booking-modal-service-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #17120f;
+    margin-bottom: 8px;
+}
+
+.booking-modal-service-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #e55200;
+}
+
+.booking-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.booking-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.booking-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.booking-form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #17120f;
+}
+
+.booking-form-label .required {
+    color: #e55200;
+}
+
+.booking-form-input,
+.booking-form-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid #e8ddd8;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: #17120f;
+    background: #fff;
+    transition: all 0.2s;
+}
+
+.booking-form-input:focus,
+.booking-form-textarea:focus {
+    outline: none;
+    border-color: #e55200;
+    box-shadow: 0 0 0 3px rgba(229, 82, 0, 0.1);
+}
+
+.booking-form-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.booking-modal-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: #f5f2f0;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-top: 8px;
+}
+
+.booking-modal-total strong {
+    font-size: 20px;
+    font-weight: 700;
+    color: #e55200;
+}
+
+.booking-modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.booking-btn-cancel,
+.booking-btn-confirm {
+    flex: 1;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-family: 'Inter', sans-serif;
+}
+
+.booking-btn-cancel {
+    background: #f5f2f0;
+    color: #17120f;
+}
+
+.booking-btn-cancel:hover {
+    background: #e8ddd8;
+}
+
+.booking-btn-confirm {
+    background: #e55200;
+    color: #fff;
+}
+
+.booking-btn-confirm:hover {
+    background: #c74600;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(229, 82, 0, 0.3);
+}
+
+.booking-btn-confirm:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 640px) {
+    .booking-modal {
+        padding: 24px;
+    }
+    
+    .booking-form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .booking-modal-actions {
+        flex-direction: column;
+    }
+}
+
+
+/* ════════════════════════════════════════
+   TOAST NOTIFICATIONS
+════════════════════════════════════════ */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10001;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.toast {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 8px 24px rgba(23, 18, 15, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 320px;
+    max-width: 420px;
+    pointer-events: auto;
+    animation: toastSlideIn 0.3s ease;
+    border-left: 4px solid #e55200;
+}
+
+.toast.success {
+    border-left-color: #22c55e;
+}
+
+.toast.error {
+    border-left-color: #ef4444;
+}
+
+.toast.info {
+    border-left-color: #3b82f6;
+}
+
+@keyframes toastSlideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.toast.hiding {
+    animation: toastSlideOut 0.3s ease forwards;
+}
+
+@keyframes toastSlideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+.toast-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.toast-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.toast-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.toast-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #17120f;
+}
+
+.toast-message {
+    font-size: 13px;
+    color: #6b5a52;
+    line-height: 1.4;
+}
+
+.toast-close {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #9c877d;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.toast-close:hover {
+    background: #f5f2f0;
+    color: #17120f;
+}
+
+@media (max-width: 640px) {
+    .toast-container {
+        left: 20px;
+        right: 20px;
+    }
+    
+    .toast {
+        min-width: auto;
+        max-width: none;
+    }
+}

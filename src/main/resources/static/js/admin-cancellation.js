@@ -448,9 +448,9 @@ window.deleteRecord = async function(id) {
    POLICY MODAL
 ═══════════════════════════════════════════════════ */
 const DEFAULT_POLICIES = [
-    { minDays: 48, label: 'Hủy trước 48h hoàn 100%',  rate: 100 },
-    { minDays: 24, label: 'Hủy trước 24h hoàn 50%',   rate: 50  },
-    { minDays: 0,  label: 'Hủy trong ngày không hoàn', rate: 0   }
+    { minHours: 48, label: 'Hủy trước 48h hoàn 100%',  refundRate: 100 },
+    { minHours: 24, label: 'Hủy trước 24h hoàn 50%',   refundRate: 50  },
+    { minHours: 0,  label: 'Hủy trong ngày không hoàn', refundRate: 0   }
 ];
 
 async function loadPolicies() {
@@ -474,10 +474,16 @@ function renderPolicies() {
                     onchange="updatePolicy(${i},'label',this.value)" />
             </div>
             <div>
+                <label style="font-size:11px;font-weight:600;color:#8c7b72;margin-bottom:4px;display:block">Số giờ tối thiểu</label>
+                <input class="form-input" type="number" min="0" placeholder="Số giờ"
+                    value="${p.minHours || 0}"
+                    onchange="updatePolicy(${i},'minHours',+this.value)" />
+            </div>
+            <div>
                 <label style="font-size:11px;font-weight:600;color:#8c7b72;margin-bottom:4px;display:block">Tỷ lệ hoàn (%)</label>
                 <input class="form-input" type="number" min="0" max="100" placeholder="0-100"
-                    value="${p.rate}"
-                    onchange="updatePolicy(${i},'rate',+this.value)" />
+                    value="${p.refundRate || 0}"
+                    onchange="updatePolicy(${i},'refundRate',+this.value)" />
             </div>
             <button class="btn-remove-policy" onclick="removePolicy(${i})" title="Xóa">×</button>
         </div>
@@ -494,7 +500,7 @@ window.removePolicy = function(idx) {
 };
 
 document.getElementById('btnAddPolicy').addEventListener('click', () => {
-    policies.push({ minDays: 0, label: '', rate: 0 });
+    policies.push({ minHours: 0, label: '', refundRate: 0 });
     renderPolicies();
 });
 

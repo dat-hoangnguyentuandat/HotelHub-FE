@@ -39,6 +39,18 @@
     const modalUnit   = document.getElementById('svcModalUnit');
     const modalBtnBook = document.getElementById('svcModalBtnBook');
 
+    /* ── Booking Modal ── */
+    const bookingOverlay = document.getElementById('bookingModalOverlay');
+    const bookingModalClose = document.getElementById('bookingModalClose');
+    const bookingForm = document.getElementById('bookingForm');
+    const bookingBtnCancel = document.getElementById('bookingBtnCancel');
+    const bookingServiceName = document.getElementById('bookingServiceName');
+    const bookingServicePrice = document.getElementById('bookingServicePrice');
+    const bookingTotalAmount = document.getElementById('bookingTotalAmount');
+    const bookingQuantity = document.getElementById('bookingQuantity');
+    
+    let currentService = null;
+
     /* ════════════════════════════════════════
        FETCH DATA
     ════════════════════════════════════════ */
@@ -180,8 +192,8 @@
         /* Nút Đặt dịch vụ */
         modalBtnBook.onclick = () => {
             closeModal();
-            /* Chuyển sang trang đặt phòng với intent */
-            window.location.href = `/?service=${encodeURIComponent(s.name)}`;
+            currentService = s;
+            openBookingModal(s);
         };
 
         overlay.classList.add('open');
@@ -193,6 +205,116 @@
         overlay.classList.remove('open');
         document.body.style.overflow = '';
     }
+
+    /* ════════════════════════════════════════
+       BOOKING MODAL
+    ════════════════════════════════════════ */
+    function openBookingModal(service) {
+        // Kiểm tra đăng nhập
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            showToast('Yêu cầu đăng nhập', 'Vui lòng đăng nhập để đặt dịch vụ', 'info');
+            setTimeout(() => {
+                window.location.href = '/login?redirect=/services';
+            }, 1500);
+            return;
+        }
+
+        // Hiển thị thông tin dịch vụ
+        bookingServiceName.textContent = service.name;
+        bookingServicePrice.textContent = fmtVND(service.price) + (service.unit ? ` / ${service.unit}` : '');
+        
+        // Tính tổng tiền
+        updateTotalAmount(service.price, 1);
+        
+        // Reset form
+        bookingForm.reset();
+        bookingQuantity.value = 1;
+        
+        // Hiển thị modal
+        bookingOverlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeBookingModal() {
+        bookingOverlay.style.display = 'none';
+        document.body.style.overflow = '';
+        currentService = null;
+    }
+
+    function updateTotalAmount(price, quantity) {
+        const total = Number(price) * Number(quantity);
+        bookingTotalAmount.textContent = fmtVND(total);
+    }
+
+    /* ════════════════════════════════════════
+       BOOKING FORM SUBMIT
+    ════════════════════════════════════════ */
+    bookingForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!currentService) return;
+        
+        const formData = {
+            serviceId: currentService.id,
+            serviceName: currentService.name,
+            quantity: Number(bookingQuantity.value),
+            guestName: document.getElementById('bookingGuestName').value.trim(),
+            guestPhone: document.getElementById('bookingGuestPhone').value.trim(),
+            guestEmail: document.getElementById('bookingGuestEmail').value.trim(),
+            note: document.getElementById('bookingNote').value.trim(),
+            totalAmount: Number(currentService.price) * Number(bookingQuantity.value)
+        };
+
+        try {
+            const token = localStorage.getItem('accessToken');
+            const res = await fetch(`${BACKEND}/api/services/book`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!res.ok) {
+                const error = await res.json().catch(() => ({}));
+                throw new Error(error.message || 'Không thể đặt dịch vụ');
+            }
+
+            const result = await res.json();
+            
+            // Đóng modal
+            closeBookingModal();
+            
+            // Hiển thị toast thành công
+            showToast(
+                'Đặt dịch vụ thành công!',
+                `Mã đặt: ${result.bookingCode || 'N/A'}. Chúng tôi sẽ liên hệ với bạn sớm nhất.`,
+                'success'
+            );
+            
+        } catch (err) {
+            console.error('[Booking] Error:', err);
+            showToast('Đặt dịch vụ thất bại', err.message, 'error');
+        }
+    });
+
+    /* ════════════════════════════════════════
+       BOOKING MODAL EVENT LISTENERS
+    ════════════════════════════════════════ */
+    bookingModalClose.addEventListener('click', closeBookingModal);
+    bookingBtnCancel.addEventListener('click', closeBookingModal);
+    bookingOverlay.addEventListener('click', (e) => {
+        if (e.target === bookingOverlay) closeBookingModal();
+    });
+
+    // Cập nhật tổng tiền khi thay đổi số lượng
+    bookingQuantity.addEventListener('input', () => {
+        if (currentService) {
+            updateTotalAmount(currentService.price, bookingQuantity.value);
+        }
+    });
 
     /* ════════════════════════════════════════
        EVENT LISTENERS
@@ -316,6 +438,61 @@
                 Không thể tải danh sách dịch vụ. Vui lòng thử lại sau.
             </div>`;
         resultCount.textContent = '';
+    }
+
+    /* ════════════════════════════════════════
+       TOAST NOTIFICATION
+    ════════════════════════════════════════ */
+    function showToast(title, message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+
+        const icons = {
+            success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" fill="#f0fdf4" stroke="#22c55e"/>
+                <path d="M9 12l2 2 4-4" stroke="#22c55e" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`,
+            error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" fill="#fef2f2" stroke="#ef4444"/>
+                <path d="M12 8v4M12 16v.5" stroke="#ef4444" stroke-linecap="round"/>
+            </svg>`,
+            info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" fill="#eff6ff" stroke="#3b82f6"/>
+                <path d="M12 12v4M12 8v.5" stroke="#3b82f6" stroke-linecap="round"/>
+            </svg>`
+        };
+
+        toast.innerHTML = `
+            <div class="toast-icon">${icons[type] || icons.info}</div>
+            <div class="toast-content">
+                <div class="toast-title">${title}</div>
+                ${message ? `<div class="toast-message">${message}</div>` : ''}
+            </div>
+            <button class="toast-close" aria-label="Đóng">
+                <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+                    <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        `;
+
+        container.appendChild(toast);
+
+        // Nút đóng
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            toast.classList.add('hiding');
+            setTimeout(() => toast.remove(), 300);
+        });
+
+        // Tự động đóng sau 5 giây
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 300);
+            }
+        }, 5000);
     }
 
     /* ── Khởi động ── */

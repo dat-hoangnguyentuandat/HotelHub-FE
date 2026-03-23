@@ -87,8 +87,26 @@
         <!-- ===== LEFT: PAYMENT LIST ===== -->
         <section class="list-section">
 
-            <!-- Filter bar -->
-            <div class="filter-bar">
+            <!-- Tab switcher -->
+            <div class="tab-switcher">
+                <button class="tab-btn active" id="tabBooking" data-tab="booking">
+                    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 14V6L8 2L14 6V14H10V10H6V14H2Z" fill="currentColor"/>
+                    </svg>
+                    Đặt phòng
+                </button>
+                <button class="tab-btn" id="tabService" data-tab="service">
+                    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5.5 8h5M8 5.5v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    Đặt dịch vụ
+                    <span class="tab-badge" id="tabServiceBadge" hidden></span>
+                </button>
+            </div>
+
+            <!-- Filter bar (chỉ hiện cho tab Đặt phòng) -->
+            <div class="filter-bar" id="filterBarBooking">
                 <div class="search-wrap">
                     <svg class="search-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="8.5" cy="8.5" r="5.5" stroke="#8c7b72" stroke-width="1.5"/>
@@ -122,7 +140,32 @@
                 </div>
             </div>
 
-            <!-- Payment list -->
+            <!-- Filter bar dịch vụ -->
+            <div class="filter-bar" id="filterBarService" hidden>
+                <div class="search-wrap">
+                    <svg class="search-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="8.5" cy="8.5" r="5.5" stroke="#8c7b72" stroke-width="1.5"/>
+                        <path d="M14 14l3 3" stroke="#8c7b72" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <input type="text" id="searchServiceInput" class="search-input" placeholder="Tìm mã đặt dịch vụ, tên dịch vụ..." />
+                </div>
+                <div class="filter-group">
+                    <select id="filterServiceStatus" class="filter-select">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="PENDING">Chờ xử lý</option>
+                        <option value="CONFIRMED">Đã xác nhận</option>
+                        <option value="COMPLETED">Hoàn thành</option>
+                        <option value="CANCELLED">Đã hủy</option>
+                    </select>
+                    <button class="btn-filter-clear" id="btnClearServiceFilter" title="Xóa bộ lọc">
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Payment list (đặt phòng) -->
             <div class="payment-list" id="paymentList">
                 <!-- Items injected by JS -->
                 <div class="list-skeleton" id="listSkeleton">
@@ -133,7 +176,10 @@
                 </div>
             </div>
 
-            <!-- Pagination -->
+            <!-- Service booking list (đặt dịch vụ) -->
+            <div class="payment-list" id="serviceList" hidden></div>
+
+            <!-- Pagination (chỉ cho đặt phòng) -->
             <div class="pagination" id="pagination"></div>
         </section>
 
@@ -346,6 +392,7 @@
             </button>
         </div>
         <div class="modal-body">
+            <!-- Thông tin giao dịch -->
             <div class="refund-info-box" id="refundInfoBox">
                 <div class="refund-info-row">
                     <span>Mã giao dịch:</span>
@@ -356,6 +403,8 @@
                     <strong id="refundAmount" class="orange-text">–</strong>
                 </div>
             </div>
+
+            <!-- Bước 1: Lý do -->
             <div class="form-group">
                 <label class="form-label" for="refundReason">Lý do hoàn tiền <span class="required">*</span></label>
                 <select id="refundReason" class="form-select">
@@ -368,19 +417,107 @@
                 </select>
                 <span class="form-error" id="errRefundReason"></span>
             </div>
-            <!-- Policy Preview -->
+
+            <!-- Hiển thị chính sách -->
             <div id="policyPreview" hidden></div>
+
+            <!-- Bước 2: Hình thức hoàn trả (hiện sau khi chọn lý do) -->
+            <div id="refundTypeSection" hidden>
+                <div class="refund-type-label">Hình thức hoàn trả</div>
+                <div class="refund-type-options">
+                    <!-- Option A: Hoàn tiền mặt -->
+                    <label class="refund-type-card" id="rtCardCash">
+                        <input type="radio" name="refundType" value="CASH" id="rtCash" checked />
+                        <div class="rtc-icon rtc-icon--cash">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <rect x="2" y="7" width="20" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                                <circle cx="12" cy="13" r="3" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="M6 13h.5M17.5 13H18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="rtc-body">
+                            <div class="rtc-title">Hoàn tiền về tài khoản</div>
+                            <div class="rtc-desc">Xử lý trong 3–5 ngày làm việc sau khi admin duyệt</div>
+                        </div>
+                        <div class="rtc-check">
+                            <svg viewBox="0 0 20 20" fill="none">
+                                <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="M6 10l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </label>
+
+                    <!-- Option B: Đổi voucher -->
+                    <label class="refund-type-card" id="rtCardVoucher">
+                        <input type="radio" name="refundType" value="VOUCHER" id="rtVoucher" />
+                        <div class="rtc-icon rtc-icon--voucher">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <rect x="2" y="6" width="20" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="M9 6v12M2 10h7M2 14h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M12 10h6M12 14h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="rtc-body">
+                            <div class="rtc-title">Đổi lấy voucher <span class="rtc-badge-instant">Nhận ngay</span></div>
+                            <div class="rtc-desc">Voucher tương đương số tiền hoàn, dùng cho lần đặt phòng tiếp theo</div>
+                        </div>
+                        <div class="rtc-check">
+                            <svg viewBox="0 0 20 20" fill="none">
+                                <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="M6 10l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Preview voucher được gợi ý (hiện khi chọn VOUCHER) -->
+                <div id="voucherSuggestionBox" hidden>
+                    <div class="vsb-header">
+                        <svg viewBox="0 0 16 16" fill="none">
+                            <rect x="1" y="3.5" width="14" height="9" rx="1.5" stroke="#7c3aed" stroke-width="1.3"/>
+                            <path d="M6 3.5v9M1 7h5M1 9.5h5" stroke="#7c3aed" stroke-width="1.3" stroke-linecap="round"/>
+                        </svg>
+                        Voucher bạn sẽ nhận
+                    </div>
+                    <div id="voucherSuggestionList" class="vsb-list">
+                        <!-- Items injected by JS -->
+                    </div>
+                    <div class="vsb-total" id="voucherSuggestionTotal"></div>
+                </div>
+
+                <!-- Loading gợi ý -->
+                <div id="voucherSuggestionLoading" hidden class="vsb-loading">
+                    <div class="vsb-spinner"></div> Đang tìm voucher phù hợp...
+                </div>
+
+                <!-- Không có voucher khả dụng -->
+                <div id="voucherSuggestionEmpty" hidden class="vsb-empty">
+                    Hiện không có voucher phù hợp. Vui lòng chọn hoàn tiền về tài khoản.
+                </div>
+            </div>
+
+            <!-- Ghi chú thêm -->
             <div class="form-group" id="refundNoteGroup">
                 <label class="form-label" for="refundNote">Ghi chú thêm</label>
                 <textarea id="refundNote" class="form-textarea" placeholder="Mô tả chi tiết lý do hoàn tiền..." rows="3"></textarea>
             </div>
-            <div class="refund-warning">
+
+            <!-- Cảnh báo (chỉ hiện khi chọn CASH) -->
+            <div class="refund-warning" id="refundWarnCash">
                 <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="10" cy="10" r="7.5" stroke="#f59e0b" stroke-width="1.5"/>
                     <path d="M10 7v4" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round"/>
                     <circle cx="10" cy="13.5" r="0.75" fill="#f59e0b"/>
                 </svg>
-                <span>Yêu cầu hoàn tiền sẽ được xử lý trong vòng 3-5 ngày làm việc.</span>
+                <span>Yêu cầu hoàn tiền sẽ được xử lý trong vòng 3–5 ngày làm việc.</span>
+            </div>
+            <div class="refund-warning refund-warn-voucher" id="refundWarnVoucher" hidden>
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="10" cy="10" r="7.5" stroke="#7c3aed" stroke-width="1.5"/>
+                    <path d="M10 7v4" stroke="#7c3aed" stroke-width="1.5" stroke-linecap="round"/>
+                    <circle cx="10" cy="13.5" r="0.75" fill="#7c3aed"/>
+                </svg>
+                <span>Voucher sẽ được thêm vào tài khoản của bạn ngay sau khi xác nhận.</span>
             </div>
         </div>
         <div class="modal-footer">

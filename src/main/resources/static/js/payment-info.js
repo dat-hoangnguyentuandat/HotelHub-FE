@@ -5,6 +5,7 @@
      GET  /api/payments/my/stats        → thống kê 4 thẻ
      GET  /api/payments/my/info         → danh sách giao dịch (có filter + phân trang)
      GET  /api/payments/{id}/info       → chi tiết giao dịch
+     GET  /api/services/my-bookings     → danh sách đặt dịch vụ
      POST /api/admin/payments/{id}/refund → yêu cầu hoàn tiền
      PATCH /api/payments/{id}/cancel    → hủy giao dịch PENDING
 ═══════════════════════════════════════════════════════ */
@@ -134,28 +135,57 @@ const METHOD_SVG = {
     CASH:  `<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="12" rx="2" stroke="#e55200" stroke-width="1.8"/><circle cx="12" cy="13" r="3" stroke="#e55200" stroke-width="1.8"/><path d="M6 13h.5M17.5 13H18" stroke="#e55200" stroke-width="1.8" stroke-linecap="round"/></svg>`
 };
 
+// Labels/CSS cho trạng thái đặt dịch vụ
+const SVC_STATUS_LABEL = {
+    PENDING:   'Chờ xử lý',
+    CONFIRMED: 'Đã xác nhận',
+    COMPLETED: 'Hoàn thành',
+    CANCELLED: 'Đã hủy'
+};
+const SVC_STATUS_CSS = {
+    PENDING:   'pending',
+    CONFIRMED: 'success',
+    COMPLETED: 'success',
+    CANCELLED: 'cancelled'
+};
+
+// SVG icon cho loại "dịch vụ"
+const SERVICE_SVG = `<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#e55200" stroke-width="1.8"/><path d="M8 12h8M12 8v8" stroke="#e55200" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+
 /* ══════════════════════════════════════════════════════
    STATE
 ══════════════════════════════════════════════════════ */
 const state = {
-    /* Data */
+    /* Tab hiện tại: 'booking' | 'service' */
+    activeTab: 'booking',
+
+    /* Data đặt phòng */
     payments: [],          // mảng PaymentInfoResponse từ API
     totalElements: 0,
     totalPages: 0,
 
-    /* Filters */
+    /* Data đặt dịch vụ */
+    serviceBookings: [],            // mảng ServiceBookingResponse từ API
+    serviceBookingsFiltered: [],    // sau khi lọc phía client
+
+    /* Filters (đặt phòng) */
     search:      '',
     filterStatus:'',
     filterMethod:'',
     filterDateFrom:'',
     filterDateTo:'',
 
+    /* Filters (đặt dịch vụ – client-side) */
+    searchService:       '',
+    filterServiceStatus: '',
+
     /* Pagination */
     page: 0,
     pageSize: 8,
 
     /* Detail */
-    selectedId: null,
+    selectedId:     null,
+    selectedSvcId:  null,
 
     /* Trạng thái loading */
     loading: false
@@ -217,16 +247,54 @@ function showLoginWall() {
 async function loadStats() {
     try {
         const s = await apiGet('/api/payments/my/stats');
-        document.getElementById('statTotal').textContent   = s.totalCount  ?? 0;
-        document.getElementById('statSpend').textContent   = formatCurrency(s.totalSpend);
-        document.getElementById('statPending').textContent = s.pendingCount ?? 0;
-        document.getElementById('statPoints').textContent  =
-            (s.totalPointsEarned ?? 0).toLocaleString('vi-VN') + ' điểm';
+        // Lưu stats đặt phòng để sau cộng thêm dịch vụ
+        state._paymentStats = s;
+        updateStatCards();
     } catch (err) {
         if (err.message !== 'Unauthorized') {
             console.warn('[Stats]', err.message);
         }
     }
+}
+
+function updateStatCards() {
+    const s = state._paymentStats || {};
+    const svcCount = state.serviceBookings.length;
+    const svcPending = state.serviceBookings.filter(b => b.status === 'PENDING').length;
+    const svcSpend = state.serviceBookings
+        .filter(b => b.status === 'COMPLETED' || b.status === 'CONFIRMED')
+        .reduce((sum, b) => sum + Number(b.totalAmount || 0), 0);
+
+    document.getElementById('statTotal').textContent =
+        ((s.totalCount ?? 0) + svcCount);
+    document.getElementById('statSpend').textContent =
+        formatCurrency((Number(s.totalSpend || 0) + svcSpend));
+    document.getElementById('statPending').textContent =
+        ((s.pendingCount ?? 0) + svcPending);
+    document.getElementById('statPoints').textContent =
+        (s.totalPointsEarned ?? 0).toLocaleString('vi-VN') + ' điểm';
+}
+
+/* ══════════════════════════════════════════════════════
+   TAB SWITCHER
+══════════════════════════════════════════════════════ */
+function switchTab(tab) {
+    state.activeTab = tab;
+    closeDetail();
+
+    document.getElementById('tabBooking').classList.toggle('active', tab === 'booking');
+    document.getElementById('tabService').classList.toggle('active', tab === 'service');
+
+    document.getElementById('filterBarBooking').hidden  = (tab !== 'booking');
+    document.getElementById('filterBarService').hidden  = (tab !== 'service');
+    document.getElementById('paymentList').hidden       = (tab !== 'booking');
+    document.getElementById('serviceList').hidden       = (tab !== 'service');
+    document.getElementById('pagination').hidden        = (tab !== 'booking');
+}
+
+function initTabListeners() {
+    document.getElementById('tabBooking')?.addEventListener('click', () => switchTab('booking'));
+    document.getElementById('tabService')?.addEventListener('click', () => switchTab('service'));
 }
 
 /* ══════════════════════════════════════════════════════
@@ -245,7 +313,248 @@ function buildQueryString() {
 }
 
 /* ══════════════════════════════════════════════════════
-   LOAD PAYMENTS  →  danh sách giao dịch
+   LOAD SERVICE BOOKINGS
+══════════════════════════════════════════════════════ */
+async function loadServiceBookings() {
+    try {
+        const data = await apiGet('/api/services/my-bookings');
+        state.serviceBookings = Array.isArray(data) ? data : [];
+        applyServiceFilter();
+        updateStatCards();
+        // Cập nhật badge tab nếu có đơn chờ xử lý
+        const pendingCount = state.serviceBookings.filter(b => b.status === 'PENDING').length;
+        const badge = document.getElementById('tabServiceBadge');
+        if (badge) {
+            if (pendingCount > 0) {
+                badge.textContent = pendingCount;
+                badge.hidden = false;
+            } else {
+                badge.hidden = true;
+            }
+        }
+    } catch (err) {
+        if (err.message !== 'Unauthorized') {
+            console.warn('[ServiceBookings]', err.message);
+        }
+        state.serviceBookings = [];
+    }
+}
+
+function applyServiceFilter() {
+    let list = state.serviceBookings;
+
+    if (state.searchService) {
+        const kw = state.searchService.toLowerCase();
+        list = list.filter(b =>
+            (b.bookingCode || '').toLowerCase().includes(kw) ||
+            (b.serviceName || '').toLowerCase().includes(kw)
+        );
+    }
+    if (state.filterServiceStatus) {
+        list = list.filter(b => b.status === state.filterServiceStatus);
+    }
+
+    state.serviceBookingsFiltered = list;
+    renderServiceList();
+}
+
+function renderServiceList() {
+    const listEl = document.getElementById('serviceList');
+    listEl.innerHTML = '';
+
+    if (!state.serviceBookingsFiltered.length) {
+        listEl.innerHTML = `
+            <div class="empty-state" style="display:flex;flex-direction:column;align-items:center;padding:48px 20px;gap:10px;color:#8c7b72;text-align:center;">
+                <svg viewBox="0 0 48 48" fill="none" style="width:56px;height:56px;">
+                    <circle cx="24" cy="24" r="20" stroke="#e8e0dc" stroke-width="2"/>
+                    <path d="M16 24h16M24 16v16" stroke="#c9beb7" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <p class="empty-title" style="font-size:14px;font-weight:600;color:#5c504a;margin:0;">
+                    ${state.searchService || state.filterServiceStatus
+                        ? 'Không tìm thấy đặt dịch vụ phù hợp.'
+                        : 'Bạn chưa có đơn đặt dịch vụ nào.'}
+                </p>
+            </div>`;
+        return;
+    }
+
+    state.serviceBookingsFiltered.forEach(b => {
+        listEl.appendChild(buildServiceItem(b));
+    });
+}
+
+function buildServiceItem(b) {
+    const div = document.createElement('div');
+    div.className = 'payment-item' + (b.id === state.selectedSvcId ? ' selected' : '');
+    div.dataset.svcId = b.id;
+
+    const sClass = SVC_STATUS_CSS[b.status] || 'pending';
+    const label  = SVC_STATUS_LABEL[b.status] || b.status;
+
+    div.innerHTML = `
+        <div class="pi-method-icon" style="background:#fff3ee;">
+            ${SERVICE_SVG}
+        </div>
+        <div class="pi-item-main">
+            <div class="pi-item-top">
+                <span class="pi-item-ref">${b.bookingCode || '–'}</span>
+                <span class="pi-item-amount ${sClass === 'success' ? 'success' : ''}">${formatCurrency(b.totalAmount)}</span>
+            </div>
+            <div class="pi-item-bottom">
+                <span class="pi-item-meta">${b.serviceName || '–'} · ${formatDateTime(b.createdAt)}</span>
+                <span class="status-badge ${sClass}">${label}</span>
+            </div>
+        </div>`;
+
+    div.addEventListener('click', () => selectServiceBooking(b));
+    return div;
+}
+
+async function selectServiceBooking(b) {
+    state.selectedSvcId = b.id;
+    state.selectedId    = null;
+
+    document.querySelectorAll('#serviceList .payment-item').forEach(el => {
+        el.classList.toggle('selected', Number(el.dataset.svcId) === b.id);
+    });
+
+    renderServiceDetail(b);
+}
+
+function renderServiceDetail(b) {
+    document.getElementById('detailPlaceholder').hidden = true;
+    const content = document.getElementById('detailContent');
+    content.hidden = false;
+
+    const sClass = SVC_STATUS_CSS[b.status] || 'pending';
+    const label  = SVC_STATUS_LABEL[b.status] || b.status;
+
+    const heroSvgs = {
+        success:  `<svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="#22c55e" stroke-width="2"/><path d="M8.5 14l4 4 7-7" stroke="#22c55e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+        pending:  `<svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="#3b82f6" stroke-width="2"/><path d="M14 9v5l3 3" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/></svg>`,
+        cancelled:`<svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="#f59e0b" stroke-width="2"/><path d="M9 14h10" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/></svg>`
+    };
+
+    content.innerHTML = `
+        <div class="detail-header">
+            <div class="detail-status-badge ${sClass}">${label}</div>
+            <button class="btn-icon detail-close" id="btnDetailClose">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M6 6l8 8M14 6l-8 8" stroke="#8c7b72" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+        </div>
+
+        <div class="detail-amount-hero">
+            <div class="hero-icon ${sClass}">${heroSvgs[sClass] || heroSvgs.pending}</div>
+            <div class="hero-amount">${formatCurrency(b.totalAmount)}</div>
+            <div class="hero-ref copyable" title="Nhấn để sao chép">${b.bookingCode || '–'}</div>
+        </div>
+
+        <!-- Thông tin giao dịch -->
+        <div class="detail-card">
+            <div class="detail-card-title">
+                <svg viewBox="0 0 16 16" fill="none"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="#8c7b72" stroke-width="1.3"/><path d="M4.5 6h7M4.5 9h4" stroke="#8c7b72" stroke-width="1.3" stroke-linecap="round"/></svg>
+                Thông tin giao dịch
+            </div>
+            <div class="detail-rows">
+                <div class="detail-row">
+                    <span class="dr-label">Loại</span>
+                    <span class="dr-value method-chip" style="background:#fff3ee;color:#e55200;">Đặt dịch vụ</span>
+                </div>
+                <div class="detail-row"><span class="dr-label">Ngày đặt</span><span class="dr-value">${formatDateTime(b.createdAt)}</span></div>
+                <div class="detail-row">
+                    <span class="dr-label">Mã đặt dịch vụ</span>
+                    <span class="dr-value mono copyable" title="Nhấn để sao chép">${b.bookingCode || '–'}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông tin dịch vụ -->
+        <div class="detail-card">
+            <div class="detail-card-title">
+                <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#8c7b72" stroke-width="1.3"/><path d="M5.5 8h5M8 5.5v5" stroke="#8c7b72" stroke-width="1.3" stroke-linecap="round"/></svg>
+                Thông tin dịch vụ
+            </div>
+            <div class="detail-rows">
+                <div class="detail-row"><span class="dr-label">Tên dịch vụ</span><span class="dr-value" style="font-weight:600;">${b.serviceName || '–'}</span></div>
+                <div class="detail-row"><span class="dr-label">Số lượng</span><span class="dr-value">${b.quantity ?? '–'}</span></div>
+                ${b.note ? `<div class="detail-row"><span class="dr-label">Ghi chú</span><span class="dr-value">${b.note}</span></div>` : ''}
+            </div>
+        </div>
+
+        <!-- Chi tiết chi phí -->
+        <div class="detail-card">
+            <div class="detail-card-title">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M8 1.5v13M5 4.5h4.5a2 2 0 0 1 0 4H5m0 0h5a2 2 0 0 1 0 4H5" stroke="#8c7b72" stroke-width="1.3" stroke-linecap="round"/></svg>
+                Chi tiết chi phí
+            </div>
+            <div class="price-table">
+                <div class="pt-row total"><span>Tổng thanh toán</span><span>${formatCurrency(b.totalAmount)}</span></div>
+            </div>
+        </div>
+
+        <!-- Thông tin khách hàng -->
+        <div class="detail-card">
+            <div class="detail-card-title">
+                <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="#8c7b72" stroke-width="1.3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="#8c7b72" stroke-width="1.3" stroke-linecap="round"/></svg>
+                Thông tin liên hệ
+            </div>
+            <div class="detail-rows">
+                <div class="detail-row"><span class="dr-label">Họ tên</span><span class="dr-value">${b.guestName || '–'}</span></div>
+                <div class="detail-row"><span class="dr-label">Điện thoại</span><span class="dr-value">${b.guestPhone || '–'}</span></div>
+                <div class="detail-row"><span class="dr-label">Email</span><span class="dr-value">${b.guestEmail || '–'}</span></div>
+            </div>
+        </div>
+
+        <div class="detail-actions">
+            <button class="btn-action-outline" id="btnDownloadSvcInvoice">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M10 13V4M6 9l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 16h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Tải hóa đơn
+            </button>
+        </div>`;
+
+    document.getElementById('btnDetailClose')?.addEventListener('click', closeDetail);
+    document.getElementById('btnDownloadSvcInvoice')?.addEventListener('click', () => downloadServiceInvoice(b));
+    document.getElementById('detailPanel').scrollTop = 0;
+}
+
+function downloadServiceInvoice(b) {
+    const lines = [
+        `══════════════════════════════════════════`,
+        `     HÓA ĐƠN ĐẶT DỊCH VỤ - HOTELHUB      `,
+        `══════════════════════════════════════════`,
+        `Mã đặt dịch vụ: ${b.bookingCode || '–'}`,
+        `Ngày đặt      : ${formatDateTime(b.createdAt)}`,
+        `Trạng thái    : ${SVC_STATUS_LABEL[b.status] || b.status}`,
+        ``,
+        `──── Thông tin dịch vụ ────`,
+        `Tên dịch vụ   : ${b.serviceName || '–'}`,
+        `Số lượng      : ${b.quantity ?? '–'}`,
+        ...(b.note ? [`Ghi chú       : ${b.note}`] : []),
+        ``,
+        `──── Thông tin liên hệ ────`,
+        `Họ tên        : ${b.guestName || '–'}`,
+        `Điện thoại    : ${b.guestPhone || '–'}`,
+        `Email         : ${b.guestEmail || '–'}`,
+        ``,
+        `──────────────────────────────────────────`,
+        `TỔNG THANH TOÁN: ${formatCurrency(b.totalAmount)}`,
+        `══════════════════════════════════════════`,
+        `        Cảm ơn quý khách!`,
+        `══════════════════════════════════════════`
+    ].join('\n');
+
+    const blob = new Blob(['\uFEFF' + lines], { type: 'text/plain;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `HoaDonDichVu-${b.bookingCode || 'unknown'}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Đang tải hóa đơn...', 'success');
+}
+
+/* ══════════════════════════════════════════════════════
+   LOAD PAYMENTS  →  danh sách giao dịch đặt phòng
 ══════════════════════════════════════════════════════ */
 async function loadPayments() {
     if (state.loading) return;
@@ -665,23 +974,44 @@ async function doCancelPayment(p) {
 /* ══════════════════════════════════════════════════════
    REFUND MODAL
 ══════════════════════════════════════════════════════ */
-let _refundPayment = null;
+let _refundPayment  = null;
 let _refundPolicies = [];
+let _refundType     = 'CASH';   // 'CASH' | 'VOUCHER'
 
 async function openRefundModal(p) {
     _refundPayment = p;
+    _refundType    = 'CASH';
+
     document.getElementById('refundTxRef').textContent  = p.transactionRef || '–';
     document.getElementById('refundAmount').textContent = formatCurrency(p.totalAmount);
     document.getElementById('refundReason').value       = '';
     document.getElementById('refundNote').value         = '';
     document.getElementById('errRefundReason').textContent = '';
-    
-    // Ẩn policy preview ban đầu
-    const policyPreview = document.getElementById('policyPreview');
-    if (policyPreview) policyPreview.hidden = true;
-    
+
+    // Reset trạng thái UI
+    const policyPreview       = document.getElementById('policyPreview');
+    const refundTypeSection   = document.getElementById('refundTypeSection');
+    const voucherBox          = document.getElementById('voucherSuggestionBox');
+    const voucherLoading      = document.getElementById('voucherSuggestionLoading');
+    const voucherEmpty        = document.getElementById('voucherSuggestionEmpty');
+    const warnCash            = document.getElementById('refundWarnCash');
+    const warnVoucher         = document.getElementById('refundWarnVoucher');
+
+    policyPreview.hidden     = true;
+    refundTypeSection.hidden = true;
+    voucherBox.hidden        = true;
+    voucherLoading.hidden    = true;
+    voucherEmpty.hidden      = true;
+    warnCash.hidden          = false;
+    warnVoucher.hidden       = true;
+
+    // Reset radio về CASH
+    const rtCash = document.getElementById('rtCash');
+    if (rtCash) rtCash.checked = true;
+    _syncRefundTypeCards('CASH');
+
     document.getElementById('refundModal').hidden = false;
-    
+
     // Load chính sách hoàn tiền
     try {
         const preview = await apiGet(`/api/payments/${p.id}/refund-preview`);
@@ -694,7 +1024,8 @@ async function openRefundModal(p) {
 
 function closeRefundModal() {
     document.getElementById('refundModal').hidden = true;
-    _refundPayment = null;
+    _refundPayment  = null;
+    _refundPolicies = [];
 }
 
 async function submitRefund() {
@@ -703,6 +1034,15 @@ async function submitRefund() {
 
     if (!reason) { errEl.textContent = 'Vui lòng chọn lý do hoàn tiền.'; return; }
     errEl.textContent = '';
+
+    // Kiểm tra voucher mode: phải có ít nhất 1 voucher
+    if (_refundType === 'VOUCHER') {
+        const empty = document.getElementById('voucherSuggestionEmpty');
+        if (!empty.hidden) {
+            showToast('Không có voucher phù hợp. Vui lòng chọn hoàn tiền về tài khoản.', 'error');
+            return;
+        }
+    }
 
     const note = document.getElementById('refundNote').value.trim();
     const p    = _refundPayment;
@@ -713,10 +1053,19 @@ async function submitRefund() {
     btn.textContent = 'Đang gửi...';
 
     try {
-        await apiPost(`/api/payments/${p.id}/refund`, {
-            reason: reason + (note ? ` – ${note}` : '')
+        const res = await apiPost(`/api/payments/${p.id}/refund`, {
+            reason:     reason + (note ? ` – ${note}` : ''),
+            refundType: _refundType
         });
-        showToast('Yêu cầu hoàn tiền đã được gửi thành công!', 'success');
+
+        if (_refundType === 'VOUCHER' && res.vouchers?.length) {
+            // Hiển thị thông báo thành công với vouchers nhận được
+            const names = res.vouchers.map(v => v.voucherName).join(', ');
+            showToast(`Đổi voucher thành công! Bạn nhận được: ${names}`, 'success');
+        } else {
+            showToast('Yêu cầu hoàn tiền đã được gửi thành công!', 'success');
+        }
+
         closeRefundModal();
         await loadPayments();
         await loadStats();
@@ -727,6 +1076,93 @@ async function submitRefund() {
         btn.disabled = false;
         btn.innerHTML = `<svg viewBox="0 0 20 20" fill="none"><path d="M17 5l-9.5 9.5L3 10" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Gửi yêu cầu`;
     }
+}
+
+/* ── Đồng bộ trạng thái radio card ── */
+function _syncRefundTypeCards(type) {
+    const cardCash    = document.getElementById('rtCardCash');
+    const cardVoucher = document.getElementById('rtCardVoucher');
+    if (cardCash)    cardCash.classList.toggle('selected',    type === 'CASH');
+    if (cardVoucher) cardVoucher.classList.toggle('selected', type === 'VOUCHER');
+}
+
+/* ── Khi người dùng đổi sang VOUCHER ── */
+async function onSelectVoucherRefund() {
+    _refundType = 'VOUCHER';
+    _syncRefundTypeCards('VOUCHER');
+
+    const warnCash    = document.getElementById('refundWarnCash');
+    const warnVoucher = document.getElementById('refundWarnVoucher');
+    warnCash.hidden    = true;
+    warnVoucher.hidden = false;
+
+    // Load gợi ý voucher
+    const box     = document.getElementById('voucherSuggestionBox');
+    const loading = document.getElementById('voucherSuggestionLoading');
+    const empty   = document.getElementById('voucherSuggestionEmpty');
+    box.hidden     = true;
+    empty.hidden   = true;
+    loading.hidden = false;
+
+    try {
+        const data = await apiGet(`/api/payments/${_refundPayment.id}/refund-voucher-suggestion`);
+        loading.hidden = true;
+
+        if (!data.available || !data.vouchers?.length) {
+            empty.hidden = false;
+            return;
+        }
+
+        renderVoucherSuggestions(data);
+        box.hidden = false;
+    } catch (err) {
+        loading.hidden = true;
+        empty.hidden   = false;
+        console.error('Voucher suggestion error:', err);
+    }
+}
+
+/* ── Khi người dùng chọn lại CASH ── */
+function onSelectCashRefund() {
+    _refundType = 'CASH';
+    _syncRefundTypeCards('CASH');
+
+    document.getElementById('refundWarnCash').hidden    = false;
+    document.getElementById('refundWarnVoucher').hidden = true;
+    document.getElementById('voucherSuggestionBox').hidden     = true;
+    document.getElementById('voucherSuggestionLoading').hidden = true;
+    document.getElementById('voucherSuggestionEmpty').hidden   = true;
+}
+
+function renderVoucherSuggestions(data) {
+    const list  = document.getElementById('voucherSuggestionList');
+    const total = document.getElementById('voucherSuggestionTotal');
+    list.innerHTML = '';
+
+    data.vouchers.forEach(v => {
+        const item = document.createElement('div');
+        item.className = 'vsb-item';
+        item.innerHTML = `
+            <div class="vsb-item-icon">
+                <svg viewBox="0 0 20 20" fill="none">
+                    <rect x="1" y="4" width="18" height="12" rx="2" stroke="#7c3aed" stroke-width="1.5"/>
+                    <path d="M7 4v12M1 8h6M1 12h6M9 8h6M9 12h4" stroke="#7c3aed" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="vsb-item-body">
+                <span class="vsb-item-name">${v.name}</span>
+                ${v.description ? `<span class="vsb-item-desc">${v.description}</span>` : ''}
+            </div>
+            <span class="vsb-item-value">${formatCurrency(v.value)}</span>`;
+        list.appendChild(item);
+    });
+
+    const diff = data.totalVoucherValue - data.refundAmount;
+    total.innerHTML = `
+        <span>Tổng giá trị voucher</span>
+        <span class="vsb-total-amt">${formatCurrency(data.totalVoucherValue)}
+            ${diff > 0 ? `<small class="vsb-bonus">+${formatCurrency(diff)} so với tiền hoàn</small>` : ''}
+        </span>`;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -820,6 +1256,28 @@ function initFilterListeners() {
         ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
         loadPayments();
     });
+
+    // ── Filter dịch vụ (client-side) ──
+    let svcSearchDebounce;
+    document.getElementById('searchServiceInput')?.addEventListener('input', e => {
+        clearTimeout(svcSearchDebounce);
+        svcSearchDebounce = setTimeout(() => {
+            state.searchService = e.target.value.trim();
+            applyServiceFilter();
+        }, 300);
+    });
+
+    document.getElementById('filterServiceStatus')?.addEventListener('change', e => {
+        state.filterServiceStatus = e.target.value;
+        applyServiceFilter();
+    });
+
+    document.getElementById('btnClearServiceFilter')?.addEventListener('click', () => {
+        state.searchService = ''; state.filterServiceStatus = '';
+        const ids = ['searchServiceInput', 'filterServiceStatus'];
+        ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+        applyServiceFilter();
+    });
 }
 
 /* ══════════════════════════════════════════════════════
@@ -833,6 +1291,20 @@ function initModalListeners() {
     // Hiển thị chính sách khi chọn lý do
     document.getElementById('refundReason')?.addEventListener('change', showRefundPolicy);
 
+    // Radio chọn hình thức hoàn trả
+    document.getElementById('rtCash')?.addEventListener('change', () => onSelectCashRefund());
+    document.getElementById('rtVoucher')?.addEventListener('change', () => onSelectVoucherRefund());
+
+    // Click vào card label cũng trigger
+    document.getElementById('rtCardCash')?.addEventListener('click', () => {
+        document.getElementById('rtCash').checked = true;
+        onSelectCashRefund();
+    });
+    document.getElementById('rtCardVoucher')?.addEventListener('click', () => {
+        document.getElementById('rtVoucher').checked = true;
+        onSelectVoucherRefund();
+    });
+
     document.getElementById('refundModal')?.addEventListener('click', e => {
         if (e.target.id === 'refundModal') closeRefundModal();
     });
@@ -843,28 +1315,30 @@ function initModalListeners() {
 }
 
 function showRefundPolicy() {
-    const policyPreview = document.getElementById('policyPreview');
+    const policyPreview     = document.getElementById('policyPreview');
+    const refundTypeSection = document.getElementById('refundTypeSection');
     if (!policyPreview || !_refundPolicies.length) return;
-    
+
     // Tìm chính sách áp dụng (ưu tiên policy có isApplicable = true)
     let applicable = _refundPolicies.find(p => p.isApplicable);
-    
+
     // Nếu không có policy nào applicable, lấy policy có minHours nhỏ nhất (policy mặc định)
     if (!applicable && _refundPolicies.length > 0) {
-        applicable = _refundPolicies.reduce((min, p) => 
+        applicable = _refundPolicies.reduce((min, p) =>
             p.minHours < min.minHours ? p : min
         );
     }
-    
+
     if (!applicable) {
-        policyPreview.hidden = true;
+        policyPreview.hidden     = true;
+        refundTypeSection.hidden = true;
         return;
     }
-    
+
     // Hiển thị chính sách
     policyPreview.hidden = false;
     policyPreview.innerHTML = `
-        <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:#e0f2fe;border:1px solid#bae6fd;border-radius:10px;">
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:#e0f2fe;border:1px solid #bae6fd;border-radius:10px;margin-bottom:4px;">
             <svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;flex-shrink:0;margin-top:1px;">
                 <circle cx="10" cy="10" r="7.5" stroke="#0284c7" stroke-width="1.5"/>
                 <path d="M10 7v4" stroke="#0284c7" stroke-width="1.5" stroke-linecap="round"/>
@@ -873,11 +1347,20 @@ function showRefundPolicy() {
             <div style="flex:1;">
                 <div style="font-size:12.5px;font-weight:700;color:#0c4a6e;margin-bottom:4px;">Chính sách hoàn tiền áp dụng</div>
                 <div style="font-size:12px;color:#075985;line-height:1.5;">
-                    <strong>${applicable.description}</strong>: Hoàn <strong>${applicable.refundPercent}%</strong> 
+                    <strong>${applicable.description}</strong>: Hoàn <strong>${applicable.refundPercent}%</strong>
                     (${formatCurrency(applicable.refundAmount)})
                 </div>
             </div>
         </div>`;
+
+    // Hiện section chọn hình thức hoàn trả
+    refundTypeSection.hidden = false;
+
+    // Nếu đang chọn VOUCHER thì cần reset lại suggestion (refundAmount đổi)
+    if (_refundType === 'VOUCHER') {
+        document.getElementById('rtCash').checked = true;
+        onSelectCashRefund();
+    }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -899,10 +1382,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    initTabListeners();
     initFilterListeners();
     initModalListeners();
     initCopyable();
 
-    // Load song song stats + danh sách
-    await Promise.all([loadStats(), loadPayments()]);
+    // Load song song stats + đặt phòng + đặt dịch vụ
+    await Promise.all([loadStats(), loadPayments(), loadServiceBookings()]);
 });
