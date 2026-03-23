@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard – HotelHub Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <!-- ═══════════════════════════════════════
+         SIDEBAR
+    ═══════════════════════════════════════ -->
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('dashboard')}"></aside>
+
+    <!-- ═══════════════════════════════════════
+         MAIN CONTENT
+    ═══════════════════════════════════════ -->
+    <main class="main-content">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Dashboard</h1>
+        </div>
+
+        <!-- ── Tổng quan ── -->
+        <section class="section">
+            <h2 class="section-title">Tổng quan</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Tỷ lệ lấp đầy</span>
+                    <span class="stat-value" id="statOccupancy">—</span>
+                    <span class="stat-change" id="statOccupancyChange">—</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">RevPAR</span>
+                    <span class="stat-value" id="statRevPar">—</span>
+                    <span class="stat-change" id="statRevParChange">—</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Tổng khách check-in</span>
+                    <span class="stat-value" id="statCheckIns">—</span>
+                    <span class="stat-change" id="statCheckInsChange">—</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Yêu cầu chờ</span>
+                    <span class="stat-value" id="statPending">—</span>
+                    <span class="stat-change" id="statPendingChange">—</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Doanh thu ── -->
+        <section class="section">
+            <h2 class="section-title">Doanh thu</h2>
+            <div class="charts-grid">
+                <!-- Biểu đồ doanh thu hàng tháng -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <p class="chart-subtitle">Doanh thu hàng tháng</p>
+                            <p class="chart-value" id="monthlyRevenueTotal">—</p>
+                        </div>
+                    </div>
+                    <div class="chart-area">
+                        <canvas id="monthlyRevenueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Biểu đồ doanh thu theo loại phòng -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <p class="chart-subtitle">Doanh thu theo loại phòng</p>
+                            <p class="chart-value" id="roomTypeRevenueTotal">—</p>
+                            <p class="chart-month" id="roomTypeMonth">—</p>
+                        </div>
+                    </div>
+                    <div class="chart-area">
+                        <canvas id="roomTypeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Giao dịch gần nhất ── -->
+        <section class="section">
+            <h2 class="section-title">Giao dịch gần nhất</h2>
+            <div class="table-card">
+                <div class="table-wrapper">
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Mã giao dịch</th>
+                                <th>Khách hàng</th>
+                                <th>Loại phòng</th>
+                                <th>Ngày check-in</th>
+                                <th>Ngày check-out</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTbody">
+                            <!-- Render bởi dashboard.js -->
+                            <tr>
+                                <td colspan="6" style="text-align:center;padding:24px;color:#8c7b72">
+                                    Đang tải dữ liệu...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+<div th:replace="~{fragments/admin-sidebar :: sidebar-script}"></div>
+
+</body>
+</html>

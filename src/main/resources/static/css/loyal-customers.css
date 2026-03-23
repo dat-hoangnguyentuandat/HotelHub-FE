@@ -1,0 +1,515 @@
+/* ===== RESET ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ===== BASE ===== */
+body {
+    font-family: 'Inter', 'Manrope', sans-serif;
+    background: #f5f2f0;
+    color: #17120f;
+    min-height: 100vh;
+}
+/* ═══════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════ */
+.main-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* ═══════════════════════════════════════
+   LOYALTY HERO – layout 2 cột
+═══════════════════════════════════════ */
+.loyalty-hero {
+    display: flex;
+    gap: 24px;
+    align-items: stretch;
+    background: #ede8e3;
+    border-radius: 20px;
+    padding: 36px;
+}
+
+/* ── Cột trái: Profile ── */
+.customer-profile-card {
+    flex: 0 0 260px;
+    background: #f5efe9;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 24px;
+    gap: 16px;
+    min-height: 260px;
+}
+
+.customer-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #ffffff;
+    box-shadow: 0 4px 20px rgba(23, 18, 15, 0.12);
+    flex-shrink: 0;
+}
+
+.customer-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.customer-name {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: #17120f;
+    text-align: center;
+    line-height: 1.3;
+}
+
+/* ── Badge hạng ── */
+.membership-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 24px;
+    border-radius: 50px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.membership-badge.gold    { background: #f5c800; color: #17120f; }
+.membership-badge.platinum { background: #b0b8d0; color: #17120f; }
+.membership-badge.silver  { background: #d0d0d0; color: #17120f; }
+
+/* ── Cột phải: Loyalty Info ── */
+.loyalty-info-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: #ede8e3;
+}
+
+.loyalty-title {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    color: #17120f;
+    letter-spacing: -0.5px;
+}
+
+.loyalty-subtitle {
+    font-size: 15px;
+    color: #5a4f48;
+    line-height: 1.5;
+    margin-top: -12px;
+}
+
+/* ── Điểm ── */
+.points-row {
+    display: flex;
+    gap: 16px;
+}
+
+.point-box {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border: 1px solid #f0ebe7;
+}
+
+.point-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #7a6d65;
+}
+
+.point-value {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 32px;
+    color: #17120f;
+    letter-spacing: -1px;
+}
+
+/* ── Tiến trình ── */
+.progress-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.progress-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #5a4f48;
+}
+
+.progress-track {
+    width: 100%;
+    height: 8px;
+    background: #ddd8d2;
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #f5c800;
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-caption {
+    font-size: 12px;
+    color: #7a6d65;
+}
+
+/* ── Quyền lợi ── */
+.benefits-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.benefits-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #17120f;
+}
+
+.benefits-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.benefit-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 18px;
+    background: #ffffff;
+    border: 1px solid #e0dad4;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #3d3028;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.benefit-chip:hover {
+    background: #f5c800;
+    border-color: #f5c800;
+    color: #17120f;
+}
+
+/* ═══════════════════════════════════════
+   SECTION HEADING
+═══════════════════════════════════════ */
+.section-heading {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: #17120f;
+    letter-spacing: -0.3px;
+}
+
+/* ═══════════════════════════════════════
+   TIER CARDS
+═══════════════════════════════════════ */
+.tiers-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.tiers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.tier-card {
+    background: #ffffff;
+    border: 2px solid #f0ebe7;
+    border-radius: 16px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.tier-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(23, 18, 15, 0.08);
+}
+
+.tier-card.active {
+    border-color: #f5c800;
+    background: linear-gradient(135deg, #fffef0 0%, #ffffff 100%);
+    box-shadow: 0 4px 24px rgba(245, 200, 0, 0.18);
+}
+
+.tier-icon {
+    font-size: 32px;
+    line-height: 1;
+}
+
+.tier-name {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: #17120f;
+}
+
+.tier-range {
+    font-size: 13px;
+    color: #7a6d65;
+    font-weight: 500;
+}
+
+.tier-perks {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.tier-perks li {
+    font-size: 13px;
+    color: #5a4f48;
+    padding-left: 16px;
+    position: relative;
+}
+
+.tier-perks li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #c17c5a;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.current-tier-badge {
+    position: absolute;
+    top: -1px;
+    right: 16px;
+    background: #f5c800;
+    color: #17120f;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 0 0 8px 8px;
+    letter-spacing: 0.3px;
+}
+
+/* ═══════════════════════════════════════
+   HISTORY TABLE
+═══════════════════════════════════════ */
+.history-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.filter-select,
+.filter-month {
+    height: 38px;
+    padding: 0 14px;
+    border: 1.5px solid #e0dad4;
+    border-radius: 10px;
+    background: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: #3d3028;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.filter-select:focus,
+.filter-month:focus {
+    border-color: #c17c5a;
+}
+
+.table-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #f0ebe7;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(23, 18, 15, 0.04);
+}
+
+.table-wrapper { overflow-x: auto; }
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.history-table thead tr {
+    background: #f9f6f3;
+    border-bottom: 1px solid #f0ebe7;
+}
+
+.history-table th {
+    padding: 14px 20px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #7a6d65;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    white-space: nowrap;
+}
+
+.history-table td {
+    padding: 15px 20px;
+    color: #3d3028;
+    border-bottom: 1px solid #f9f6f3;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.history-table tbody tr:last-child td { border-bottom: none; }
+
+.history-table tbody tr:hover { background: #fdfbf9; }
+
+.badge-earn {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-redeem {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    background: #fff3e0;
+    color: #e65100;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.points-earn   { color: #2e7d32; font-weight: 700; }
+.points-redeem { color: #e65100; font-weight: 700; }
+
+/* ── Nút Đổi điểm ── */
+.redeem-action {
+    margin-top: 4px;
+}
+
+.btn-redeem {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 22px;
+    background: #f5c800;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #17120f;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.btn-redeem:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+}
+
+/* ── Nút Load More ── */
+.load-more-wrap {
+    display: flex;
+    justify-content: center;
+    padding-top: 12px;
+}
+
+.btn-load-more {
+    padding: 10px 28px;
+    background: #ffffff;
+    border: 1.5px solid #e0dad4;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #5a4f48;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.btn-load-more:hover {
+    background: #f5f2f0;
+    border-color: #c17c5a;
+    color: #17120f;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 768px) {
+    .navbar { padding: 0 16px; }
+    .navbar-nav { display: none; }
+
+    .main-content { padding: 24px 16px 60px; gap: 28px; }
+
+    .loyalty-hero {
+        flex-direction: column;
+        padding: 24px;
+        gap: 20px;
+    }
+
+    .customer-profile-card { flex: none; }
+
+    .points-row { flex-direction: column; }
+
+    .tiers-grid { grid-template-columns: 1fr; }
+
+    .history-header { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+    .loyalty-title { font-size: 22px; }
+    .point-value   { font-size: 26px; }
+}

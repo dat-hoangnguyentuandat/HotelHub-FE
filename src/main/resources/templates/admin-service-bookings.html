@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Yêu cầu dịch vụ bổ sung – HotelHub Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/admin-service-bookings.css}" />
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <!-- ═══════════════════════════════════════
+         SIDEBAR
+    ═══════════════════════════════════════ -->
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('service-bookings')}"></aside>
+
+    <!-- ═══════════════════════════════════════
+         MAIN CONTENT
+    ═══════════════════════════════════════ -->
+    <main class="main-content">
+
+        <!-- Top bar -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Yêu cầu dịch vụ bổ sung</h1>
+                <p class="page-subtitle">Quản lý các yêu cầu đặt dịch vụ từ khách hàng</p>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="9" cy="9" r="6" stroke="#8c7b72" stroke-width="1.5"/>
+                        <path d="M13.5 13.5L17 17" stroke="#8c7b72" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Tìm mã, tên, SĐT..." />
+                </div>
+                <select class="filter-select" id="filterStatus">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="PENDING">Chờ xử lý</option>
+                    <option value="CONFIRMED">Đã xác nhận</option>
+                    <option value="COMPLETED">Đã hoàn thành</option>
+                    <option value="CANCELLED">Đã hủy</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Stats cards -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-card stat-yellow">
+                <div class="stat-icon stat-icon-pending">
+                    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7V12L15 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Chờ xử lý</span>
+                    <span class="stat-val" id="statPending">—</span>
+                </div>
+            </div>
+            <div class="stat-card stat-blue">
+                <div class="stat-icon stat-icon-confirmed">
+                    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M8 12l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Đã xác nhận</span>
+                    <span class="stat-val" id="statConfirmed">—</span>
+                </div>
+            </div>
+            <div class="stat-card stat-green">
+                <div class="stat-icon stat-icon-completed">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Hoàn thành</span>
+                    <span class="stat-val" id="statCompleted">—</span>
+                </div>
+            </div>
+            <div class="stat-card stat-red">
+                <div class="stat-icon stat-icon-cancelled">
+                    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Đã hủy</span>
+                    <span class="stat-val" id="statCancelled">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table card -->
+        <div class="table-card">
+            <div class="table-header">
+                <span class="table-count" id="tableCount">Đang tải...</span>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="booking-table" id="bookingTable">
+                    <thead>
+                        <tr>
+                            <th class="col-code">Mã đặt</th>
+                            <th class="col-service">Dịch vụ</th>
+                            <th class="col-guest">Khách hàng</th>
+                            <th class="col-contact">Liên hệ</th>
+                            <th class="col-qty">Số lượng</th>
+                            <th class="col-amount">Tổng tiền</th>
+                            <th class="col-status">Trạng thái</th>
+                            <th class="col-date">Ngày tạo</th>
+                            <th class="col-action">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingTableBody">
+                        <tr class="loading-row">
+                            <td colspan="9">
+                                <div class="skeleton-wrap">
+                                    <div class="skeleton"></div>
+                                    <div class="skeleton"></div>
+                                    <div class="skeleton"></div>
+                                    <div class="skeleton"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty state -->
+            <div class="empty-state" id="emptyState" style="display:none">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="8" y="10" width="48" height="44" rx="4" stroke="#d4c5bc" stroke-width="2.5"/>
+                    <path d="M8 26H56M20 10V26M44 10V26" stroke="#d4c5bc" stroke-width="2.5" stroke-linecap="round"/>
+                    <circle cx="32" cy="42" r="8" stroke="#d4c5bc" stroke-width="2.5"/>
+                    <path d="M29 42H35M32 39V45" stroke="#d4c5bc" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                <p>Không tìm thấy yêu cầu dịch vụ nào</p>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+
+    </main>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL CHI TIẾT
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="detailOverlay">
+    <div class="modal modal-detail" id="detailModal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <h2 class="modal-title" id="detailTitle">Chi tiết yêu cầu dịch vụ</h2>
+            <button class="modal-close" id="detailClose" aria-label="Đóng">&times;</button>
+        </div>
+        <div class="modal-body" id="detailBody">
+            <!-- Content will be injected by JS -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" id="btnCloseDetail">Đóng</button>
+            <button class="btn-save" id="btnUpdateStatus" style="display:none">Cập nhật trạng thái</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="adminToast">
+    <svg class="toast-icon-ok" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#22c55e"/><path d="M6 10l3 3 5-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg class="toast-icon-err" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#ef4444"/><path d="M7 7l6 6M13 7l-6 6" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span id="adminToastMsg">Thao tác thành công!</span>
+</div>
+
+<script th:inline="javascript">
+    const BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+</script>
+<script th:src="@{/js/admin-service-bookings.js}"></script>
+<div th:replace="~{fragments/admin-sidebar :: sidebar-script}"></div>
+
+</body>
+</html>

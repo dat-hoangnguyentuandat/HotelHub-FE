@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký – HotelHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/register.css}" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<div class="register-wrapper">
+
+    <!-- ===== LEFT PANEL ===== -->
+    <div class="left-panel">
+        <img
+            class="hotel-bg"
+            th:src="@{/images/register.png}"
+            src="/images/register.png"
+            alt="Hotel lobby"
+        />
+        <div class="overlay"></div>
+        <a href="/" class="panel-logo">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 14V6L8 2L14 6V14H10V10H6V14H2Z" fill="#fff"/>
+            </svg>
+            HotelHub
+        </a>
+        <div class="panel-text">
+            <h2>Gia nhập cùng<br/>hàng nghìn khách hàng</h2>
+            <p>Tạo tài khoản ngay hôm nay để nhận ưu đãi độc quyền và trải nghiệm dịch vụ cao cấp.</p>
+        </div>
+    </div>
+
+    <!-- ===== RIGHT PANEL ===== -->
+    <div class="right-panel">
+
+        <!-- Title block -->
+        <div class="title-block">
+            <h1>Tạo tài khoản</h1>
+            <p class="subtitle">Đăng ký chỗ nghỉ của bạn để truy cập vào bảng điều khiển quản lý.</p>
+        </div>
+
+        <!-- Alert banner (success / error từ server) -->
+        <div class="alert-banner" id="alertBanner"></div>
+
+        <!-- Full name -->
+        <label class="field-label" for="fullName">Họ và tên đầy đủ</label>
+        <input
+            class="input-field"
+            type="text"
+            id="fullName"
+            name="fullName"
+            placeholder="Nguyễn Văn A"
+            autocomplete="name"
+        />
+        <span class="error-msg" id="fullNameError">Vui lòng nhập họ và tên.</span>
+
+        <!-- Email -->
+        <label class="field-label" for="email">Địa chỉ email</label>
+        <input
+            class="input-field"
+            type="email"
+            id="email"
+            name="email"
+            placeholder="example@email.com"
+            autocomplete="email"
+        />
+        <span class="error-msg" id="emailError">Vui lòng nhập địa chỉ email hợp lệ.</span>
+
+        <!-- Password row -->
+        <div class="password-row">
+            <div class="password-group">
+                <label for="password">Mật khẩu</label>
+                <input
+                    class="input-field"
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="••••••••"
+                    autocomplete="new-password"
+                />
+            </div>
+            <div class="password-group">
+                <label for="confirmPassword">Xác nhận mật khẩu</label>
+                <input
+                    class="input-field"
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    placeholder="••••••••"
+                    autocomplete="new-password"
+                />
+            </div>
+        </div>
+        <span class="error-msg" id="passwordError">Mật khẩu không khớp.</span>
+
+        <!-- Submit button -->
+        <button class="btn-create" type="button" id="btnRegister">
+            Tạo tài khoản
+        </button>
+
+        <!-- Divider -->
+        <div class="divider">
+            <hr />
+            <span>Hoặc đăng ký với</span>
+            <hr />
+        </div>
+
+        <!-- Social buttons -->
+        <div class="social-buttons">
+            <div id="g_id_onload"
+                 data-client_id="164996972338-922radebsfu7b6qi9njabqi3e30asf67.apps.googleusercontent.com"
+                 data-callback="handleGoogleRegister"
+                 data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-size="large"
+                 data-theme="outline"
+                 data-text="signup_with"
+                 data-shape="rectangular"
+                 data-logo_alignment="left"
+                 data-width="400">
+            </div>
+        </div>
+
+        <!-- Login link -->
+        <div class="login-link">
+            <span>Bạn đã có tài khoản chưa?</span>
+            <a th:href="@{/login}" href="/login">Đăng nhập</a>
+        </div>
+
+    </div><!-- end .right-panel -->
+</div><!-- end .register-wrapper -->
+
+<script th:inline="javascript">
+    const BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+
+    const btnRegister   = document.getElementById('btnRegister');
+    const fullNameInput = document.getElementById('fullName');
+    const emailInput    = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const confirmInput  = document.getElementById('confirmPassword');
+
+    const fullNameError = document.getElementById('fullNameError');
+    const emailError    = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+    const alertBanner   = document.getElementById('alertBanner');
+
+    /* ── helpers ── */
+    function showError(el, msg) { el.textContent = msg; el.classList.add('visible'); }
+    function hideError(el)      { el.classList.remove('visible'); }
+    function validateEmail(v)   { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+    function showAlert(type, msg) {
+        alertBanner.textContent = msg;
+        alertBanner.className   = 'alert-banner ' + type;
+        alertBanner.style.display = 'block';
+    }
+    function hideAlert() { alertBanner.style.display = 'none'; }
+
+    function setLoading(on) {
+        btnRegister.disabled    = on;
+        btnRegister.textContent = on ? 'Đang xử lý...' : 'Tạo tài khoản';
+    }
+
+    /* ── submit ── */
+    btnRegister.addEventListener('click', async () => {
+        let valid = true;
+
+        if (fullNameInput.value.trim() === '') {
+            showError(fullNameError, 'Vui lòng nhập họ và tên.'); valid = false;
+        } else { hideError(fullNameError); }
+
+        if (!validateEmail(emailInput.value.trim())) {
+            showError(emailError, 'Vui lòng nhập địa chỉ email hợp lệ.'); valid = false;
+        } else { hideError(emailError); }
+
+        if (passwordInput.value.length < 8) {
+            showError(passwordError, 'Mật khẩu phải có ít nhất 8 ký tự.'); valid = false;
+        } else if (passwordInput.value !== confirmInput.value) {
+            showError(passwordError, 'Mật khẩu không khớp.'); valid = false;
+        } else { hideError(passwordError); }
+
+        if (!valid) return;
+
+        setLoading(true);
+        hideAlert();
+
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/auth/register`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fullName:        fullNameInput.value.trim(),
+                    email:           emailInput.value.trim(),
+                    password:        passwordInput.value,
+                    confirmPassword: confirmInput.value
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.status === 201) {
+                localStorage.setItem('accessToken', data.accessToken);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                showAlert('success', 'Đăng ký thành công! Đang chuyển hướng...');
+                setTimeout(() => { window.location.href = '/login?registered=true'; }, 1500);
+                return;
+            }
+
+            if (res.status === 409) {
+                showError(emailError, 'Email này đã được sử dụng.');
+            } else if (res.status === 400) {
+                const fe = data.fieldErrors;
+                if (fe) {
+                    if (fe.fullName)        showError(fullNameError, fe.fullName);
+                    if (fe.email)          showError(emailError,    fe.email);
+                    if (fe.password)       showError(passwordError, fe.password);
+                    if (fe.confirmPassword) showError(passwordError, fe.confirmPassword);
+                } else {
+                    showAlert('error', data.message || 'Dữ liệu không hợp lệ.');
+                }
+            } else {
+                showAlert('error', 'Đã xảy ra lỗi máy chủ. Vui lòng thử lại.');
+            }
+
+        } catch (e) {
+            showAlert('error', 'Không thể kết nối tới máy chủ. Vui lòng kiểm tra backend đang chạy.');
+        } finally {
+            setLoading(false);
+        }
+    });
+
+    /* ── real-time clear errors ── */
+    fullNameInput.addEventListener('input', () => hideError(fullNameError));
+    emailInput.addEventListener('input',    () => hideError(emailError));
+    passwordInput.addEventListener('input', () => hideError(passwordError));
+    confirmInput.addEventListener('input',  () => hideError(passwordError));
+
+    /* ── Google Sign-In callback ── */
+    window.handleGoogleRegister = async function(response) {
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/auth/google`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ credential: response.credential })
+            });
+
+            const data = await res.json();
+
+            if (res.status === 200) {
+                localStorage.setItem('accessToken', data.accessToken);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                showAlert('success', 'Đăng ký thành công! Đang chuyển hướng...');
+                setTimeout(() => { window.location.href = '/'; }, 1500);
+            } else {
+                showAlert('error', 'Đăng ký Google thất bại. Vui lòng thử lại.');
+            }
+        } catch (e) {
+            showAlert('error', 'Không thể kết nối tới máy chủ.');
+        }
+    };
+</script>
+
+</body>
+</html>

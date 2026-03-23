@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết Đoàn Khách - HotelHub</title>
+    <link rel="stylesheet" th:href="@{/css/admin-group-booking-detail.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/admin-sidebar :: sidebar('group-bookings')}"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="topbar">
+                <button class="btn-back" onclick="window.location.href='/admin/group-bookings'">
+                    ← Quay lại
+                </button>
+                <h1 class="page-title" id="groupName">Chi tiết Đoàn Khách</h1>
+            </div>
+
+            <!-- Group Info Card -->
+            <div class="info-card">
+                <h3>Thông tin đoàn</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Tên đoàn:</label>
+                        <span id="infoGroupName">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Người liên hệ:</label>
+                        <span id="infoContactPerson">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Số điện thoại:</label>
+                        <span id="infoContactPhone">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Email:</label>
+                        <span id="infoContactEmail">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Số lượng phòng:</label>
+                        <span id="infoTotalRooms">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Check-in:</label>
+                        <span id="infoCheckIn">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Check-out:</label>
+                        <span id="infoCheckOut">-</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Trạng thái:</label>
+                        <span id="infoStatus" class="status-badge">-</span>
+                    </div>
+                </div>
+                <div class="info-item full-width" id="noteContainer" style="display: none;">
+                    <label>Ghi chú:</label>
+                    <p id="infoNote"></p>
+                </div>
+            </div>
+
+            <!-- Rooms Management -->
+            <div class="rooms-section">
+                <div class="section-header">
+                    <h3>Danh sách phòng</h3>
+                    <button class="btn-primary" onclick="openAddRoomModal()">+ Thêm phòng</button>
+                </div>
+
+                <div class="table-container">
+                    <table id="roomsTable">
+                        <thead>
+                            <tr>
+                                <th>Tên khách</th>
+                                <th>Loại phòng</th>
+                                <th>Số phòng</th>
+                                <th>Giá</th>
+                                <th>Trạng thái</th>
+                                <th>Ghi chú</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roomsBody">
+                            <!-- Data loaded by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Room Modal -->
+    <div id="roomModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRoomModal()">&times;</span>
+            <h2 id="roomModalTitle">Thêm phòng mới</h2>
+            <form id="roomForm">
+                <input type="hidden" id="roomId">
+                
+                <div class="form-group">
+                    <label>Tên khách <span class="required">*</span></label>
+                    <input type="text" id="guestName" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Loại phòng <span class="required">*</span></label>
+                        <select id="roomType" required>
+                            <option value="">-- Chọn loại phòng --</option>
+                            <option value="Standard">Standard</option>
+                            <option value="Deluxe">Deluxe</option>
+                            <option value="Junior Suite">Junior Suite</option>
+                            <option value="Suite">Suite</option>
+                            <option value="Family">Family</option>
+                            <option value="Presidential Suite">Presidential Suite</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Số phòng</label>
+                        <input type="text" id="roomNumber" placeholder="VD: 101">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Giá phòng <span class="required">*</span></label>
+                    <input type="number" id="price" min="0" step="1000" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Ghi chú</label>
+                    <textarea id="roomNote" rows="3"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeRoomModal()">Hủy</button>
+                    <button type="submit" class="btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Status Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content small">
+            <span class="close" onclick="closeStatusModal()">&times;</span>
+            <h2>Cập nhật trạng thái</h2>
+            <form id="statusForm">
+                <input type="hidden" id="statusRoomId">
+                
+                <div class="form-group">
+                    <label>Trạng thái <span class="required">*</span></label>
+                    <select id="roomStatus" required>
+                        <option value="BOOKED">Đã cọc</option>
+                        <option value="CHECKED_IN">Đã Check-in</option>
+                        <option value="CHECKED_OUT">Đã Check-out</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeStatusModal()">Hủy</button>
+                    <button type="submit" class="btn-primary">Cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const backendUrl = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+        const groupBookingId = /*[[${groupBookingId}]]*/ 0;
+    </script>
+    <script th:src="@{/js/admin-group-booking-detail.js}"></script>
+    <div th:replace="~{fragments/admin-sidebar :: sidebar-script}"></div>
+</body>
+</html>

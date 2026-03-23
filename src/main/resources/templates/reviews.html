@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đánh Giá – HotelHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/navbar.css}" />
+    <link rel="stylesheet" th:href="@{/css/reviews.css}" />
+    <link rel="stylesheet" th:href="@{/css/special-request-widget.css}" />
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<header th:replace="~{fragments/navbar :: navbar('reviews')}"></header>
+
+<!-- ===== HERO ===== -->
+<section class="rv-hero">
+    <div class="rv-hero-inner">
+        <nav class="rv-breadcrumb" aria-label="breadcrumb">
+            <a href="/">Trang chủ</a>
+            <svg viewBox="0 0 16 16" fill="none" width="12" height="12"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span>Đánh giá</span>
+        </nav>
+        <h1 class="rv-hero-title">Đánh Giá Từ Khách Hàng</h1>
+        <p class="rv-hero-sub">Hàng nghìn trải nghiệm thật từ khách hàng của chúng tôi. Minh bạch và đáng tin cậy.</p>
+        <div class="rv-hero-score" id="heroScore">
+            <span class="rv-hero-score-num" id="heroScoreNum">—</span>
+            <div class="rv-hero-score-right">
+                <div class="rv-hero-stars" id="heroStars"></div>
+                <span class="rv-hero-total" id="heroTotal">— đánh giá</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="rv-container">
+
+    <!-- Stats card -->
+    <div class="rv-stats-section">
+        <div class="rv-stats-card" id="statsCard">
+
+            <div class="rv-stats-top">
+                <!-- Điểm tổng -->
+                <div class="rv-score-col">
+                    <span class="rv-score-big" id="scoreBig">—</span>
+                    <div>
+                        <div class="rv-score-stars" id="scoreStars"></div>
+                        <p class="rv-score-label" id="scoreLabel">Đang tải...</p>
+                    </div>
+                </div>
+                <!-- Phân phối sao -->
+                <div class="rv-bars-col" id="starBars"></div>
+            </div>
+
+            <!-- Tiêu chí chi tiết -->
+            <div class="rv-criteria-row" id="criteriaRow"></div>
+        </div>
+    </div>
+
+    <!-- Banner viết đánh giá -->
+    <div class="rv-write-banner">
+        <div class="rv-write-text">
+            <h3>Bạn đã từng lưu trú tại HotelHub?</h3>
+            <p>Chia sẻ trải nghiệm để giúp khách hàng khác có lựa chọn tốt hơn.</p>
+        </div>
+        <button class="rv-write-btn" id="btnOpenWrite">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7
+                         M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                      stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Viết đánh giá
+        </button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="rv-toolbar">
+        <div class="rv-search-wrap">
+            <svg class="rv-search-icon" viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <input type="text" id="rvSearch" class="rv-search-input"
+                   placeholder="Tìm theo tên khách, nội dung..." autocomplete="off" />
+        </div>
+
+        <div class="rv-star-tabs">
+            <button class="rv-star-tab active" data-star="">Tất cả</button>
+            <button class="rv-star-tab" data-star="5">
+                <svg viewBox="0 0 14 14" width="11" height="11" fill="#f5a623"><path d="M7 1l1.545 3.09L12 4.635l-2.5 2.437.59 3.428L7 8.77 3.91 10.5l.59-3.428L2 4.635l3.455-.545L7 1z"/></svg>
+                5 sao
+            </button>
+            <button class="rv-star-tab" data-star="4">
+                <svg viewBox="0 0 14 14" width="11" height="11" fill="#f5a623"><path d="M7 1l1.545 3.09L12 4.635l-2.5 2.437.59 3.428L7 8.77 3.91 10.5l.59-3.428L2 4.635l3.455-.545L7 1z"/></svg>
+                4 sao
+            </button>
+            <button class="rv-star-tab" data-star="3">
+                <svg viewBox="0 0 14 14" width="11" height="11" fill="#f5a623"><path d="M7 1l1.545 3.09L12 4.635l-2.5 2.437.59 3.428L7 8.77 3.91 10.5l.59-3.428L2 4.635l3.455-.545L7 1z"/></svg>
+                3 sao
+            </button>
+            <button class="rv-star-tab" data-star="1-2">
+                <svg viewBox="0 0 14 14" width="11" height="11" fill="#d4c9c2"><path d="M7 1l1.545 3.09L12 4.635l-2.5 2.437.59 3.428L7 8.77 3.91 10.5l.59-3.428L2 4.635l3.455-.545L7 1z"/></svg>
+                1-2 sao
+            </button>
+        </div>
+
+        <select class="rv-sort-select" id="rvSort">
+            <option value="newest">Mới nhất</option>
+            <option value="highest">Điểm cao nhất</option>
+            <option value="lowest">Điểm thấp nhất</option>
+        </select>
+
+        <span class="rv-result-count" id="rvResultCount"></span>
+    </div>
+
+    <!-- Grid đánh giá -->
+    <div class="rv-grid" id="rvGrid">
+        <div class="rv-loading">
+            <div class="rv-spinner"></div>
+            <span>Đang tải đánh giá...</span>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="rv-pagination" id="rvPagination"></div>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <svg viewBox="0 0 16 16" fill="none" width="20" height="20"><path d="M2 14V6L8 2L14 6V14H10V10H6V14H2Z" fill="#fff"/></svg>
+                <span>HotelHub</span>
+            </div>
+            <p class="footer-tagline">Trải nghiệm nghỉ dưỡng đẳng cấp,<br/>dịch vụ tận tâm mỗi ngày.</p>
+            <div class="footer-socials">
+                <a href="#" class="social-btn" aria-label="Facebook">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                </a>
+                <a href="#" class="social-btn" aria-label="Instagram">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                </a>
+            </div>
+        </div>
+        <div class="footer-col">
+            <h4 class="footer-heading">Khám phá</h4>
+            <ul class="footer-links">
+                <li><a href="/">Trang chủ</a></li>
+                <li><a href="/rooms">Danh sách phòng</a></li>
+                <li><a href="/services">Dịch vụ</a></li>
+                <li><a href="/reviews">Đánh giá</a></li>
+                <li><a href="/loyal-customers">Khách hàng thân thiết</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4 class="footer-heading">Liên hệ</h4>
+            <ul class="footer-contact">
+                <li>
+                    <svg viewBox="0 0 20 20" fill="none" width="14" height="14"><path d="M10 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="1.5"/><path d="M10 2a7 7 0 0 0-7 7c0 4 7 11 7 11s7-7 7-11a7 7 0 0 0-7-7z" stroke="currentColor" stroke-width="1.5"/></svg>
+                    123 Đường Lê Lợi, Q.1, TP.HCM
+                </li>
+                <li>
+                    <svg viewBox="0 0 20 20" fill="none" width="14" height="14"><path d="M2 4h16v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4zm0 0l8 7 8-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    support@hotelhub.vn
+                </li>
+                <li>
+                    <svg viewBox="0 0 20 20" fill="none" width="14" height="14"><path d="M3 4a1 1 0 0 1 1-1h3l1.5 3.5L7 8a11 11 0 0 0 5 5l1.5-1.5L17 13v3a1 1 0 0 1-1 1A14 14 0 0 1 3 4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                    1800 1234 (Miễn phí)
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 HotelHub. Bảo lưu mọi quyền.</span>
+        <div class="footer-bottom-links">
+            <a href="#">Chính sách bảo mật</a>
+            <a href="#">Điều khoản sử dụng</a>
+        </div>
+    </div>
+</footer>
+
+<!-- ===== MODAL: Chi tiết đánh giá ===== -->
+<div class="rv-modal-overlay" id="detailOverlay">
+    <div class="rv-modal" id="detailModal" role="dialog" aria-modal="true" aria-label="Chi tiết đánh giá">
+        <div class="rv-modal-header">
+            <h2 class="rv-modal-title">Chi tiết đánh giá</h2>
+            <button class="rv-modal-close" id="btnCloseDetail" aria-label="Đóng">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+        </div>
+        <div class="rv-modal-body" id="detailBody"></div>
+    </div>
+</div>
+
+<!-- ===== MODAL: Viết đánh giá ===== -->
+<div class="rv-modal-overlay" id="writeOverlay">
+    <div class="rv-write-modal" role="dialog" aria-modal="true" aria-label="Viết đánh giá">
+        <div class="rv-modal-header">
+            <h2 class="rv-modal-title">Viết đánh giá</h2>
+            <button class="rv-modal-close" id="btnCloseWrite" aria-label="Đóng">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+        </div>
+        <div class="rv-write-body">
+
+            <div class="rv-form-group">
+                <label class="rv-form-label">Mã đặt phòng <span class="req">*</span></label>
+                <input type="number" id="wBookingId" class="rv-form-input" placeholder="VD: 123" min="1" />
+            </div>
+
+            <div class="rv-form-group">
+                <label class="rv-form-label">Điểm tổng thể <span class="req">*</span></label>
+                <div class="rv-star-picker" id="mainStarPicker">
+                    <button class="rv-star-pick-btn" data-val="1" aria-label="1 sao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                    <button class="rv-star-pick-btn" data-val="2" aria-label="2 sao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                    <button class="rv-star-pick-btn" data-val="3" aria-label="3 sao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                    <button class="rv-star-pick-btn" data-val="4" aria-label="4 sao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                    <button class="rv-star-pick-btn" data-val="5" aria-label="5 sao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                </div>
+            </div>
+
+            <div class="rv-form-group">
+                <label class="rv-form-label">Tiêu đề</label>
+                <input type="text" id="wTitle" class="rv-form-input" placeholder="VD: Trải nghiệm tuyệt vời!" maxlength="255" />
+            </div>
+
+            <div class="rv-form-group">
+                <label class="rv-form-label">Nội dung nhận xét</label>
+                <textarea id="wComment" class="rv-form-textarea" rows="4"
+                          placeholder="Chia sẻ chi tiết trải nghiệm của bạn..." maxlength="3000"></textarea>
+            </div>
+
+            <div class="rv-form-group">
+                <label class="rv-form-label">Đánh giá chi tiết <span class="rv-form-opt">(tuỳ chọn)</span></label>
+                <div class="rv-sub-grid">
+                    <div class="rv-sub-item">
+                        <span class="rv-sub-label">Phòng ở</span>
+                        <div class="rv-sub-stars" data-key="roomRating" id="subRoom">
+                            <button class="rv-sub-star" data-val="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        </div>
+                    </div>
+                    <div class="rv-sub-item">
+                        <span class="rv-sub-label">Dịch vụ</span>
+                        <div class="rv-sub-stars" data-key="serviceRating" id="subService">
+                            <button class="rv-sub-star" data-val="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        </div>
+                    </div>
+                    <div class="rv-sub-item">
+                        <span class="rv-sub-label">Vị trí</span>
+                        <div class="rv-sub-stars" data-key="locationRating" id="subLocation">
+                            <button class="rv-sub-star" data-val="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        </div>
+                    </div>
+                    <div class="rv-sub-item">
+                        <span class="rv-sub-label">Sạch sẽ</span>
+                        <div class="rv-sub-stars" data-key="cleanlinessRating" id="subClean">
+                            <button class="rv-sub-star" data-val="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        </div>
+                    </div>
+                    <div class="rv-sub-item">
+                        <span class="rv-sub-label">Tiện nghi</span>
+                        <div class="rv-sub-stars" data-key="amenitiesRating" id="subAmenities">
+                            <button class="rv-sub-star" data-val="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        </div>
+                    </div>
+                    <div class="rv-sub-item">
+                        <span class="rv-sub-label">Giá trị</span>
+                        <div class="rv-sub-stars" data-key="valueRating" id="subValue">
+                            <button class="rv-sub-star" data-val="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                            <button class="rv-sub-star" data-val="5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="rv-modal-footer">
+            <button class="rv-btn-cancel" id="btnCancelWrite">Huỷ</button>
+            <button class="rv-btn-submit" id="wBtnSubmit">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 19-7z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Gửi đánh giá
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="rv-toast" id="rvToast"></div>
+
+<!-- Scripts -->
+<script th:inline="javascript">
+    const BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+</script>
+<script th:src="@{/js/reviews.js}"></script>
+<script th:src="@{/js/navbar.js}"></script>
+<script th:src="@{/js/special-request-widget.js}"></script>
+
+</body>
+</html>

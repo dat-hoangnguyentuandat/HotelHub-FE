@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Yêu cầu Đặc biệt – HotelHub Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/admin-special-requests.css}" />
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <!-- ═══════════════════════════════════════
+         SIDEBAR
+    ═══════════════════════════════════════ -->
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('special-requests')}"></aside>
+
+    <!-- ═══════════════════════════════════════
+         MAIN CONTENT
+    ═══════════════════════════════════════ -->
+    <main class="main-content">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-left">
+                <h1 class="page-title">Quản lý Yêu cầu</h1>
+                <p class="page-subtitle">Xử lý các yêu cầu đặc biệt từ khách hàng</p>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-total">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Tổng yêu cầu</span>
+                    <span class="stat-value" id="statTotal">—</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-pending">
+                    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Chờ xử lý</span>
+                    <span class="stat-value stat-pending" id="statPending">—</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-approved">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Đã duyệt</span>
+                    <span class="stat-value stat-approved" id="statApproved">—</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-done">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Đã xử lý</span>
+                    <span class="stat-value stat-done" id="statDone">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar: Search + Filter -->
+        <div class="toolbar">
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none">
+                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="search-input"
+                    placeholder="Nhập yêu cầu tìm kiếm"
+                    autocomplete="off"
+                />
+            </div>
+            <div class="filter-group">
+                <select id="statusFilter" class="filter-select">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="PENDING">Chờ xử lý</option>
+                    <option value="APPROVED">Đã duyệt</option>
+                    <option value="DONE">Đã xử lý</option>
+                    <option value="REJECTED">Từ chối</option>
+                </select>
+                <button class="btn-search" id="btnSearch" onclick="doSearch()">Tìm kiếm</button>
+            </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="table-card">
+            <div class="table-wrap">
+                <table class="requests-table" id="requestsTable">
+                    <thead>
+                        <tr>
+                            <th class="col-no">#</th>
+                            <th class="col-name">Họ và tên</th>
+                            <th class="col-type">Loại yêu cầu</th>
+                            <th class="col-content">Nội dung</th>
+                            <th class="col-status">Trạng thái</th>
+                            <th class="col-action">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsTbody">
+                        <!-- Filled by JS -->
+                        <tr id="loadingRow">
+                            <td colspan="6" class="table-empty">
+                                <div class="loading-spinner"></div>
+                                <span>Đang tải dữ liệu...</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL: Thêm / Chỉnh sửa yêu cầu
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal" id="modalForm">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Thêm yêu cầu đặc biệt</h2>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Họ và tên khách <span class="required">*</span></label>
+                    <input type="text" id="fGuestName" class="form-control" placeholder="Nguyễn Văn A" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="tel" id="fGuestPhone" class="form-control" placeholder="0901234567" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Loại yêu cầu <span class="required">*</span></label>
+                <select id="fRequestType" class="form-control">
+                    <option value="">-- Chọn loại yêu cầu --</option>
+                    <option value="Check-in sớm">Check-in sớm</option>
+                    <option value="Check-out muộn">Check-out muộn</option>
+                    <option value="Trang trí sinh nhật">Trang trí sinh nhật</option>
+                    <option value="Ăn kiêng">Ăn kiêng</option>
+                    <option value="Không làm phiền">Không làm phiền</option>
+                    <option value="Mang hành lý lên phòng">Mang hành lý lên phòng</option>
+                    <option value="Phòng tầng cao">Phòng tầng cao</option>
+                    <option value="Thêm giường phụ">Thêm giường phụ</option>
+                    <option value="Khác">Khác</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Nội dung yêu cầu <span class="required">*</span></label>
+                <textarea id="fContent" class="form-control form-textarea" rows="4" placeholder="Mô tả chi tiết yêu cầu của khách..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Mã đặt phòng (tuỳ chọn)</label>
+                <input type="number" id="fBookingId" class="form-control" placeholder="VD: 123" min="1" />
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal()">Huỷ</button>
+            <button class="btn-save" id="btnSave" onclick="saveRequest()">Lưu yêu cầu</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL: Xem chi tiết + Xử lý
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="detailOverlay" onclick="closeDetailModal(event)">
+    <div class="modal modal-detail" id="modalDetail">
+        <div class="modal-header">
+            <h2 class="modal-title">Chi tiết yêu cầu</h2>
+            <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Họ và tên</span>
+                    <span class="detail-value" id="detailName">—</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Số điện thoại</span>
+                    <span class="detail-value" id="detailPhone">—</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Loại yêu cầu</span>
+                    <span class="detail-value" id="detailType">—</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Trạng thái</span>
+                    <span class="detail-value" id="detailStatus">—</span>
+                </div>
+                <div class="detail-item detail-item-full">
+                    <span class="detail-label">Nội dung</span>
+                    <span class="detail-value" id="detailContent">—</span>
+                </div>
+                <div class="detail-item detail-item-full">
+                    <span class="detail-label">Ghi chú xử lý</span>
+                    <textarea id="detailAdminNote" class="form-control form-textarea" rows="3" placeholder="Ghi chú khi duyệt/từ chối..."></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer detail-actions">
+            <button class="btn-cancel" onclick="closeDetailModal()">Đóng</button>
+            <div class="action-btns" id="detailActionBtns">
+                <!-- Filled by JS based on current status -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     TOAST NOTIFICATION
+═══════════════════════════════════════ -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════ -->
+<script th:src="@{/js/admin-special-requests.js}"></script>
+
+<div th:replace="~{fragments/admin-sidebar :: sidebar-script}"></div>
+
+</body>
+</html>

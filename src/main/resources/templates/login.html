@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập – HotelHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/login.css}" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<div class="login-wrapper">
+
+    <!-- ===== LEFT PANEL ===== -->
+    <div class="left-panel">
+        <img
+            class="hotel-bg"
+            th:src="@{/images/login.png}"
+            src="/images/login.png"
+            alt="Hotel room"
+        />
+        <div class="overlay"></div>
+        <a href="/" class="panel-logo">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 14V6L8 2L14 6V14H10V10H6V14H2Z" fill="#fff"/>
+            </svg>
+            HotelHub
+        </a>
+        <div class="panel-text">
+            <h2>Trải nghiệm nghỉ dưỡng<br/>đẳng cấp mỗi ngày</h2>
+            <p>Đặt phòng nhanh chóng, dịch vụ tận tâm — chúng tôi luôn sẵn sàng phục vụ bạn 24/7.</p>
+        </div>
+    </div>
+
+    <!-- ===== RIGHT PANEL ===== -->
+    <div class="right-panel">
+
+        <!-- Title block -->
+        <div class="title-block">
+            <h1>Chào mừng trở lại!</h1>
+            <p class="subtitle">Nhập thông tin của bạn để truy cập vào tài khoản.</p>
+        </div>
+
+        <!-- Thông báo khi người dùng đã đăng nhập (Spring Security session) -->
+        <div sec:authorize="isAuthenticated()" class="alert-banner success" style="display:block">
+            Bạn đã đăng nhập với tư cách
+            <strong sec:authentication="name"></strong>.
+            <a th:href="@{/booking}">Về trang chủ</a>
+        </div>
+
+        <!-- Alert banner (success từ register / error từ server) -->
+        <div class="alert-banner" id="alertBanner"></div>
+
+        <!-- Email -->
+        <label class="field-label" for="email">Email</label>
+        <input
+            class="input-field"
+            type="email"
+            id="email"
+            name="email"
+            placeholder="example@email.com"
+            autocomplete="email"
+        />
+        <span class="error-msg" id="emailError">Vui lòng nhập địa chỉ email hợp lệ.</span>
+
+        <!-- Password + Forgot -->
+        <div class="label-row">
+            <label for="password">Mật khẩu</label>
+            <a href="#" class="forgot-link">Quên mật khẩu?</a>
+        </div>
+        <input
+            class="input-field"
+            type="password"
+            id="password"
+            name="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+        />
+        <span class="error-msg" id="passwordError">Vui lòng nhập mật khẩu.</span>
+
+        <!-- Submit button -->
+        <button class="btn-login" type="button" id="btnLogin">
+            Đăng nhập
+        </button>
+
+        <!-- Divider -->
+        <div class="divider">
+            <hr />
+            <span>Hoặc tiếp tục với</span>
+            <hr />
+        </div>
+
+        <!-- Social buttons -->
+        <div class="social-buttons">
+            <div id="g_id_onload"
+                 data-client_id="164996972338-922radebsfu7b6qi9njabqi3e30asf67.apps.googleusercontent.com"
+                 data-callback="handleGoogleLogin"
+                 data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-size="large"
+                 data-theme="outline"
+                 data-text="signin_with"
+                 data-shape="rectangular"
+                 data-logo_alignment="left"
+                 data-width="400">
+            </div>
+        </div>
+
+        <!-- Register link -->
+        <div class="register-link">
+            <span>Bạn chưa có tài khoản?</span>
+            <a th:href="@{/register}" href="/register">Đăng ký</a>
+        </div>
+
+    </div><!-- end .right-panel -->
+</div><!-- end .login-wrapper -->
+
+<script th:inline="javascript">
+    const BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+
+    const btnLogin      = document.getElementById('btnLogin');
+    const emailInput    = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const emailError    = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+    const alertBanner   = document.getElementById('alertBanner');
+
+    /* ── helpers ── */
+    function showError(el, msg) { el.textContent = msg; el.classList.add('visible'); }
+    function hideError(el)      { el.classList.remove('visible'); }
+    function validateEmail(v)   { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+    function showAlert(type, msg) {
+        alertBanner.textContent   = msg;
+        alertBanner.className     = 'alert-banner ' + type;
+        alertBanner.style.display = 'block';
+    }
+    function hideAlert() { alertBanner.style.display = 'none'; }
+
+    function setLoading(on) {
+        btnLogin.disabled    = on;
+        btnLogin.textContent = on ? 'Đang xử lý...' : 'Đăng nhập';
+    }
+
+    /* ── hiện thông báo nếu vừa đăng ký xong ── */
+    if (new URLSearchParams(window.location.search).get('registered') === 'true') {
+        showAlert('success', 'Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.');
+    }
+
+    /* ── submit ── */
+    btnLogin.addEventListener('click', async () => {
+        let valid = true;
+
+        if (!validateEmail(emailInput.value.trim())) {
+            showError(emailError, 'Vui lòng nhập địa chỉ email hợp lệ.'); valid = false;
+        } else { hideError(emailError); }
+
+        if (passwordInput.value.trim() === '') {
+            showError(passwordError, 'Vui lòng nhập mật khẩu.'); valid = false;
+        } else { hideError(passwordError); }
+
+        if (!valid) return;
+
+        setLoading(true);
+        hideAlert();
+
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email:    emailInput.value.trim(),
+                    password: passwordInput.value
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.status === 200) {
+                localStorage.setItem('accessToken', data.accessToken);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                showAlert('success', 'Đăng nhập thành công! Đang chuyển hướng...');
+                const role = data.user?.role;
+                const redirectUrl = (role === 'ADMIN' || role === 'HOTEL_OWNER')
+                    ? '/admin/dashboard'
+                    : '/';
+                setTimeout(() => { window.location.href = redirectUrl; }, 1500);
+                return;
+            }
+
+            if (res.status === 401) {
+                showAlert('error', 'Email hoặc mật khẩu không đúng.');
+            } else if (res.status === 400) {
+                const fe = data.fieldErrors;
+                if (fe) {
+                    if (fe.email)    showError(emailError,    fe.email);
+                    if (fe.password) showError(passwordError, fe.password);
+                } else {
+                    showAlert('error', data.message || 'Dữ liệu không hợp lệ.');
+                }
+            } else {
+                showAlert('error', 'Đã xảy ra lỗi máy chủ. Vui lòng thử lại.');
+            }
+
+        } catch (e) {
+            showAlert('error', 'Không thể kết nối tới máy chủ. Vui lòng kiểm tra backend đang chạy.');
+        } finally {
+            setLoading(false);
+        }
+    });
+
+    /* ── real-time clear errors ── */
+    emailInput.addEventListener('input',    () => hideError(emailError));
+    passwordInput.addEventListener('input', () => hideError(passwordError));
+
+    /* ── Google Sign-In callback ── */
+    window.handleGoogleLogin = async function(response) {
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/auth/google`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ credential: response.credential })
+            });
+
+            const data = await res.json();
+
+            if (res.status === 200) {
+                localStorage.setItem('accessToken', data.accessToken);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                showAlert('success', 'Đăng nhập thành công! Đang chuyển hướng...');
+                const role = data.user?.role;
+                const redirectUrl = (role === 'ADMIN' || role === 'HOTEL_OWNER')
+                    ? '/admin/dashboard'
+                    : '/';
+                setTimeout(() => { window.location.href = redirectUrl; }, 1500);
+            } else {
+                showAlert('error', 'Đăng nhập Google thất bại. Vui lòng thử lại.');
+            }
+        } catch (e) {
+            showAlert('error', 'Không thể kết nối tới máy chủ.');
+        }
+    };
+</script>
+
+</body>
+</html>

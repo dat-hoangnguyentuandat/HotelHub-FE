@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="sr-widget-head">
+    <link rel="stylesheet" th:href="@{/css/special-request-widget.css}" />
+</head>
+<body>
+
+<!--
+    Fragment: navbar
+    ─────────────────────────────────────────────────────────────────
+    Sử dụng:
+        <header th:replace="~{fragments/navbar :: navbar('home')}"></header>
+
+    Các giá trị activePage hợp lệ:
+        'home'         → /  (Trang chủ)
+        'rooms'        → /rooms
+        'customers'    → /loyal-customers
+        'payment-info' → /payment-info
+        'payment'      → /payment
+    ─────────────────────────────────────────────────────────────────
+-->
+<header th:fragment="navbar(activePage)" class="navbar">
+
+    <!-- ── Logo ── -->
+    <a href="/" class="navbar-brand" aria-label="HotelHub – Trang chủ">
+        <svg class="brand-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M2 14V6L8 2L14 6V14H10V10H6V14H2Z" fill="#171212"/>
+        </svg>
+        <span class="brand-name">HotelHub</span>
+    </a>
+
+    <!-- ── Nav links (3 mục cố định) ── -->
+    <nav class="navbar-links" aria-label="Điều hướng chính">
+        <a href="/"
+           th:classappend="${activePage == 'home'} ? 'active'"
+           class="nav-link">Trang chủ</a>
+
+        <a href="/rooms"
+           th:classappend="${activePage == 'rooms'} ? 'active'"
+           class="nav-link">Phòng</a>
+
+        <a href="/services"
+           th:classappend="${activePage == 'services'} ? 'active'"
+           class="nav-link">Dịch vụ</a>
+
+        <a href="/reviews"
+           th:classappend="${activePage == 'reviews'} ? 'active'"
+           class="nav-link">Đánh giá</a>
+    </nav>
+
+    <!-- ── Actions ── -->
+    <div class="navbar-actions">
+
+        <!-- Nút đăng nhập (hiện khi chưa login) -->
+        <a href="/login" class="navbar-btn-login" id="navBtnLogin" style="display:none"
+           aria-label="Đăng nhập">
+            <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+                <path d="M13 3h4a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-4M9 14l4-4-4-4M13 10H3"
+                      stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Đăng nhập
+        </a>
+
+        <!-- Icon user (hiện luôn khi chưa login, chuyển thành avatar khi đã login) -->
+        <div class="avatar-wrapper" id="avatarBtn" aria-haspopup="true" aria-expanded="false">
+            <!-- Ảnh avatar (thay bằng icon mặc định nếu chưa login) -->
+            <img class="avatar-img" id="avatarImg"
+                 src="data:image/svg+xml,%3Csvg viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23f0ebe7'/%3E%3Ccircle cx='20' cy='15' r='6' fill='%23c9b5a8'/%3E%3Cpath d='M6 36c0-7.732 6.268-14 14-14s14 6.268 14 14' fill='%23c9b5a8'/%3E%3C/svg%3E"
+                 alt="Tài khoản" />
+
+            <div class="avatar-dropdown" id="avatarDropdown" role="menu">
+
+                <!-- Khi ĐÃ đăng nhập: thông tin user -->
+                <div class="dropdown-user-info" id="dropdownLoggedIn" style="display:none">
+                    <span class="dropdown-username" id="dropdownUsername">Người dùng</span>
+                    <span class="dropdown-role"     id="dropdownRole"></span>
+                </div>
+
+                <!-- Khi CHƯA đăng nhập: prompt login -->
+                <div class="dropdown-guest-info" id="dropdownGuest">
+                    <span class="dropdown-guest-title">Chào mừng!</span>
+                    <span class="dropdown-guest-sub">Đăng nhập để trải nghiệm đầy đủ</span>
+                    <a href="/login" class="dropdown-btn-login">Đăng nhập</a>
+                    <a href="/register" class="dropdown-btn-register">Tạo tài khoản</a>
+                </div>
+
+                <hr class="dropdown-divider" id="dropdownDivider1" style="display:none" />
+
+                <!-- Menu items (chỉ hiện khi đã đăng nhập) -->
+                <a href="/loyal-customers" class="dropdown-item dropdown-auth-item"
+                   style="display:none" role="menuitem">
+                    <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+                        <path d="M10 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L10 14.4l-4.8 2.5.9-5.4L2.2 7.7l5.4-.8L10 2z"
+                              stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                    </svg>
+                    Khách hàng thân thiết
+                </a>
+
+                <a href="/payment-info" class="dropdown-item dropdown-auth-item"
+                   style="display:none" role="menuitem">
+                    <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+                        <rect x="2" y="4" width="16" height="13" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M2 8h16M6 12h3M6 14.5h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    Lịch sử thanh toán
+                </a>
+
+                <a href="/admin/dashboard" class="dropdown-item dropdown-auth-item" id="adminLink"
+                   style="display:none" role="menuitem">
+                    <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+                        <rect x="2"  y="2"  width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                        <rect x="12" y="2"  width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                        <rect x="2"  y="12" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                        <rect x="12" y="12" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    Quản trị
+                </a>
+
+                <hr class="dropdown-divider dropdown-auth-item" id="dropdownDivider2"
+                    style="display:none" />
+
+                <button class="dropdown-item dropdown-logout dropdown-auth-item"
+                        id="btnLogout" style="display:none" role="menuitem">
+                    <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+                        <path d="M7 17H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h3M13 14l4-4-4-4M17 10H7"
+                              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Đăng xuất
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ═══════════════════════════════════════
+     SPECIAL REQUEST WIDGET – nút chat nổi góc dưới phải
+     (Tự ẩn trên trang /admin/*)
+═══════════════════════════════════════ -->
+<th:block th:fragment="sr-widget-script">
+    <script th:src="@{/js/special-request-widget.js}"></script>
+</th:block>
+
+</body>
+</html>

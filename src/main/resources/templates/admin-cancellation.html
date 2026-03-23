@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hủy phòng &amp; Hoàn tiền – HotelHub Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/admin-cancellation.css}" />
+</head>
+<body>
+
+<div class="admin-layout">
+
+    <!-- ═══════════════════════════════════════
+         SIDEBAR
+    ═══════════════════════════════════════ -->
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('cancellation')}"></aside>
+
+    <!-- ═══════════════════════════════════════
+         MAIN CONTENT
+    ═══════════════════════════════════════ -->
+    <main class="main-content">
+
+        <!-- Top bar -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">Quản lý Yêu cầu Hủy &amp; Hoàn tiền</h1>
+                <p class="page-subtitle">Xem xét và xử lý các yêu cầu hủy phòng từ khách hàng</p>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="9" cy="9" r="6" stroke="#8c7b72" stroke-width="1.5"/>
+                        <path d="M13.5 13.5L17 17" stroke="#8c7b72" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Tìm mã đặt phòng, khách hàng..." />
+                </div>
+                <select class="filter-select" id="filterStatus">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="PENDING_REFUND">Chờ xử lý</option>
+                    <option value="REFUNDED">Đã hoàn tiền</option>
+                    <option value="REJECTED">Từ chối hoàn</option>
+                </select>
+                <button class="btn-policy" id="btnOpenPolicy">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 2L3 6V10C3 13.9 6.1 17.5 10 18.5C13.9 17.5 17 13.9 17 10V6L10 2Z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+                        <path d="M7 10l2 2 4-4" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Cấu hình chính sách
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats cards -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-total">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M9 14l-4 4m0 0l4 4m-4-4h11a4 4 0 000-8h-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Tổng yêu cầu</span>
+                    <span class="stat-val" id="statTotal">—</span>
+                </div>
+            </div>
+            <div class="stat-card stat-yellow">
+                <div class="stat-icon stat-icon-pending">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M12 7V12L15 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Chờ xử lý</span>
+                    <span class="stat-val" id="statPending">—</span>
+                </div>
+            </div>
+            <div class="stat-card stat-green">
+                <div class="stat-icon stat-icon-refunded">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M8 12l3 3 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Đã hoàn tiền</span>
+                    <span class="stat-val" id="statRefunded">—</span>
+                </div>
+            </div>
+            <div class="stat-card stat-red">
+                <div class="stat-icon stat-icon-rejected">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Từ chối hoàn</span>
+                    <span class="stat-val" id="statRejected">—</span>
+                </div>
+            </div>
+            <div class="stat-card stat-blue">
+                <div class="stat-icon stat-icon-amount">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M12 6v2M12 16v2M8.5 9.5C8.5 8.1 10.1 7 12 7s3.5 1.1 3.5 2.5c0 2-3.5 2.5-3.5 4.5M12 14h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Tổng hoàn tiền</span>
+                    <span class="stat-val stat-amount" id="statTotalAmount">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table card -->
+        <div class="table-card">
+            <div class="table-header">
+                <span class="table-count" id="tableCount">Đang tải...</span>
+                <div class="date-filter">
+                    <label class="date-label">Từ ngày</label>
+                    <input type="date" class="date-input" id="filterFrom" />
+                    <label class="date-label">Đến ngày</label>
+                    <input type="date" class="date-input" id="filterTo" />
+                    <button class="btn-filter-date" id="btnFilterDate">Lọc</button>
+                    <button class="btn-clear-date" id="btnClearDate">Xoá lọc</button>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="cancellation-table" id="cancellationTable">
+                    <thead>
+                        <tr>
+                            <th class="col-code">Mã Đặt phòng</th>
+                            <th class="col-guest">Khách hàng</th>
+                            <th class="col-dates">Ngày đặt / Hủy</th>
+                            <th class="col-policy">Chính sách áp dụng</th>
+                            <th class="col-amount">Số tiền Hoàn</th>
+                            <th class="col-status">Trạng thái</th>
+                            <th class="col-action">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cancellationTableBody">
+                        <tr class="loading-row">
+                            <td colspan="7">
+                                <div class="skeleton-wrap">
+                                    <div class="skeleton"></div>
+                                    <div class="skeleton"></div>
+                                    <div class="skeleton"></div>
+                                    <div class="skeleton"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty state -->
+            <div class="empty-state" id="emptyState" style="display:none">
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="32" cy="32" r="28" stroke="#d4c5bc" stroke-width="2.5"/>
+                    <path d="M22 22l20 20M42 22L22 42" stroke="#d4c5bc" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                <p>Không có yêu cầu hủy phòng nào</p>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+
+    </main>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL: CHI TIẾT & XỬ LÝ YÊU CẦU
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="detailModalOverlay">
+    <div class="modal modal-detail">
+        <div class="modal-header">
+            <h2 class="modal-title" id="detailModalTitle">Chi tiết yêu cầu hủy phòng</h2>
+            <button class="modal-close" id="btnCloseDetailModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <!-- Booking info section -->
+            <div class="detail-section">
+                <h3 class="detail-section-title">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="3" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                        <path d="M6 1v3M14 1v3M2 8h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                    Thông tin đặt phòng
+                </h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">Mã đặt phòng</span>
+                        <span class="detail-val" id="dBookingCode">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Khách hàng</span>
+                        <span class="detail-val" id="dGuestName">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Loại phòng</span>
+                        <span class="detail-val" id="dRoomType">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Số điện thoại</span>
+                        <span class="detail-val" id="dPhone">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Ngày nhận phòng</span>
+                        <span class="detail-val" id="dCheckIn">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Ngày trả phòng</span>
+                        <span class="detail-val" id="dCheckOut">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Tổng tiền đặt</span>
+                        <span class="detail-val detail-highlight" id="dTotalAmount">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Ngày hủy</span>
+                        <span class="detail-val" id="dCancelDate">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Refund policy section -->
+            <div class="detail-section">
+                <h3 class="detail-section-title">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 2L3 6V10C3 13.9 6.1 17.5 10 18.5C13.9 17.5 17 13.9 17 10V6L10 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                        <path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Chính sách hoàn tiền
+                </h3>
+                <div class="detail-grid">
+                    <div class="detail-item span-2">
+                        <span class="detail-label">Chính sách áp dụng</span>
+                        <span class="detail-val" id="dPolicy">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Tỷ lệ hoàn</span>
+                        <span class="detail-val detail-highlight" id="dRefundRate">—</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Số tiền hoàn</span>
+                        <span class="detail-val detail-highlight detail-green" id="dRefundAmount">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lý do hủy -->
+            <div class="detail-section">
+                <h3 class="detail-section-title">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17 3H3a1 1 0 00-1 1v10a1 1 0 001 1h7l4 3v-3h3a1 1 0 001-1V4a1 1 0 00-1-1z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                    </svg>
+                    Lý do hủy
+                </h3>
+                <p class="detail-reason" id="dReason">—</p>
+            </div>
+
+            <!-- Ghi chú xử lý (chỉ hiện khi PENDING_REFUND) -->
+            <div class="detail-section" id="processSection">
+                <h3 class="detail-section-title">
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 4h12v12H4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                        <path d="M8 8h4M8 12h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                    Ghi chú xử lý
+                </h3>
+                <textarea class="form-textarea" id="processNote" rows="3" placeholder="Nhập ghi chú hoặc lý do từ chối (nếu có)..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer" id="detailModalFooter">
+            <button class="btn-modal-cancel" id="btnCloseDetail">Đóng</button>
+            <button class="btn-modal-reject" id="btnRejectRefund">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                Từ chối hoàn
+            </button>
+            <button class="btn-modal-approve" id="btnApproveRefund">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Xác nhận hoàn tiền
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL: CẤU HÌNH CHÍNH SÁCH HOÀN TIỀN
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="policyModalOverlay">
+    <div class="modal modal-policy">
+        <div class="modal-header">
+            <h2 class="modal-title">Cấu hình chính sách hoàn tiền</h2>
+            <button class="modal-close" id="btnClosePolicyModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="policy-note">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#1d4ed8" stroke-width="1.5"/><path d="M10 9v5M10 7h.01" stroke="#1d4ed8" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Các chính sách này áp dụng khi khách hàng hủy đặt phòng. Tỷ lệ hoàn tiền được tính dựa trên số ngày trước ngày nhận phòng.
+            </div>
+
+            <div class="policy-list" id="policyList">
+                <!-- Populated by JS -->
+            </div>
+
+            <button class="btn-add-policy" id="btnAddPolicy">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                Thêm chính sách
+            </button>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal-cancel" id="btnClosePolicyFooter">Hủy</button>
+            <button class="btn-modal-approve" id="btnSavePolicy">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Lưu chính sách
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     TOAST NOTIFICATION
+═══════════════════════════════════════ -->
+<div class="toast" id="toast">
+    <svg class="toast-icon" viewBox="0 0 20 20" fill="none"><path d="M10 18A8 8 0 1010 2a8 8 0 000 16z" stroke="currentColor" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="toast-msg" id="toastMsg"></span>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    window.BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+    /*]]>*/
+</script>
+<script th:src="@{/js/admin-cancellation.js}"></script>
+<div th:replace="~{fragments/admin-sidebar :: sidebar-script}"></div>
+
+</body>
+</html>

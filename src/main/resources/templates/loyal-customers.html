@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Khách Hàng Thân Thiết – HotelHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/navbar.css}" />
+    <link rel="stylesheet" th:href="@{/css/loyal-customers.css}" />
+    <link rel="stylesheet" th:href="@{/css/special-request-widget.css}" />
+    <link rel="stylesheet" th:href="@{/css/special-request-widget.css}" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════ -->
+<header th:replace="~{fragments/navbar :: navbar('customers')}"></header>
+
+<!-- ═══════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════ -->
+<main class="main-content">
+
+    <!-- ── Hero Card ── -->
+    <section class="loyalty-hero">
+
+        <!-- Bảng trái: thông tin khách -->
+        <div class="customer-profile-card">
+            <div class="customer-avatar">
+                <img id="customerAvatarImg"
+                     src="data:image/svg+xml,%3Csvg viewBox='0 0 120 120' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='60' cy='60' r='60' fill='%23f0ebe7'/%3E%3Ccircle cx='60' cy='45' r='22' fill='%23c9b5a8'/%3E%3Cpath d='M12 108c0-26.51 21.49-48 48-48s48 21.49 48 48' fill='%23c9b5a8'/%3E%3C/svg%3E"
+                     alt="Avatar khách hàng" />
+            </div>
+            <p class="customer-name" id="customerName">Lê Nguyễn Thế Kiệt</p>
+            <span class="membership-badge gold" id="membershipBadge">Gold Member</span>
+        </div>
+
+        <!-- Bảng phải: điểm & quyền lợi -->
+        <div class="loyalty-info-card">
+            <h1 class="loyalty-title">Khách hàng thân thiết</h1>
+            <p class="loyalty-subtitle">Theo dõi điểm thưởng, hạng thành viên và quyền lợi của bạn</p>
+
+            <!-- Điểm -->
+            <div class="points-row">
+                <div class="point-box">
+                    <span class="point-label">Điểm hiện tại</span>
+                    <span class="point-value" id="currentPoints">780</span>
+                </div>
+                <div class="point-box">
+                    <span class="point-label">Điểm để lên hạng</span>
+                    <span class="point-value" id="pointsToUpgrade">220</span>
+                </div>
+            </div>
+
+            <!-- Tiến trình -->
+            <div class="progress-section">
+                <p class="progress-label">Tiến trình nâng hạng</p>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill" style="width: 78%"></div>
+                </div>
+                <p class="progress-caption" id="progressCaption">780 / 1000 điểm để lên <strong>Platinum</strong></p>
+            </div>
+
+            <!-- Quyền lợi -->
+            <div class="benefits-section">
+                <p class="benefits-title">Quyền lợi của bạn</p>
+                <div class="benefits-list" id="benefitsList">
+                    <span class="benefit-chip">Giảm 10% giá phòng</span>
+                    <span class="benefit-chip">Check-in sớm</span>
+                    <span class="benefit-chip">Ưu tiên hỗ trợ</span>
+                </div>
+            </div>
+
+            <!-- Nút đổi điểm -->
+            <div class="redeem-action">
+                <button class="btn-redeem" data-action="open-redeem">
+                    🎁 Đổi điểm thưởng
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Hạng thành viên ── -->
+    <section class="tiers-section">
+        <h2 class="section-heading">Hạng thành viên</h2>
+        <div class="tiers-grid">
+            <div class="tier-card silver" id="tierSilver">
+                <div class="tier-icon">🥈</div>
+                <h3 class="tier-name">Silver</h3>
+                <p class="tier-range">0 – 499 điểm</p>
+                <ul class="tier-perks">
+                    <li>Giảm 5% giá phòng</li>
+                    <li>Tích điểm mỗi lần đặt</li>
+                </ul>
+            </div>
+            <div class="tier-card gold active" id="tierGold">
+                <div class="tier-icon">🥇</div>
+                <h3 class="tier-name">Gold</h3>
+                <p class="tier-range">500 – 999 điểm</p>
+                <ul class="tier-perks">
+                    <li>Giảm 10% giá phòng</li>
+                    <li>Check-in sớm</li>
+                    <li>Ưu tiên hỗ trợ</li>
+                </ul>
+                <span class="current-tier-badge">Hạng hiện tại</span>
+            </div>
+            <div class="tier-card platinum" id="tierPlatinum">
+                <div class="tier-icon">💎</div>
+                <h3 class="tier-name">Platinum</h3>
+                <p class="tier-range">1000+ điểm</p>
+                <ul class="tier-perks">
+                    <li>Giảm 20% giá phòng</li>
+                    <li>Check-in sớm & Check-out muộn</li>
+                    <li>Phòng nâng hạng miễn phí</li>
+                    <li>Quà tặng đặc biệt</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Lịch sử điểm ── -->
+    <section class="history-section">
+        <div class="history-header">
+            <h2 class="section-heading">Lịch sử điểm thưởng</h2>
+            <div class="filter-bar">
+                <select class="filter-select" id="filterType">
+                    <option value="">Tất cả</option>
+                    <option value="earn">Tích điểm</option>
+                    <option value="redeem">Đổi điểm</option>
+                </select>
+                <input type="month" class="filter-month" id="filterMonth" />
+            </div>
+        </div>
+        <div class="table-card">
+            <div class="table-wrapper">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Ngày</th>
+                            <th>Mô tả</th>
+                            <th>Loại</th>
+                            <th>Điểm</th>
+                            <th>Số dư</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTbody">
+                        <tr>
+                            <td>18/03/2026</td>
+                            <td>Đặt phòng Deluxe #BK-2026-0312</td>
+                            <td><span class="badge-earn">Tích điểm</span></td>
+                            <td class="points-earn">+120</td>
+                            <td>780</td>
+                        </tr>
+                        <tr>
+                            <td>10/03/2026</td>
+                            <td>Đặt phòng Suite #BK-2026-0298</td>
+                            <td><span class="badge-earn">Tích điểm</span></td>
+                            <td class="points-earn">+200</td>
+                            <td>660</td>
+                        </tr>
+                        <tr>
+                            <td>02/03/2026</td>
+                            <td>Đổi điểm giảm giá phòng</td>
+                            <td><span class="badge-redeem">Đổi điểm</span></td>
+                            <td class="points-redeem">-100</td>
+                            <td>460</td>
+                        </tr>
+                        <tr>
+                            <td>20/02/2026</td>
+                            <td>Đặt phòng Standard #BK-2026-0271</td>
+                            <td><span class="badge-earn">Tích điểm</span></td>
+                            <td class="points-earn">+80</td>
+                            <td>560</td>
+                        </tr>
+                        <tr>
+                            <td>08/02/2026</td>
+                            <td>Thưởng dịp sinh nhật</td>
+                            <td><span class="badge-earn">Tích điểm</span></td>
+                            <td class="points-earn">+50</td>
+                            <td>480</td>
+                        </tr>
+                        <tr>
+                            <td>14/01/2026</td>
+                            <td>Đổi điểm check-in sớm</td>
+                            <td><span class="badge-redeem">Đổi điểm</span></td>
+                            <td class="points-redeem">-50</td>
+                            <td>430</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Nút xem thêm -->
+        <div class="load-more-wrap">
+            <button class="btn-load-more" id="btnLoadMore">Xem thêm</button>
+        </div>
+    </section>
+
+</main>
+
+<script th:src="@{/js/loyal-customers.js}"></script>
+
+<!-- ═══════════════════════════════════════
+     MODAL ĐỔI ĐIỂM LẤY VOUCHER
+═══════════════════════════════════════ -->
+<div id="redeemModal" style="display:none; position:fixed; inset:0; background:rgba(23,18,15,.45);
+     z-index:1000; align-items:center; justify-content:center; padding:16px;">
+
+    <div style="background:#fff; border-radius:20px; width:100%; max-width:580px;
+                max-height:90vh; display:flex; flex-direction:column;
+                box-shadow:0 16px 64px rgba(0,0,0,.18);">
+
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:center;
+                    padding:28px 28px 0;">
+            <div>
+                <h2 style="font-family:'Manrope',sans-serif; font-size:20px; font-weight:700; color:#17120f;">
+                    🎁 Đổi điểm lấy Voucher
+                </h2>
+                <p style="font-size:13px; color:#8c7b72; margin-top:4px;">
+                    Bạn có <strong id="redeemModalPoints" style="color:#c17c5a;">0</strong> điểm.
+                    Chọn voucher muốn đổi bên dưới.
+                </p>
+            </div>
+            <button id="btnCloseRedeemModal"
+                style="border:none; background:none; font-size:20px; cursor:pointer;
+                       color:#7a6d65; line-height:1; padding:4px; flex-shrink:0;">✕</button>
+        </div>
+
+        <!-- Voucher list -->
+        <div id="voucherListArea" style="overflow-y:auto; flex:1; padding:20px 28px; display:flex; flex-direction:column; gap:12px;">
+            <!-- Filled by JS -->
+            <div id="voucherLoadingState" style="text-align:center; padding:32px; color:#8c7b72;">
+                Đang tải danh sách voucher...
+            </div>
+        </div>
+
+        <!-- My vouchers tab -->
+        <div style="padding:0 28px 16px; border-top:1px solid #f0ebe7;">
+            <button id="btnViewMyVouchers"
+                style="width:100%; height:38px; background:#f5f2f0; border:none; border-radius:10px;
+                       font-family:'Manrope',sans-serif; font-size:13px; font-weight:600;
+                       color:#5a4540; cursor:pointer; margin-top:14px; transition:background .15s;">
+                📋 Xem voucher đã đổi của tôi
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL XÁC NHẬN ĐỔI VOUCHER
+═══════════════════════════════════════ -->
+<div id="confirmRedeemModal" style="display:none; position:fixed; inset:0; background:rgba(23,18,15,.45);
+     z-index:1001; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#fff; border-radius:20px; padding:32px; width:100%; max-width:400px;
+                box-shadow:0 16px 64px rgba(0,0,0,.18);">
+        <h3 style="font-family:'Manrope',sans-serif; font-size:18px; font-weight:700; color:#17120f;
+                   margin-bottom:12px;">Xác nhận đổi điểm</h3>
+        <p style="font-size:14px; color:#5a4540; line-height:1.6; margin-bottom:20px;"
+           id="confirmRedeemText">Bạn có muốn đổi 100 điểm lấy voucher này không?</p>
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <button id="btnCancelConfirmRedeem"
+                style="height:40px; padding:0 18px; border:1.5px solid #e0dad4; border-radius:10px;
+                       background:#fff; font-size:14px; font-weight:500; cursor:pointer; font-family:'Manrope',sans-serif;">
+                Hủy
+            </button>
+            <button id="btnDoRedeem"
+                style="height:40px; padding:0 20px; background:#c17c5a; color:#fff; border:none;
+                       border-radius:10px; font-size:14px; font-weight:700; cursor:pointer;
+                       font-family:'Manrope',sans-serif; transition:opacity .2s;">
+                Xác nhận đổi
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL VOUCHER ĐÃ ĐỔI
+═══════════════════════════════════════ -->
+<div id="myVouchersModal" style="display:none; position:fixed; inset:0; background:rgba(23,18,15,.45);
+     z-index:1001; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#fff; border-radius:20px; width:100%; max-width:520px;
+                max-height:85vh; display:flex; flex-direction:column;
+                box-shadow:0 16px 64px rgba(0,0,0,.18);">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:24px 28px 0;">
+            <h3 style="font-family:'Manrope',sans-serif; font-size:18px; font-weight:700; color:#17120f;">
+                📋 Voucher của tôi
+            </h3>
+            <button id="btnCloseMyVouchers"
+                style="border:none; background:none; font-size:18px; cursor:pointer; color:#7a6d65; padding:4px;">✕</button>
+        </div>
+        <div id="myVouchersContent" style="overflow-y:auto; flex:1; padding:16px 28px 28px; display:flex; flex-direction:column; gap:10px;">
+            <p style="text-align:center; color:#8c7b72; padding:24px;">Đang tải...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div id="lcToast" style="display:none; position:fixed; bottom:28px; right:28px; z-index:9999;
+     padding:14px 20px; border-radius:12px; font-size:14px; font-weight:500;
+     box-shadow:0 8px 32px rgba(0,0,0,.15); color:#fff; max-width:340px;"></div>
+<script th:src="@{/js/navbar.js}"></script>
+<script th:src="@{/js/special-request-widget.js}"></script>
+</body>
+</html>
