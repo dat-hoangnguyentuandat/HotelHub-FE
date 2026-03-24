@@ -409,6 +409,9 @@
     <span id="toastMessage">Thao tác thành công!</span>
 </div>
 
+<script th:inline="javascript">
+    window.BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+</script>
 <script th:src="@{/js/admin-reviews.js}"></script>
 <div th:replace="~{fragments/admin-sidebar :: sidebar-script}"></div>
 

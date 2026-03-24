@@ -9,7 +9,7 @@
     'use strict';
 
     /* ── Config ── */
-    const API_BASE = 'http://localhost:8081';
+    const API_BASE = window.BACKEND_URL || 'http://localhost:8081';
     const API_URL  = API_BASE + '/api/admin/special-requests';
 
     /* ── State ── */
