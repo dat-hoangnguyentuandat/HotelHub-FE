@@ -231,7 +231,8 @@
     </div>
 
     <script th:inline="javascript">
-        const backendUrl = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+        window.BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+        const backendUrl = window.BACKEND_URL; // For backward compatibility
     </script>
     <script th:src="@{/js/admin-group-bookings.js}"></script>
     <div th:replace="~{fragments/admin-sidebar :: sidebar-script}"></div>

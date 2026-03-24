@@ -172,7 +172,8 @@
     </div>
 
     <script th:inline="javascript">
-        const backendUrl = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+        window.BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+        const backendUrl = window.BACKEND_URL; // For backward compatibility
         const groupBookingId = /*[[${groupBookingId}]]*/ 0;
     </script>
     <script th:src="@{/js/admin-group-booking-detail.js}"></script>
