@@ -126,6 +126,7 @@
 </div>
 
 <script th:inline="javascript">
+    window.BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
     const bookingId = /*[[${bookingId}]]*/ 0;
 </script>
 <script th:src="@{/js/admin-booking-detail.js}"></script>

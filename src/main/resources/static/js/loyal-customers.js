@@ -6,7 +6,7 @@
 /* ─────────────────────────────────────────
    CẤU HÌNH
 ───────────────────────────────────────── */
-const API_BASE = 'http://localhost:8081';   // Cổng backend Spring Boot
+const API_BASE = window.BACKEND_URL || 'http://localhost:8081';   // Cổng backend Spring Boot
 
 /** Lấy JWT token đã lưu sau khi đăng nhập */
 function getToken() {

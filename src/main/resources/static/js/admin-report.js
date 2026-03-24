@@ -36,7 +36,8 @@ async function loadReportData(page = 0) {
     
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch(`http://localhost:8081/api/admin/reports/revenue?${params.toString()}`, {
+        const backendUrl = window.BACKEND_URL || 'http://localhost:8081';
+        const response = await fetch(`${backendUrl}/api/admin/reports/revenue?${params.toString()}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'

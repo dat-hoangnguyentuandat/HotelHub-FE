@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
 async function loadBookingDetail() {
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch(`http://localhost:8081/api/admin/bookings/${bookingId}`, {
+        const backendUrl = window.BACKEND_URL || 'http://localhost:8081';
+        const response = await fetch(`${backendUrl}/api/admin/bookings/${bookingId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
