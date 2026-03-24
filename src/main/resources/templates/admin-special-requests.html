@@ -239,6 +239,9 @@
 <!-- ═══════════════════════════════════════
      SCRIPTS
 ═══════════════════════════════════════ -->
+<script th:inline="javascript">
+    window.BACKEND_URL = /*[[${backendUrl}]]*/ 'http://localhost:8081';
+</script>
 <script th:src="@{/js/admin-special-requests.js}"></script>
 
 <div th:replace="~{fragments/admin-sidebar :: sidebar-script}"></div>

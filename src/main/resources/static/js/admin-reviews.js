@@ -6,7 +6,7 @@
 'use strict';
 
 /* ─── Cấu hình API ─── */
-const API_BASE = 'http://localhost:8081/api';
+const API_BASE = (window.BACKEND_URL || 'http://localhost:8081') + '/api';
 
 /** Lấy JWT từ localStorage (được lưu khi đăng nhập) */
 function getToken() {
