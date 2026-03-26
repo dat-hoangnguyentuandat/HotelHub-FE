@@ -27,9 +27,21 @@
         loadStats();
         loadRequests();
 
-        /* Tìm kiếm khi nhấn Enter */
+        /* Tìm kiếm khi nhấn Enter trên ô search */
         document.getElementById('searchInput').addEventListener('keydown', function (e) {
             if (e.key === 'Enter') doSearch();
+        });
+
+        /* Tìm kiếm realtime khi gõ (debounce 400ms) */
+        var searchTimer;
+        document.getElementById('searchInput').addEventListener('input', function () {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(function () { doSearch(); }, 400);
+        });
+
+        /* Tự động lọc ngay khi đổi dropdown trạng thái */
+        document.getElementById('statusFilter').addEventListener('change', function () {
+            doSearch();
         });
     });
 

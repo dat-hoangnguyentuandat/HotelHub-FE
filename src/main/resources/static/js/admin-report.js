@@ -6,13 +6,13 @@ let totalPages = 0;
 
 // Load report data on page load
 document.addEventListener('DOMContentLoaded', function() {
-    loadReportData();
-    
-    // Add event listeners for filters
-    document.getElementById('startDate').addEventListener('change', loadReportData);
-    document.getElementById('endDate').addEventListener('change', loadReportData);
-    document.getElementById('source').addEventListener('change', loadReportData);
-    document.getElementById('paymentStatus').addEventListener('change', loadReportData);
+    loadReportData(0);
+
+    // Add event listeners for filters — reset về trang 0 mỗi khi filter thay đổi
+    document.getElementById('startDate').addEventListener('change', function() { loadReportData(0); });
+    document.getElementById('endDate').addEventListener('change', function() { loadReportData(0); });
+    document.getElementById('source').addEventListener('change', function() { loadReportData(0); });
+    document.getElementById('paymentStatus').addEventListener('change', function() { loadReportData(0); });
 });
 
 async function loadReportData(page = 0) {
