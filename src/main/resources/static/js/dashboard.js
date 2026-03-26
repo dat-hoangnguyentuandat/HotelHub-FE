@@ -134,11 +134,12 @@
                 datasets: [{
                     label: 'Doanh thu (triệu VND)',
                     data: dataInMillions,
-                    backgroundColor: COLOR_BLUE_STEEL,
+                    backgroundColor: dataInMillions.map(() => COLOR_BLUE_STEEL),
                     borderRadius: 4,
                     borderSkipped: false,
                     barPercentage: 0.55,
                     categoryPercentage: 0.75,
+                    minBarLength: 2,
                 }]
             },
             options: buildBarOptions(yMax, 'triệu VND')
@@ -298,7 +299,9 @@
 
     /** VND → triệu (1 chữ số thập phân) */
     function toMillions(value) {
-        return Math.round(Number(value) / 100000) / 10;
+        const num = Number(value);
+        if (!num || num <= 0) return 0;
+        return Math.round(num / 100000) / 10;
     }
 
     /** VND → "X,X triệu" */
